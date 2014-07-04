@@ -14,7 +14,7 @@ _Nucleic Acids Res._ 31(17), 5108-21.
 ###Requirements
 
 ##### do_x3dna
-* [3DNA package](x3dna.org)
+* [3DNA package](http://x3dna.org)
 
 * GROMACS libraries <code> libgmx, libmd, libgmxana </code> are required.
 
@@ -103,7 +103,7 @@ file is generated containing the base pair information as per index of the hydro
 
 <code> -lbpm </code> option calculates Local Base Pair Parameters (Shear, Stretch, Stagger, Buckle, Propeller and Opening) with function of time, and average (with <code>-avg</code> ) of these parameters with function of the base-pairs.
 
-<code> -lbpsm </code> option calculates Local Base Pair-Step Parameters (Shift, Slide, Rise, Tilt, Roll and Twist) with function of time, and average (with <code>-avg<code> ) of these parameters with function of the base-steps.
+<code> -lbpsm </code> option calculates Local Base Pair-Step Parameters (Shift, Slide, Rise, Tilt, Roll and Twist) with function of time, and average (with <code>-avg</code> ) of these parameters with function of the base-steps.
 
 <code> -lbphm </code> option calculates Local Base Pair-Helical Parameters (X-displacement, Y-displacement, H-rise, Inclination, Tip and H-twist) with function of time, and average (with <code>-avg</code> ) of these parameters with function of the base-steps.
 
