@@ -5,7 +5,7 @@ do_x3dna uses 3DNA package to calculate several structural descriptors or parame
 
 To execute do_x3dna, 3DNA package should be installed and $X3DNA environment variable (Detail is given in 3DNA manual) should be defined.
 
-<strong> Please cites the follwoing publication and the curren github page:</strong>               
+<strong> Please cite the follwoing publication and the current github page:</strong>               
 Xiang-Jun Lu & Wilma K. Olson (2003)                                    
 3DNA: a software package for the analysis, rebuilding and visualization 
 of three-dimensional nucleic acid structures.                           
