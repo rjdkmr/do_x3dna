@@ -1,7 +1,9 @@
 do_x3dna
 ========
 
-do_x3dna uses 3DNA package to calculate several structural descriptors or parameters of DNA/RNA using the GROMACS MD trajectory. It extracts output of the 3DNA package,and saves these parameters to external output files with function of time.
+do\_x3dna uses 3DNA package to calculate several structural descriptors or parameters of DNA/RNA using the GROMACS MD trajectory. It extracts output of the 3DNA package,and saves these parameters to external output files with function of time. 
+
+<strong> Note: </strong> do\_x3dna can be used for analyzing DNA and RNA from the trajectory files that are obtained from other MD packages such as NAMD and AMBER. A PDB file could be used in place of a GROMACS _tpr_ file.
 
 To execute do_x3dna, 3DNA package should be installed and $X3DNA environment variable (Detail is given in 3DNA manual) should be defined.
 
