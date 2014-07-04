@@ -98,14 +98,14 @@ To execute do_x3dna, 3DNA package should be installed and $X3DNA environment var
 
 <strong>NOTE 4:</strong> If <code> -fit </code> is enabled, during fitting procedure the DNA/RNA is translated to origin such that its center of mass is located at the origin. Most of the parameters are unaffected by this fitting, however coordinates of the local helical axis could mismatch with the input coordinates with the DNA/RNA.
 
-<code> -hbond </code> option extracts hydrogen bonds for each base pair. A map.log (<code> -g </code>")
-file is generated containing the base pair information as per index of the hydrogen bond map (<code> -map </code>").
+<code> -hbond </code> option extracts hydrogen bonds for each base pair. A map.log ( <code>-g</code> )
+file is generated containing the base pair information as per index of the hydrogen bond map ( <code>-map</code> ).
 
-<code> -lbpm </code> option calculates Local Base Pair Parameters (Shear, Stretch, Stagger, Buckle, Propeller and Opening) with function of time, and average (with <code> -avg </code>) of these parameters with function of the base-pairs.
+<code> -lbpm </code> option calculates Local Base Pair Parameters (Shear, Stretch, Stagger, Buckle, Propeller and Opening) with function of time, and average (with <code>-avg</code> ) of these parameters with function of the base-pairs.
 
-<code> -lbpsm </code> option calculates Local Base Pair-Step Parameters (Shift, Slide, Rise, Tilt, Roll and Twist) with function of time, and average (with <code> -avg <code>) of these parameters with function of the base-steps.
+<code> -lbpsm </code> option calculates Local Base Pair-Step Parameters (Shift, Slide, Rise, Tilt, Roll and Twist) with function of time, and average (with <code>-avg<code> ) of these parameters with function of the base-steps.
 
-<code> -lbphm </code> option calculates Local Base Pair-Helical Parameters (X-displacement, Y-displacement, H-rise, Inclination, Tip and H-twist) with function of time, and average (with <code> -avg </code>) of these parameters with function of the base-steps.
+<code> -lbphm </code> option calculates Local Base Pair-Helical Parameters (X-displacement, Y-displacement, H-rise, Inclination, Tip and H-twist) with function of time, and average (with <code>-avg</code> ) of these parameters with function of the base-steps.
 
 Also, all the above parameters including local helical axis, major and minor grooves, local helical radius, backbone dihedral angles (alpha, beta, gamma, delta, epsilon, zeta and chi) of both strands are calculated using 3DNA package for each frame and written in separate files with function of time.
 
