@@ -1277,8 +1277,8 @@ int gmx_3dna(int argc,char *argv[])
 		  "    HelAxis_g.dat                => Local helical axis coordinates\n",
 		  "    MGroove_g.dat                => Major and Minor grooves\n",
 		  "    HelixRad_g.dat               => Local helical radius\n",
-		  "    BackBoneCHiDihedrals_g.dat   => Backbone dihederal angles\n",
-		  "    SugarDihedrals_g.dat         => Sugar dihederal angles\n"
+		  "    BackBoneCHiDihedrals_g.dat   => Backbone dihederal angles including Chi-dihedral\n",
+		  "    SugarDihedrals_g.dat         => Sugar dihederal angles including puckring type\n"
 		  "Name of these files could be change by setting different prefix instead of \"g\" using \"-name\" option.",
 		  "These files could be used with the Python APIs or scripts for further analysis.\n"
   };
@@ -1553,12 +1553,14 @@ int gmx_3dna(int argc,char *argv[])
   //============================
 
   fprintf(stderr,"\nFinished Trajectory Reading and X3DNA Executions....\n");
-  fprintf(stderr,"========================================================\n");
-  fprintf(stderr,"                        Post Processing                 \n");
-  fprintf(stderr,"========================================================\n");
 
 
   if(bHbond || bLBPM || bLBPSM || bLBPHM)	{
+
+	  fprintf(stderr,"========================================================\n");
+	  fprintf(stderr,"                        Post Processing                 \n");
+	  fprintf(stderr,"========================================================\n");
+
 	  fprintf(stderr,"\rGetting all base pairs....\n");
 	  int **bp=NULL, max_num_bp=0;
 	  bp = get_max_base_pairs(fn_cum_data[eBasePairs],&max_num_bp);
