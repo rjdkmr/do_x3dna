@@ -41,7 +41,7 @@
 #ifndef DO_X3DNA_H_
 #define DO_X3DNA_H_
 
-enum { eBasePairs, eHbond, eLBP, eLBPS, eLBPH, eHelAxis, eMgroove, eHelixRad, eBBnDihedral };
+enum { eBasePairs, eHbond, eLBP, eLBPS, eLBPH, eHelAxis, eMgroove, eHelixRad, eBBnDihedral, eSugarConf };
 
 typedef struct {
 	int bp1, bp2;

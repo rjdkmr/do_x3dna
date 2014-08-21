@@ -966,14 +966,14 @@ int** get_max_base_pairs_step(char *filename, int *num_bp)	{
 
 void write_time(real t, FILE *f_cum_data[])	{
 	int i=0;
-	for(i=0;i<8;i++)	{
+	for(i=0;i<10;i++)	{
 		fprintf(f_cum_data[i],"\n# Time = %15.5f\n",t);
 	}
 }
 
 int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
-	int i = 0, bp = 0;
-	gmx_bool bProp[9], bS1=FALSE, bS2=FALSE;
+	int i = 0, j= 0, bp = 0;
+	gmx_bool bProp[10], bS1=FALSE, bS2=FALSE;
 	FILE *f_input;
 	int number=0;
 	char **data=NULL, **two_strand=NULL, *tmp_str;
@@ -984,7 +984,7 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 	data = get_all_lines(f_input, &number);
 	fclose(f_input);
 
-	for(i=0;i<8;i++)
+	for(i=0;i<10;i++)
 		bProp[i]=FALSE;
 
 	for(i=0;i<number;i++)	{
@@ -1002,13 +1002,28 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 			bProp[eMgroove] = FALSE;
 			bProp[eHelixRad] = FALSE;
 
-			if ((bS2) && (bProp[eBBnDihedral]))	{
+			if (bProp[eBBnDihedral])	{
 				for(bp=0;bp<num_bp;bp++)
 					fprintf(f_cum_data[eBBnDihedral],"%s\n", two_strand[bp]);
 				bS2 = FALSE;
 				bProp[eBBnDihedral] = FALSE;
+				bp = 0;
+				for(j=0; j<num_bp; j++)
+						free(two_strand[j]);
 				free(two_strand);
 			}
+
+			if (bProp[eSugarConf])	{
+				for(bp=0;bp<num_bp;bp++)
+					fprintf(f_cum_data[eSugarConf],"%s\n", two_strand[bp]);
+				bS2 = FALSE;
+				bProp[eSugarConf] = FALSE;
+				bp = 0;
+				for(j=0; j<num_bp; j++)
+						free(two_strand[j]);
+				free(two_strand);
+			}
+
 
 			continue;
 		}
@@ -1054,21 +1069,54 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 			continue;
 		}
 
+
 		if(strstr(data[i],"Main chain and chi torsion angles")!=NULL)		{
 			bProp[eBBnDihedral] = TRUE;
+			two_strand = (char **) malloc (num_bp * sizeof(char*));
+			for(j=0; j<num_bp; j++)
+				two_strand[j] = (char *) malloc (160 * sizeof(char));
 			continue;
 		}
 
+		if(strstr(data[i],"Sugar conformational parameters")!=NULL)		{
+			bProp[eSugarConf] = TRUE;
+			two_strand = (char **) malloc (num_bp * sizeof(char*));
+			for(j=0; j<num_bp; j++)
+				two_strand[j] = (char *) malloc (200 * sizeof(char));
+			continue;
+
+		}
+
 		if (bProp[eBBnDihedral])	{
-			if(strstr(data[i], "Strand I")!=NULL)	{
+			if ((strstr(data[i], "Strand I")!=NULL) && (bS1==FALSE))	{
 				bS1 = TRUE;
 				bS2 = FALSE;
+				bp = 0;
+				continue;
 			}
-			if(strstr(data[i], "Strand II")!=NULL)	{
+			if((strstr(data[i], "Strand II")!=NULL) && (bS2==FALSE))	{
 				bS1 = FALSE;
 				bS2 = TRUE;
+				bp = 0;
+				continue;
 			}
 		}
+
+		if (bProp[eSugarConf])	{
+			if ((strstr(data[i], "Strand I")!=NULL) && (bS1==FALSE))	{
+				bS1 = TRUE;
+				bS2 = FALSE;
+				bp = 0;
+				continue;
+			}
+			if((strstr(data[i], "Strand II")!=NULL) && (bS2==FALSE))	{
+				bS1 = FALSE;
+				bS2 = TRUE;
+				bp = 0;
+				continue;
+			}
+		}
+
 
 		if(!is_first_numerics(data[i]))
 				continue;
@@ -1123,25 +1171,39 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 
 		if(bProp[eBBnDihedral])	{
 			SplitData = split_by_space(data[i]);
-			two_strand = (char **) malloc (num_bp * sizeof(char*));
 			tmp_str = (char *) malloc (80 * sizeof(char));
-
-			if (bS1)
-				for(bp=0;bp<num_bp;bp++)	{
-					sprintf(tmp_str, "%s   %s   %s   %s   %s   %s  %s",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7],SplitData[8]);
-					two_strand[bp] = strdup(tmp_str);
+			if (bS1)	{
+				sprintf(tmp_str, "%s   %s   %s   %s   %s   %s  %s  ",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7],SplitData[8]);
+				strcpy(two_strand[bp], tmp_str);
+				bp += 1;
 			}
 
-			if (bS2)
-				for(bp=0;bp<num_bp;bp++)	{
-					sprintf(tmp_str, "%s   %s   %s   %s   %s   %s  %s",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7],SplitData[8]);
-					strcat(two_strand[bp],tmp_str);
+			if (bS2)	{
+				sprintf(tmp_str, "%s   %s   %s   %s   %s   %s  %s",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7],SplitData[8]);
+				strcat(two_strand[bp], strdup(tmp_str));
+				bp += 1;
 			}
 			free(SplitData);
 			free(tmp_str);
 		}
 
+		if(bProp[eSugarConf])	{
+			SplitData = split_by_space(data[i]);
+			tmp_str = (char *) malloc (100 * sizeof(char));
+			if (bS1)	{
+				sprintf(tmp_str, "%s   %s   %s   %s   %s   %s  %s  %s  ",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7],SplitData[8],SplitData[9]);
+				strcpy(two_strand[bp], tmp_str);
+				bp += 1;
+			}
 
+			if (bS2)	{
+				sprintf(tmp_str, "%s   %s   %s   %s   %s   %s  %s  %s",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7],SplitData[8],SplitData[9]);
+				strcat(two_strand[bp], strdup(tmp_str));
+				bp += 1;
+			}
+			free(SplitData);
+			free(tmp_str);
+		}
 
 	}
 
@@ -1207,15 +1269,16 @@ int gmx_3dna(int argc,char *argv[])
 		  "radius, backbone dihedral angles (alpha, beta, gamma, delta, epsilon, zeta and chi) of both strands",
 		  "are calculated using 3DNA package for each frame and written in separate files with function of time.\n"
 		  "OUTPUT FILE LIST:\n",
-		  "    base_pairs_g.dat         => Base-pairs\n",
-		  "    h-bond_g.dat             => hydrogen bonds between base-pairs\n",
-		  "    L-BP_g.dat               => Base-pairs parameters\n",
-		  "    L-BPS_g.dat              => Base-steps parameters\n",
-		  "    L-BPH_g.dat              => Helical Base-steps parameters\n",
-		  "    HelAxis_g.dat            => Local helical axis coordinates\n",
-		  "    MGroove_g.dat            => Major and Minor grooves\n",
-		  "    HelixRad_g.dat           => Local helical radius\n",
-		  "    BBnCHiDihedrals_g.dat    => Backbone dihederal angles\n",
+		  "    base_pairs_g.dat             => Base-pairs\n",
+		  "    h-bond_g.dat                 => Hydrogen bonds between base-pairs\n",
+		  "    L-BP_g.dat                   => Base-pairs parameters\n",
+		  "    L-BPS_g.dat                  => Base-steps parameters\n",
+		  "    L-BPH_g.dat                  => Helical Base-steps parameters\n",
+		  "    HelAxis_g.dat                => Local helical axis coordinates\n",
+		  "    MGroove_g.dat                => Major and Minor grooves\n",
+		  "    HelixRad_g.dat               => Local helical radius\n",
+		  "    BackBoneCHiDihedrals_g.dat   => Backbone dihederal angles\n",
+		  "    SugarDihedrals_g.dat         => Sugar dihederal angles\n"
 		  "Name of these files could be change by setting different prefix instead of \"g\" using \"-name\" option.",
 		  "These files could be used with the Python APIs or scripts for further analysis.\n"
   };
@@ -1276,8 +1339,8 @@ int gmx_3dna(int argc,char *argv[])
   char       prefix_name[32], pdbfile[32],inpfile[32],x3dna_out_file[32], title[256];
   char       find_pair_cmd[256], analyze_cmd[256];
   const char *dptr, *leg[1] = {"No. of BP"};
-  char		  fn_cum_data[9][32];
-  FILE		  *f_cum_data[9];
+  char		  fn_cum_data[10][32];
+  FILE		  *f_cum_data[10];
 
   fnBP_Count= opt2fn("-o",NFILE,fnm);
 
@@ -1392,7 +1455,8 @@ int gmx_3dna(int argc,char *argv[])
   	sprintf(fn_cum_data[eHelAxis],"HelAxis_%s.dat",ComName[0]);
   	sprintf(fn_cum_data[eMgroove],"MGroove_%s.dat",ComName[0]);
   	sprintf(fn_cum_data[eHelixRad],"HelixRad_%s.dat",ComName[0]);
-  	sprintf(fn_cum_data[eBBnDihedral],"BBnCHiDihedrals_%s.dat",ComName[0]);
+  	sprintf(fn_cum_data[eBBnDihedral],"BackBoneCHiDihedrals_%s.dat",ComName[0]);
+  	sprintf(fn_cum_data[eSugarConf],"SugarDihedrals_%s.dat",ComName[0]);
 
   	f_cum_data[eBasePairs] = ffopen(fn_cum_data[eBasePairs],"w");
 
@@ -1420,9 +1484,14 @@ int gmx_3dna(int argc,char *argv[])
 
     f_cum_data[eBBnDihedral] = ffopen(fn_cum_data[eBBnDihedral],"w");
     fprintf(f_cum_data[eBBnDihedral],"#Strand I                                                    Strand II \n");
-    fprintf(f_cum_data[eBBnDihedral],"#alpha    beta   gamma   delta  epsilon   zeta    chi   |||  alpha    beta   gamma   delta  epsilon   zeta    chi'\n");
+    fprintf(f_cum_data[eBBnDihedral],"#alpha    beta   gamma   delta  epsilon   zeta    chi   |||  alpha    beta   gamma   delta  epsilon   zeta    chi\n");
 
-    for (i=0;i<9;i++)
+    f_cum_data[eSugarConf] = ffopen(fn_cum_data[eSugarConf],"w");
+    fprintf(f_cum_data[eSugarConf],"#Strand I                                                              Strand II \n");
+    fprintf(f_cum_data[eSugarConf],"#v0      v1      v2      v3      v4      tm       P    Puckering  |||  v0      v1      v2      v3      v4      tm       P    Puckering\n");
+
+
+    for (i=0;i<10;i++)
     	setbuf(f_cum_data[i],NULL);
 
   //=======================================================================================
