@@ -109,7 +109,7 @@ file is generated containing the base pair information as per index of the hydro
 
 <code> -lbphm </code> option calculates Local Base Pair-Helical Parameters (X-displacement, Y-displacement, H-rise, Inclination, Tip and H-twist) with function of time, and average (with <code>-avg</code> ) of these parameters with function of the base-steps.
 
-Also, all the above parameters including local helical axis, major and minor grooves, local helical radius, backbone dihedral angles (alpha, beta, gamma, delta, epsilon, zeta and chi) of both strands are calculated using 3DNA package for each frame and written in separate files with function of time.
+Also, all the above parameters including local helical axis, major and minor grooves, local helical radius, backbone dihedral angles (alpha, beta, gamma, delta, epsilon, zeta and chi) and sugar dihedral angles (v0, v1, v2, v3 and v4) of both strands are calculated using 3DNA package for each frame and written in separate files as a function of time.
 
 <strong>OUTPUT FILE LIST:</strong>
 
@@ -123,6 +123,8 @@ Also, all the above parameters including local helical axis, major and minor gro
 |HelAxis_g.dat              | Local helical axis coordinates                                                      |
 |MGroove_g.dat              | Major and Minor grooves                                                             |
 |HelixRad_g.dat             | Local helical radius                                                                |
+|BackBoneCHiDihedrals_g.dat | Backbone dihederal angles including Chi-dihedral                                    |
+|SugarDihedrals_g.dat       | Sugar dihederal angles including puckring type                                      |
 |Stretch_g.xvg              | Stretch of base-pairs with function of time                                         |
 |Shear_g.xvg                | Shear of base-pairs with function of time                                           |
 |Stagger_g.xvg              | Stagger of base-pairs with function of time                                         |
