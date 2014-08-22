@@ -452,10 +452,8 @@ abbr, acronym {
 /* -- code displays --------------------------------------------------------- */
 
 pre {
-    overflow-x: scroll;
-    overflow-y: hidden;   /*fixes display issues on Chrome browsers */
-    overflow: scroll; /* for CSS3 lacking browsers */
-    /*overflow: scroll hidden;*/
+    overflow: auto;
+    /*overflow: hidden;   fixes display issues on Chrome browsers */
 }
 
 td.linenos pre {
