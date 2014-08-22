@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-do_x3dna
-========
+Introduction
+============
 do_x3dna uses `3DNA package <http://x3dna.org>`_ to calculate several structural descriptors or parameters of DNA/RNA using the GROMACS MD trajectory. It extracts output of the 3DNA package,and saves these parameters to external output files with function of time. 
 
 **Note:** do_x3dna can be used for analyzing DNA and RNA from the trajectory files that are obtained from other MD packages such as NAMD and AMBER. A PDB file could be used in place of a GROMACS *tpr* file.
