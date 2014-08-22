@@ -452,7 +452,7 @@ abbr, acronym {
 /* -- code displays --------------------------------------------------------- */
 
 pre {
-    /*overflow: auto;*/
+    overflow-x: auto;
     /*overflow-y: hidden;   fixes display issues on Chrome browsers */
     overflow: scroll; /* for CSS3 lacking browsers */
     /*overflow: scroll hidden;*/
