@@ -1,0 +1,32 @@
+Download and Installation
+=========================
+
+Download
+--------
+
+::
+    
+    git clone https://github.com/rjdkmr/do_x3dna
+
+
+Installation
+------------
+
+::
+    
+    cd do_x3dna
+    mkdir build
+    cd build
+    cmake ..  -DGMX_PATH=/opt/gromacs -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
+    make
+    make install
+
+
+Directory ``/opt/gromacs`` should contains ``include`` and ``lib`` directories. If these directories are in seprate locations, use followings: ::
+    
+    cmake ..  -DGMX_LIB=/path/to/lib -GMX_INCLUDE=/path/to/include -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
+
+If fftw library ``libfftw3f.so`` or ``libfftw3f.a`` are not present in standard locations: ::
+    
+    -DFFTW_LIB=/path/to/fftw3/lib
+

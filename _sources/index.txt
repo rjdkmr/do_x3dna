@@ -1,0 +1,36 @@
+.. do_x3dna documentation master file, created by
+   sphinx-quickstart on Thu Aug 21 15:46:15 2014.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+do_x3dna
+========
+do_x3dna uses `3DNA package <http://x3dna.org>`_ to calculate several structural descriptors or parameters of DNA/RNA using the GROMACS MD trajectory. It extracts output of the 3DNA package,and saves these parameters to external output files with function of time. 
+
+**Note:** do_x3dna can be used for analyzing DNA and RNA from the trajectory files that are obtained from other MD packages such as NAMD and AMBER. A PDB file could be used in place of a GROMACS *tpr* file.
+
+
+| **Please cite the follwoing publication and the current github page:**               
+| Xiang-Jun Lu & Wilma K. Olson (2003)                                    
+| 3DNA: a software package for the analysis, rebuilding and visualization of three-dimensional nucleic acid structures.
+| *Nucleic Acids Res.* 31(17), 5108-21.                                     
+
+
+
+Contents
+--------
+
+.. toctree::
+   :maxdepth: 1
+   
+   Download and Installation <install>
+   Usage <usage>
+   Python API <code>
+
+Indices and tables
+------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

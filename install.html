@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>do_x3dna &mdash; do_x3dna Documentation</title>
+    <title>Download and Installation &mdash; do_x3dna Documentation</title>
     
     <link rel="stylesheet" href="_static/agogo.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,8 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="do_x3dna Documentation" href="#" />
-    <link rel="next" title="Download and Installation" href="install.html" />
+    <link rel="top" title="do_x3dna Documentation" href="index.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+    <link rel="prev" title="do_x3dna" href="index.html" />
  
 <script type="text/javascript">
  	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -43,9 +44,11 @@
     <div class="header-wrapper">
       <div class="header">
         <div class="headertitle"><a
-          href="#">do_x3dna</a></div>
+          href="index.html">do_x3dna</a></div>
         <div class="rel">
-          <a href="install.html" title="Download and Installation"
+          <a href="index.html" title="do_x3dna"
+             accesskey="P">previous</a> |
+          <a href="usage.html" title="Usage"
              accesskey="N">next</a> |
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |
@@ -63,33 +66,32 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="do-x3dna">
-<h1>do_x3dna<a class="headerlink" href="#do-x3dna" title="Permalink to this headline">¶</a></h1>
-<p>do_x3dna uses <a class="reference external" href="http://x3dna.org">3DNA package</a> to calculate several structural descriptors or parameters of DNA/RNA using the GROMACS MD trajectory. It extracts output of the 3DNA package,and saves these parameters to external output files with function of time.</p>
-<p><strong>Note:</strong> do_x3dna can be used for analyzing DNA and RNA from the trajectory files that are obtained from other MD packages such as NAMD and AMBER. A PDB file could be used in place of a GROMACS <em>tpr</em> file.</p>
-<div class="line-block">
-<div class="line"><strong>Please cite the follwoing publication and the current github page:</strong></div>
-<div class="line">Xiang-Jun Lu &amp; Wilma K. Olson (2003)</div>
-<div class="line">3DNA: a software package for the analysis, rebuilding and visualization of three-dimensional nucleic acid structures.</div>
-<div class="line"><em>Nucleic Acids Res.</em> 31(17), 5108-21.</div>
-</div>
-<div class="section" id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Download and Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.html">Python API</a></li>
-</ul>
+  <div class="section" id="download-and-installation">
+<h1>Download and Installation<a class="headerlink" href="#download-and-installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="download">
+<h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/rjdkmr/do_x3dna
+</pre></div>
 </div>
 </div>
-<div class="section" id="indices-and-tables">
-<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
-<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
-</ul>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>cd do_x3dna
+mkdir build
+cd build
+cmake ..  -DGMX_PATH=/opt/gromacs -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
+make
+make install
+</pre></div>
+</div>
+<p>Directory <tt class="docutils literal"><span class="pre">/opt/gromacs</span></tt> should contains <tt class="docutils literal"><span class="pre">include</span></tt> and <tt class="docutils literal"><span class="pre">lib</span></tt> directories. If these directories are in seprate locations, use followings:</p>
+<div class="highlight-python"><div class="highlight"><pre>cmake ..  -DGMX_LIB=/path/to/lib -GMX_INCLUDE=/path/to/include -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
+</pre></div>
+</div>
+<p>If fftw library <tt class="docutils literal"><span class="pre">libfftw3f.so</span></tt> or <tt class="docutils literal"><span class="pre">libfftw3f.a</span></tt> are not present in standard locations:</p>
+<div class="highlight-python"><div class="highlight"><pre>-DFFTW_LIB=/path/to/fftw3/lib
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -100,8 +102,8 @@
         </div>
         <div class="sidebar">
           <h3>Table Of Contents</h3>
-          <ul>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Download and Installation</a></li>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Download and Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Python API</a></li>
 </ul>
@@ -124,14 +126,16 @@
     <div class="footer-wrapper">
       <div class="footer">
         <div class="left">
-          <a href="install.html" title="Download and Installation"
+          <a href="index.html" title="do_x3dna"
+             >previous</a> |
+          <a href="usage.html" title="Usage"
              >next</a> |
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |
           <a href="genindex.html" title="General Index"
              >index</a>
             <br/>
-            <a href="_sources/index.txt"
+            <a href="_sources/install.txt"
                rel="nofollow">Show Source</a>
         </div>
 

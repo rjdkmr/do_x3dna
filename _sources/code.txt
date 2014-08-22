@@ -1,0 +1,17 @@
+Documentation for the python APIs
+=================================
+
+
+DNA members
+-----------
+
+.. autoclass:: dna_main.DNA
+   :members: get_parameters, set_base_pair_parameters, set_helical_radius, set_base_step_parameters, get_mean_error, set_helical_axis, parameters_vs_axis, 
+
+
+
+main members
+------------
+
+.. automodule:: dna_main
+    :members: get_error
