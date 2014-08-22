@@ -452,8 +452,8 @@ abbr, acronym {
 /* -- code displays --------------------------------------------------------- */
 
 pre {
-    overflow: auto;
-    /*overflow: hidden;   fixes display issues on Chrome browsers */
+    /*overflow: auto;*/
+    overflow-y: hidden;   /*fixes display issues on Chrome browsers */
 }
 
 td.linenos pre {
