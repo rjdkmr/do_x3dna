@@ -454,6 +454,8 @@ abbr, acronym {
 pre {
     overflow: auto;
     overflow-y: hidden;  /* fixes display issues on Chrome browsers */
+    overflow: scroll; /* for CSS3 lacking browsers */
+    overflow: scroll hidden;
 }
 
 td.linenos pre {
