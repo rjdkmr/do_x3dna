@@ -37,6 +37,15 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+####### VIM Setting ###########
+#
+# set smarttab
+# set tabstop=4
+# set shiftwidth=4
+# set autoindent
+# set number
+#
+###############################
 
 import numpy as np
 import re, os, sys
@@ -78,6 +87,16 @@ class base_pair():
 		self.radS2 = []
 
 class DNA:
+	"""DNA class stores all data obtained from the input files.
+		
+		*To initialize this class:* ::
+		
+				dna = DNA(60)       # 60 is the number of basepairs
+
+		This class also contains several methods (functions) that are discussed in following sections.
+
+	"""
+
 	def __init__(self,num_bp):
 		self.num_bp = num_bp
 		self.num_step = num_bp-1
@@ -93,46 +112,49 @@ class DNA:
 
 	def get_parameters(self,parameter, bp, bp_range=True):
 		"""To get the parameters over all frame for the given range of base pair/steps
+		
 		Args:
-			parameter (string): [Name of the prameter]
-			                    Shear
-			                    Stretch
-			                    Stagger
-			                    Buckle
-			                    Propeller
-			                    Opening
-			                    Shift
-			                    Slide
-			                    Rise
-			                    Tilt
-			                    Roll
-			                    Twist
-			                    X-disp
-			                    Y-disp
-			                    h-Rise
-			                    Inclination
-			                    Tip
-			                    h-Twist
-			                    Helical X-axis
-			                    Helical Y-axis
-			                    Helical Z-axis
-			                    Radius S-1
-			                    Radius S-2
 
-			bp (list) or (numpy array): base-pairs to analyze
-			      Example:
-			        for base pair number 6:
-			            bp = [6]                                #bp_range = False
-			        for base pair number 4  to 15:
-			            bp = [4,15]                             #bp_range = True
-			            bp = range(4,15)                        #bp_range = False
-			            bp = np.arange(4,15)                    #bp_range = False
-			        for base pair number 2,5,6,7,9,12 and 18:
-			            bp = [2,5,6,7,9,12,18]                  #bp_range = False
+			* ``parameter (string)``: [Name of the prameter]
+				Currently accepted keywords are as follows:
+					* ``Shear``
+					* ``Stretch``
+					* ``Stagger``
+					* ``Buckle``
+					* ``Propeller``
+					* ``Opening``
+					* ``Shift``
+					* ``Slide``
+					* ``Rise``
+					* ``Tilt``
+					* ``Roll``
+					* ``Twist``
+					* ``X-disp``
+					* ``Y-disp``
+					* ``h-Rise``
+					* ``Inclination``
+					* ``Tip``
+					* ``h-Twist``
+					* ``Helical X-axis``
+					* ``Helical Y-axis``
+					* ``Helical Z-axis``
+					* ``Radius S-1``
+					* ``Radius S-2``
+					
+			* ``bp (1D list) or (1D array)``: base-pairs to analyze
+				Example: ::
 
-			bp_range (bool)	: Dfault=True: Shown above. if True, bp is taken as a range otherwise list or numpy array
-
-		Return (list[bp][nframe]) : where bp is number of base pairs/steps and nframe is number of frames.
+							bp = [6]                                # bp_range = False
+							bp = [4,15]                             # bp_range = True
+							bp = range(4,15)                        # bp_range = False
+							bp = np.arange(4,15)                    # bp_range = False
+							bp = [2,5,6,7,9,12,18]                  # bp_range = False
+					
+			* ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
+            
+        Returns : parameters
+            ``parameters[bp][nframe] (2D list)``: where bp is number of base pairs/steps and nframe is total number of frames in the trajector.
+		
 		"""
 		bp_idx, dum = get_idx_of_bp_parameters(bp,[],bp_range)
 		append = False
@@ -406,38 +428,48 @@ class DNA:
 		return data, bp_idx
 
 	def set_base_pair_parameters(self, filename, bp, parameters=range(1,7), bp_range=True):
-		"""	To read the parameters and set to the base_pair
-		Args:
-		    filename (string) : output file from do_x3dna. e.g. L-BP_g.dat
-		    
-		    bp (range list) or (list) or (numpy array): base-pairs to analyze
-			      Example:
-			        for base pair number 6:
-			            bp = [6]                                #bp_range = False
-			        for base pair number 4  to 15:
-			            bp = [4,15]                             #bp_range = True
-			            bp = range(4,15)                        #bp_range = False
-			            bp = np.arange(4,15)                    #bp_range = False
-			        for base pair number 2,5,6,7,9,12 and 18:
-			            bp = [2,5,6,7,9,12,18]                  #bp_range = False
-             
-		    parameters (list) : list of parameters number to analyze:
-		                 shear      =>  1
-		                 stretch    =>  2
-		                 stagger    =>  3
-		                 buckle     =>  4
-		                 propeller  =>  5
-		                 opening    =>  6
-		          Example:
-		            for shear, buckle, propeller:
-		                parameters = [1,4,6]
-		            for stretch to propeller
-		                parameters = range(2,6)
-		                parameters = [2,3,4,5]
+		"""	To read and store basepairs parameters (shear, stretch, stagger, buckle, propeller and opening) from an input file.
 		
-		    bp_range (bool) : Shown above. if True, bp should be a range otherwise list or numpy array
+		Args:
+		
+			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
+		    
+			* ``bp (1D list) or (1D array)``: base-pairs to analyze
+				Example: ::
 
-		Return:   None
+							bp = [6]                                # bp_range = False
+							bp = [4,15]                             # bp_range = True
+							bp = range(4,15)                        # bp_range = False
+							bp = np.arange(4,15)                    # bp_range = False
+							bp = [2,5,6,7,9,12,18]                  # bp_range = False
+							
+			
+			* ``parameters (1D list)``: List of numbers corrosponding to base-pairs parameters as follows:
+						
+						* ``shear      ->  1``
+						* ``stretch    ->  2``
+						* ``stagger    ->  3``
+						* ``buckle     ->  4``
+						* ``propeller  ->  5``
+						* ``opening    ->  6``
+				
+				Example:
+				
+					*For shear, buckle, and propeller:*
+					
+								``parameters = [1,4,6]``
+		            
+					*For stretch, stagger, buckle, and propeller:*
+		                
+								``parameters = range(2,6)``
+		                
+								``parameters = [2,3,4,5]``
+		
+			* ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
+
+		Return:
+				``None``
+
 		"""
 		if not (isinstance(bp,list) or isinstance(bp,np.ndarray)):
 			raise AssertionError("type %s is not list or np.ndarray" % type(bp))
@@ -479,28 +511,30 @@ class DNA:
 
 
 	def set_helical_radius(self, filename, bp, atomname='P', full=False, bp_range=True):
-		"""	To read the parameters and set to the base_pair
+		"""	To read and set local helical radius of both strand
+		
 		Args:
-		    filename (string) : output file from do_x3dna, e.g. HelixRad_g.dat
 			
-		    bp (range list) or (list) or (numpy array): base-pairs to analyze
-			      Example:
-			        for base pair number 6:
-			            bp = [6]                                #bp_range = False
-			        for base pair number 4  to 15:
-			            bp = [4,15]                             #bp_range = True
-			            bp = range(4,15)                        #bp_range = False
-			            bp = np.arange(4,15)                    #bp_range = False
-			        for base pair number 2,5,6,7,9,12 and 18:
-			            bp = [2,5,6,7,9,12,18]                  #bp_range = False
+			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. HelixRad_g.dat
 			
-		    atomname (string) : list of atom names to consider the DNA helix (accepted keywords: P O4*/O4' C1*/C1')
+			* ``bp (1D list) or (1D array)``: base-pairs to analyze
+				Example: ::
 
-		    full (bool): To calculate full helical radius. Overrides atomname option and uses atom 'P', subsequently added 1 A to the radius calculated by 3DNA package.
+							bp = [6]                                # bp_range = False
+							bp = [4,15]                             # bp_range = True
+							bp = range(4,15)                        # bp_range = False
+							bp = np.arange(4,15)                    # bp_range = False
+							bp = [2,5,6,7,9,12,18]                  # bp_range = False
+			
 
-		    bp_range (bool)   : Shown above. if True, bp should be a range otherwise list or numpy array
+			* ``atomname (string)``: list of atom names to consider for the DNA helix (accepted keywords: ``P, O4*, O4', C1* and C1``)
+			
+			* ``full (bool)``: To calculate full helical radius. Overrides atomname option and uses atom 'P', subsequently added 1 A to the radius calculated by 3DNA package
+			
+			* ``bp_range (bool)``: Shown above. if True, bp should be a range otherwise list or numpy array
 
-		Return: None
+		Return: 
+				``None``
 		"""
 		if not (isinstance(bp,list) or isinstance(bp,np.ndarray)):
 			raise AssertionError("type %s is not list or np.ndarray" % type(bp))
@@ -539,46 +573,56 @@ class DNA:
 				self.base_pairs[bp_idx[i]].radS2 = data[i][5]
 
 	def set_base_step_parameters(self, filename, bp_step, parameters=range(1,7), step_range=True,helical=False):
-		"""	To read the parameters and set to the base_pair
+		"""	To read and store base-step (Shift, Slide, Rise, Tilt, Roll and Twist) and helical base-step (X-disp, Y-disp, h-Rise, Inclination, Tip and h-Twist) parameters from an input file
+		
 		Args:
-		    filename (string) : output file from do_x3dna. e.g. L-BPS_g.dat or L-BPH_g.dat
 		
-		    bp_step (range list) or (list) or (numpy array): base-pairs step to analyze
-			      Example:
-			        for base pair number 6:
-			            bp = [6]                                #bp_range = False
-			        for base pair number 4  to 15:
-			            bp = [4,15]                             #bp_range = True
-			            bp = range(4,15)                        #bp_range = False
-			            bp = np.arange(4,15)                    #bp_range = False
-			        for base pair number 2,5,6,7,9,12 and 18:
-			            bp = [2,5,6,7,9,12,18]                  #bp_range = False
-			
-		    parameters (list) : list of parameters number to analyze:
-		            if "helical = False"
-		                Shift       =>  1
-		                Slide       =>  2
-		                Rise        =>  3
-		                Tilt        =>  4
-		                Roll        =>  5
-		                Twist       =>  6
-		            if "helical = True"
-		                X-disp      =>  1
-		                Y-disp      =>  2
-		                h-Rise      =>  3
-		                Inclination =>  4
-		                Tip         =>  5
-		                h-Twist     =>  6
-		            Example: 
-		                for Shift, Tilt and Twist:
-		                    parameters = [1,4,6]
-		                for Slide to Roll:
-		                    parameters = range(2,6)
-		                    parameters = [2,3,4,5]
+			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. ``L-BPS_g.dat`` or ``L-BPH_g.dat``
+		    
+			* ``bp (1D list) or (1D array)``: base-pairs to analyze
+				Example: ::
 
-		    step_range (bool)  : Shown above. if True, bp_step should be a range otherwise list or numpy array
-		
-		Return  :    None
+							bp = [6]                                # bp_range = False
+							bp = [4,15]                             # bp_range = True
+							bp = range(4,15)                        # bp_range = False
+							bp = np.arange(4,15)                    # bp_range = False
+							bp = [2,5,6,7,9,12,18]                  # bp_range = False
+							
+			
+			* ``parameters (1D list)``: List of numbers corrosponding to base-steps parameters as follows:
+		            
+					If ``helical = False``:
+							* ``Shift       ->  1``
+							* ``Slide       ->  2``
+							* ``Rise        ->  3``
+							* ``Tilt        ->  4``
+							* ``Roll        ->  5``
+							* ``Twist       ->  6``
+
+					If ``helical = True``:
+							* ``X-disp      ->  1``
+							* ``Y-disp      ->  2``
+							* ``h-Rise      ->  3``
+							* ``Inclination ->  4``
+							* ``Tip         ->  5``
+							* ``h-Twist     ->  6``
+					
+					Example:
+						
+						*For Shift, Tilt and Twist*:
+						
+								``parameters = [1,4,6]``
+								
+						*For Slide, Rise, Tilt and Roll*:
+						
+								``parameters = range(2,6)``
+								
+								``parameters = [2,3,4,5]``
+			
+			* ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
+
+		Return:
+				``None``
 		"""
 		if not (isinstance(bp_step,list) or isinstance(bp_step,np.ndarray)):
 			raise AssertionError("type %s is not list or np.ndarray" % type(bp_step))
@@ -634,53 +678,59 @@ class DNA:
 		
 	def get_mean_error(self,bp,parameter,err_type='std',bp_range=True, merge_bp=1):
 		"""To calculate average and error of the given parameter for the gieven set of base-pairs/steps
+		
 		Args:
-		     bp (list) or (numpy array): base-pairs or base-steps to analyze
-			      Example:
-			        for base pair number 6:
-			            bp = [6]                                #bp_range = False
-			        for base pair number 4  to 15:
-			            bp = [4,15]                             #bp_range = True
-			            bp = range(4,15)                        #bp_range = False
-			            bp = np.arange(4,15)                    #bp_range = False
-			        for base pair number 2,5,6,7,9,12 and 18:
-			            bp = [2,5,6,7,9,12,18]                  #bp_range = False
+			* ``bp (1D list) or (1D array)``: base-pairs or base-steps to analyze
+				Example: ::
+					
+					bp = [6]                                # bp_range = False
+					bp = [4,15]                             # bp_range = True
+					bp = range(4,15)                        # bp_range = False
+					bp = np.arange(4,15)                    # bp_range = False
+					bp = [2,5,6,7,9,12,18]                  # bp_range = False
+			
+			* ``parameter (string)``: Name of the prameter 
+				Currently accepted keywords are as follows:
+					* Shear
+					* Stretch
+					* Stagger
+					* Buckle
+					* Propeller
+					* Opening
+					* Shift
+					* Slide
+					* Rise
+					* Tilt
+					* Roll
+					* Twist
+					* X-disp
+					* Y-disp
+					* h-Rise
+					* Inclination
+					* Tip
+					* Radius S1
+					* Radius S2
+			
+			* ``error     (string)``:  Method of error estimation.
+				Currently accepted method as follows:
+					* ``error = 'std'``   : Standard Deviation
+					* ``error = 'acf'``   : Standard error using autocorrelation time (requires: g_analyze)
+					* ``error = 'block'`` : Standard error using block averaging method (requires: g_analyze)
 
-		     parameter (string): Name of the prameter. Currently accepted keywords as follows:
-		                        Shear
-		                        Stretch
-		                        Stagger
-		                        Buckle
-		                        Propeller
-		                        Opening
-		                        Shift
-		                        Slide
-		                        Rise
-		                        Tilt
-		                        Roll
-		                        Twist
-		                        X-disp
-		                        Y-disp
-		                        h-Rise
-		                        Inclination
-		                        Tip
-		                        Radius S1
-		                        Radius S2
+					.. warning::
+						to calculate errors by using ``error = 'acf'`` or ``error = 'block'`` , GROMACS tool ``g_analyze`` should be present in ``$PATH``.
+			
+			* ``bp_range (bool)``: Shown above. if True, bp should be a range otherwise list or numpy array
+			
+			* ``merge_bp (integer)``: Number of base pair-step to merge
+			
+		Returns : basepairs or basesteps, avg_values, error
+				* ``basepairs/steps (1D array)``: Number of base pair-steps. If ``merge_bp>1``, middle number will be returned.
+				* ``avg. parameter values (1D array)``: average values of the parameter
+				* ``error (1D array)``: Error values for corresponding average values
+		
+		"""
 
-		     error (string)  :  Method of error estimation. Currently accepted method as follows:
-		                        std   : Standard Deviation
-		                        acf   : Standard error using autocorrelation time (requires: g_analyze)
-		                        block : Standard error using block averaging method (requires: g_analyze)
-
-		     bp_range (bool)    : Shown above. if True, bp should be a range otherwise list or numpy array
-
-		     merge_bp (integer) : Number of base pair-step to merge
-
-	Return   : [base_pairs/steps], [avg_parameter_values], [error]
-	           base_pairs/steps :  base pair-steps number. if merge_bp>1, middle number will be returned
-	           avg_parameter_value: average values of the parameter
-	           error : corresponding error values
-	"""
 		merge=False
 
 		if(not bp_range) and (merge_bp>1):
@@ -737,23 +787,29 @@ class DNA:
 			return bp_number, np.mean(data,axis=1), error
 
 	def set_helical_axis(self, filename, step_range=False,step=[]):
-		"""	To read the parameters and set to the base_pair
+		"""	To read and set local helical-axis postions from an input file.
+		
 		Args:
-		    filename (string) : output file from do_x3dna. e.g. HelAxis_g.dat
+		
+			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. HelAxis_g.dat
+			
+			* ``step_range (bool)``:
+					* ``step_range = True`` : read axis coordinates of base-steps for the given range of base-steps
+					* ``step_range = False``: read axis coordinates of all base-steps
+					
+			* ``step (list)``: list containing lower and higher limit of base-steps range
+							* This option only works with ``step_range=True``.
+							* This list should not contain more than two number. 
+							* First number should be less than second number.
+							
+					Example:
+						
+						*For base-step 4 to 15*:
+							``step = [4,15]         # step_range = True``
+							
+		Returns:
+					``None``
 
-		    step_range (bool) : 
-		                        if "True"  : read axis coordinates of base-steps for the given range "step"
-		                        if "False" : read axis coordinates of all base-steps
-
-		    step (list): list containing lower and higher limit of base-steps range.
-		                 This option only works with "step_range=True".
-		                 This list should not contain more than two number. 
-		                 First number should be less than second number.
-		             Example:
-		                 for base step number 4  to 15:
-		                    step = [4,15]         #step_range = True
-
-		Return   :  None
 		"""
 
 		if (step_range):
@@ -789,36 +845,38 @@ class DNA:
 				if(2==j):
 					self.base_steps[bp_idx[i]].hel_Zaxis = data[i][j]
 
-def parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis ='Z', bp_range=True, windows=10, err_type='block'):
-	"""To calculate parameter deviation of a DNA to reference DNA along given axis
-	   Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)
-	Args:
-	     dnaRef  (DNA object):   Reference DNA
-
-	     dnaSubj (DNA object):   Subject DNA
-
-	     parameter (string)  :   Name of parameter
+def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis ='Z', bp_range=True, windows=10, err_type='block'):
+	"""To calculate deviation in the given parameters of a Subject DNA to Reference DNA along the given axis.
+	
+		*Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)*
 		
-	     bp (list) or (numpy array): base-pairs to analyze
-	         Example:
-			        for base pair number 6:
-			            bp = [6]                                #bp_range = False
-			        for base pair number 4  to 15:
-			            bp = [4,15]                             #bp_range = True
-			            bp = range(4,15)                        #bp_range = False
-			            bp = np.arange(4,15)                    #bp_range = False
-			        for base pair number 2,5,6,7,9,12 and 18:
-			            bp = [2,5,6,7,9,12,18]                  #bp_range = False
+	Args:
+	
+		* ``dnaRef  (DNA object)``:   Reference DNA
+		
+		* ``dnaSubj (DNA object)``:   Subject DNA. Number of base-pairs in Reference and Subject DNA **should be** same.
+		
+		* ``parameter (string)``:   Name of a base-pair or base-step or helical base-step parameter
+		
+		* ``bp (1D list) or (1D array)``: base-pairs or base-steps to analyze
+				Example: ::
+					
+					bp = [6]                                # bp_range = False
+					bp = [4,15]                             # bp_range = True
+					bp = range(4,15)                        # bp_range = False
+					bp = np.arange(4,15)                    # bp_range = False
+					bp = [2,5,6,7,9,12,18]                  # bp_range = False
 
-	     bp_range (bool)      : Shown above. if True, bp should be range otherwise list or numpy array
+
+		* ``bp_range (bool)``: Shown above. if True, bp should be range otherwise list or numpy array
 	    
-	     windows  (integer)	  : Number of bins along the axis
+		* ``windows  (int)``: Number of bins along the axis
 
-	Return  : [deviation], [error], [axis], [axis_error]
-	        deviation   (numpy array): length = no. of windows; Deviation in the parameter for two given DNA
-	        error       (numpy array): length = no. of windows; Standard error in deviation fo each window/bin
-	        axis        (numpy array): length = no. of windows; average position of window/bin along given axis
-	        axis_error  (numpy array): length = no. of windows; Standard error in average position of window/bin along given axis
+	Returns : deviation, deviation_error, axis, axis_error
+		* ``deviation        (1D array)``: length = no. of windows; Deviation in the parameter for two given DNA
+		* ``deviation_error  (1D array)``: length = no. of windows; Standard error in deviation fo each window/bin
+		* ``axis             (1D array)``: length = no. of windows; average position of window/bin along given axis
+		* ``axis_error       (1D array)``: length = no. of windows; Standard error in average position of window/bin along given axis
 	"""
 	RefParam, ref_bp_idx = dnaRef.get_parameters(parameter,bp,bp_range)
 	RefAxis, dummy = dnaRef.get_parameters('Helical {0}-axis' .format(axis),bp,bp_range)
@@ -879,19 +937,22 @@ def parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis ='Z', bp_range=True,
 
 	
 
-def get_error(time,x,sets,err_type='acf'):
+def get_error(time,x,sets,err_type='block'):
 	"""To estimate error using block averaging method
-	It requires 'g_analyze' of Gromacs package. If 'g_analyze' is not in PATH, this function will not work.
+	
+	.. warning::
+				It requires ``g_analyze`` of GROMACS package. ``g_analyze`` should be present in ``$PATH``.
 
 	Args:
-		time (list or numpy array):		Containing time
-		x	 (list or numpy array): of shape (nset,nframe); where nset is number of set and nframe is number of frame.
-										nframe should be equal to length of time list/array
-		sets (integer)			  : Number of sets
 	
-		err_type (string)		  : Error estimation by autocorrelation time 'acf' or block avearaging method 'block'	
+		* ``time (1D list) or (1D array)``: time
+		* ``x	 (2D list) or (2D array)``: Shape of (nset, nframe); where *nset* is number of set and *nframe* is total number of frames. *nframe* should be equal to length of time list/array
+		* ``sets (int)``: Number of sets (*nset*)
+		* ``err_type (string)``: Error estimation by autocorrelation method ``err_type='acf'`` or block avearaging method ``err_type='block'``
+	
 	Return:
-		error (numpy error)	: of length = sets
+			``error (1D array)``: Of length = number of sets (*nset*)
+
 	"""
 	for i in range(sets):
 		if (len(time) != len(x[i])):
