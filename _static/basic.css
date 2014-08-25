@@ -452,6 +452,7 @@ abbr, acronym {
 /* -- code displays --------------------------------------------------------- */
 
 pre {
+	width: 50em
     overflow-x: auto;
     overflow-y: hidden;  /* fixes display issues on Chrome browsers */
 }
