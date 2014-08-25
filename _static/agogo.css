@@ -199,6 +199,7 @@ div.document .section:first-child {
 }
 
 div.document div.highlight {
+  overflow: auto;
   padding: 3px;
   background-color: #eeeeec;
   border-top: 2px solid #dddddd;
