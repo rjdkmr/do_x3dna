@@ -85,8 +85,9 @@ make install
 </pre></div>
 </div>
 <p>Directory <tt class="docutils literal"><span class="pre">/opt/gromacs</span></tt> should contains <tt class="docutils literal"><span class="pre">include</span></tt> and <tt class="docutils literal"><span class="pre">lib</span></tt> directories. If these directories are in seprate locations, use followings:</p>
-<pre>cmake ..  -DGMX_LIB=/path/to/lib -GMX_INCLUDE=/path/to/include -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
-</pre>
+<div class="highlight-python"><div class="highlight"><pre>cmake ..  -DGMX_LIB=/path/to/lib -GMX_INCLUDE=/path/to/include -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
+</pre></div>
+</div>
 <p>If fftw library <tt class="docutils literal"><span class="pre">libfftw3f.so</span></tt> or <tt class="docutils literal"><span class="pre">libfftw3f.a</span></tt> are not present in standard locations:</p>
 <div class="highlight-python"><div class="highlight"><pre>-DFFTW_LIB=/path/to/fftw3/lib
 </pre></div>

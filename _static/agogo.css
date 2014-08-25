@@ -192,7 +192,6 @@ div.document dd {
 }
 
 div.document .section {
-  overflow: auto;
   margin-top: 1.7em;
 }
 div.document .section:first-child {
