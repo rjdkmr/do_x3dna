@@ -42,6 +42,9 @@
   <body>
     <div class="header-wrapper">
       <div class="header">
+          <p class="logo"><a href="#">
+            <img class="logo" src="_static/logo.png" alt="Logo"/>
+          </a></p>
         <div class="headertitle"><a
           href="#">do_x3dna</a></div>
         <div class="rel">
@@ -67,11 +70,24 @@
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>do_x3dna uses <a class="reference external" href="http://x3dna.org">3DNA package</a> to calculate several structural descriptors or parameters of DNA/RNA using the GROMACS MD trajectory. It extracts output of the 3DNA package,and saves these parameters to external output files with function of time.</p>
 <p><strong>Note:</strong> do_x3dna can be used for analyzing DNA and RNA from the trajectory files that are obtained from other MD packages such as NAMD and AMBER. A PDB file could be used in place of a GROMACS <em>tpr</em> file.</p>
+<div class="section" id="example">
+<h2>Example:<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Bending in the helical axis of a <a class="reference external" href="http://pdb.org/pdb/explore/explore.do?structureId=3tmm">mitochondiral DNA</a>:</li>
+</ul>
+<a class="reference internal image-reference" href="_images/p3tmm.png"><img alt="_images/p3tmm.png" class="align-center" src="_images/p3tmm.png" style="width: 596.4px; height: 386.4px;" /></a>
+<hr class="docutils" />
+<ul class="simple">
+<li>Bending in the helical axis of a DNA in the <a class="reference external" href="http://pdb.org/pdb/explore/explore.do?structureId=3Ut9">nucleosome</a>:</li>
+</ul>
+<a class="reference internal image-reference" href="_images/p3ut9.png"><img alt="_images/p3ut9.png" class="align-center" src="_images/p3ut9.png" style="width: 497.0px; height: 423.5px;" /></a>
+<hr class="docutils" />
 <div class="line-block">
 <div class="line"><strong>Please cite the follwoing publication and the current github page:</strong></div>
 <div class="line">Xiang-Jun Lu &amp; Wilma K. Olson (2003)</div>
 <div class="line">3DNA: a software package for the analysis, rebuilding and visualization of three-dimensional nucleic acid structures.</div>
 <div class="line"><em>Nucleic Acids Res.</em> 31(17), 5108-21.</div>
+</div>
 </div>
 <div class="section" id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
@@ -87,7 +103,6 @@
 <h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
 <li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
 </ul>
 </div>

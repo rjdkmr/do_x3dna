@@ -10,6 +10,26 @@ do_x3dna uses `3DNA package <http://x3dna.org>`_ to calculate several structural
 **Note:** do_x3dna can be used for analyzing DNA and RNA from the trajectory files that are obtained from other MD packages such as NAMD and AMBER. A PDB file could be used in place of a GROMACS *tpr* file.
 
 
+Example:
+--------
+
+* Bending in the helical axis of a `mitochondiral DNA <http://pdb.org/pdb/explore/explore.do?structureId=3tmm>`_:
+
+.. image:: ./images/p3tmm.png
+   :scale: 60 %
+   :align: center
+
+-------
+
+* Bending in the helical axis of a DNA in the `nucleosome <http://pdb.org/pdb/explore/explore.do?structureId=3Ut9>`_:
+
+.. image:: ./images/p3ut9.png
+   :scale: 50 %
+   :align: center
+
+--------
+
+
 | **Please cite the follwoing publication and the current github page:**               
 | Xiang-Jun Lu & Wilma K. Olson (2003)                                    
 | 3DNA: a software package for the analysis, rebuilding and visualization of three-dimensional nucleic acid structures.
@@ -31,6 +51,5 @@ Indices and tables
 ------------------
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 
