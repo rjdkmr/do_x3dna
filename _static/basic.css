@@ -452,8 +452,8 @@ abbr, acronym {
 /* -- code displays --------------------------------------------------------- */
 
 pre {
-	width: 50em
-    overflow-x: auto;
+	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    overflow: auto;
     overflow-y: hidden;  /* fixes display issues on Chrome browsers */
 }
 
