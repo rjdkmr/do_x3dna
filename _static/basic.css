@@ -452,12 +452,12 @@ abbr, acronym {
 /* -- code displays --------------------------------------------------------- */
 
 pre {
-	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
     overflow: auto;
     overflow-y: hidden;  /* fixes display issues on Chrome browsers */
 }
 
 td.linenos pre {
+	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
     padding: 5px 0px;
     border: 0;
     background-color: transparent;
