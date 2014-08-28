@@ -153,7 +153,7 @@ class DNA:
 			* ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
             
         Returns : parameters
-            ``parameters[bp][nframe] (2D list)``: where bp is number of base pairs/steps and nframe is total number of frames in the trajector.
+            ``parameters[bp][nframe] (2D list)``: where bp is number of base pairs/steps and nframe is total number of frames in the trajectory.
 		
 		"""
 		bp_idx, dum = get_idx_of_bp_parameters(bp,[],bp_range)
@@ -427,6 +427,128 @@ class DNA:
 
 		return data, bp_idx
 
+	def time_vs_parameter(self, parameter, bp, merge=False, merge_method='mean'):
+		"""To get the parameter of either a specfic base-pair/step or a DNA segment as a function of time.
+		
+		Args:
+
+			* ``parameter (string)``: Name of a base-pair or base-step or helical parameter
+									For details about accepted keywords, see ``parameter`` in the method :meth:`dnaMD.DNA.get_parameters`.
+			* ``bp (1D list) or (1D array)``: base-pairs to analyze
+				Example: ::
+
+							bp = [6]                                  # merge = False
+							bp = [4,15]                               # merge = True
+					
+			* ``merge (bool)``: ``Dfault=False``: As shown above, if ``True``, bp should a list of range otherwise a list of single value. If ``bp = True``, the parameter for the respective DNA segment could be merged or calculated by ``merge_method``.
+
+			* ``merge_method  (string)``: Method to calculate the parameter of a DNA segment from local parameters of all base-pairs/steps that are between the range given through ``bp``. 
+				Currently accepted keywords are as follows:
+
+					* ``merge_method = mean``: Average of local parameters
+					* ``merge_method = sum``: Sum of local parameters
+            
+        Returns : time, value
+            * ``time  (1D array)``: array containing time of length number of frames
+            * ``value (1D array)``: array containing parameter values of length number of frames
+		
+		"""
+		if not (isinstance(bp,list) or isinstance(bp,np.ndarray)):
+			raise AssertionError("type %s is not list or np.ndarray" % type(bp))
+
+		if (len(bp)>1) and (merge==False):
+			raise AssertionError("bp %s contains more than two values, whereas merge=False. Use either one value in bp or merge=True" % bp)
+			exit(1)
+
+		if len(bp)==1:
+			merge = False
+
+		if (merge==True) and not ((merge_method == 'mean') or (merge_method == 'sum')):
+			raise AssertionError("merge method %s is not available." % merge_method)
+			exit(1)
+
+		if len(bp)==1:
+			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=False)
+		else:
+			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=True)
+
+		if (merge==True) and (merge_method=='mean'):
+			return self.time, np.mean(param_value, axis=0)
+
+		elif (merge==True) and (merge_method=='sum'):
+			return self.time, np.sum(param_value, axis=0)
+
+		else:
+			return self.time, param_value[0]
+
+
+
+	def parameter_distribution(self, parameter, bp, bins=30, merge=False, merge_method='mean'):
+		"""To get the parameter distribution of either a specfic base-pair/step or a DNA segment over the MD simulation.
+		
+		Args:
+
+			* ``parameter (string)``: Name of a base-pair or base-step or helical parameter
+									For details about accepted keywords, see ``parameter`` in the method :meth:`dnaMD.DNA.get_parameters`.
+					
+			* ``bp (1D list) or (1D array)``: base-pairs to analyze
+				Example: ::
+
+							bp = [6]                                  # merge = False
+							bp = [4,15]                               # merge = True
+		
+			* ``bins  (int)``: Number of bins to calculate histogram
+			
+			* ``merge (bool)``: ``Dfault=False``: As shown above, if ``True``, bp should a list of range otherwise a list of single value. If ``bp = True``, the parameter for the respective DNA segment could be merged or calculated by ``merge_method``.
+
+			* ``merge_method  (string)``: Method to calculate the parameter of a DNA segment from local parameters of all base-pairs/steps that are between the range given through ``bp``. 
+				Currently accepted keywords are as follows:
+
+					* ``merge_method = mean``: Average of local parameters
+					* ``merge_method = sum``: Sum of local parameters
+            
+
+        Returns : values, density
+            * ``values   (1D array)``: array containing parameter values
+            * ``density  (1D array)``: array containing density for respective parameter values
+		
+		"""
+		if not (isinstance(bp,list) or isinstance(bp,np.ndarray)):
+			raise AssertionError("type %s is not list or np.ndarray" % type(bp))
+
+		if (len(bp)>1) and (merge==False):
+			raise AssertionError("bp %s contains more than two values, whereas merge=False. Use either one value in bp or merge=True" % bp)
+			exit(1)
+
+		if len(bp)==1:
+			merge = False
+
+		if (merge==True) and not ((merge_method == 'mean') or (merge_method == 'sum')):
+			raise AssertionError("merge method %s is not available." % merge_method)
+			exit(1)
+
+		if len(bp)==1:
+			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=False)
+		else:
+			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=True)
+
+		if (merge==True) and (merge_method=='mean'):
+			param_value = np.mean(param_value, axis=0)
+
+		elif (merge==True) and (merge_method=='sum'):
+			param_value = np.sum(param_value, axis=0)
+
+		else:
+			param_value = param_value[0]
+		
+		density, bin_edges = np.histogram(param_value, bins=bins, density=True)
+
+		values = []
+		for i in range(len(bin_edges)-1):
+			values.append((bin_edges[i]+bin_edges[i+1])/2)
+
+		return np.array(values), density
+
 	def set_base_pair_parameters(self, filename, bp, parameters=range(1,7), bp_range=True):
 		"""	To read and store basepairs parameters (shear, stretch, stagger, buckle, propeller and opening) from an input file.
 		
@@ -676,7 +798,7 @@ class DNA:
 					if(5==param_idx[j]):
 						self.base_steps[bp_idx[i]].h_twist = data[i][j]
 		
-	def get_mean_error(self,bp,parameter,err_type='std',bp_range=True, merge_bp=1):
+	def get_mean_error(self,bp,parameter,err_type='std',bp_range=True, merge_bp=1, merge_method='mean'):
 		"""To calculate average and error of the given parameter for the gieven set of base-pairs/steps
 		
 		Args:
@@ -687,29 +809,9 @@ class DNA:
 					bp = [4,15]                             # bp_range = True
 					bp = range(4,15)                        # bp_range = False
 					bp = np.arange(4,15)                    # bp_range = False
-					bp = [2,5,6,7,9,12,18]                  # bp_range = False
 			
-			* ``parameter (string)``: Name of the prameter 
-				Currently accepted keywords are as follows:
-					* Shear
-					* Stretch
-					* Stagger
-					* Buckle
-					* Propeller
-					* Opening
-					* Shift
-					* Slide
-					* Rise
-					* Tilt
-					* Roll
-					* Twist
-					* X-disp
-					* Y-disp
-					* h-Rise
-					* Inclination
-					* Tip
-					* Radius S1
-					* Radius S2
+			* ``parameter (string)``: Name of a base-pair or base-step or helical parameter
+									For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
 			
 			* ``error     (string)``:  Method of error estimation.
 				Currently accepted method as follows:
@@ -722,7 +824,14 @@ class DNA:
 			
 			* ``bp_range (bool)``: Shown above. if True, bp should be a range otherwise list or numpy array
 			
-			* ``merge_bp (integer)``: Number of base pair-step to merge
+			* ``merge_bp (integer)``: Number of base-pairs or steps to merge for creating the small DNA segments
+			
+			* ``merge_method  (string)``: Method to calculate the parameter of a DNA segment from local parameters of all base-pairs/steps that are between the range given through ``bp``. 
+				Currently accepted keywords are as follows:
+
+					* ``merge_method = mean``: Average of local parameters
+					* ``merge_method = sum``: Sum of local parameters
+            
 			
 		Returns : basepairs or basesteps, avg_values, error
 				* ``basepairs/steps (1D array)``: Number of base pair-steps. If ``merge_bp>1``, middle number will be returned.
@@ -739,6 +848,10 @@ class DNA:
 
 		if(bp_range) and (merge_bp>1):
 			merge = True
+		
+		if (merge==True) and not ((merge_method == 'mean') or (merge_method == 'sum')):
+			raise AssertionError("merge method %s is not available." % merge_method)
+			exit(1)
 		
 		data, bp_idx = self.get_parameters(parameter,bp,bp_range)
 
@@ -758,8 +871,11 @@ class DNA:
 					end   = i + merge_bp	
 				
 				if(start < end):
-					mid_bin.append(int(start+(end-start)/2))
-					merge_data.append(np.mean(data[start:end],axis=0))
+					mid_bin.append(int(start+(end-start)/2) + bp_number[0])
+					if (merge_method == 'mean'):
+						merge_data.append(np.mean(data[start:end],axis=0))
+					if (merge_method == 'sum'):
+						merge_data.append(np.sum(data[start:end],axis=0))
 				
 				if(i >= len(bp_idx)):
 					break
@@ -845,6 +961,78 @@ class DNA:
 				if(2==j):
 					self.base_steps[bp_idx[i]].hel_Zaxis = data[i][j]
 
+def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='std', bp_range=True, merge_bp=1, merge_method='mean'):
+	"""To calculate deviation in the given parameters of a Subject DNA with respect to a Reference DNA along the base-pairs/steps.
+	
+		*Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)*
+
+		.. warning:: Number of base-pairs/steps should be similar in reference and subject DNA.
+		
+	Args:
+	
+		* ``dnaRef  (DNA object)``:   Reference DNA
+		
+		
+		* ``bpRef (1D list) or (1D array)``: base-pairs or base-steps to consider from Reference DNA
+				Example: ::
+					
+					bp = [6]                                # bp_range = False
+					bp = [4,15]                             # bp_range = True
+					bp = range(4,15)                        # bp_range = False
+					bp = np.arange(4,15)                    # bp_range = False
+
+		
+		* ``dnaSubj (DNA object)``:   Subject DNA. Number of base-pairs in Reference and Subject DNA **should be** same.
+		
+		
+		* ``bpSubj (1D list) or (1D array)``: base-pairs or base-steps to consider from Reference DNA. Foe more, see above example of ``bpSubj``.
+		
+		
+		* ``parameter (string)``:   Name of a base-pair or base-step or helical base-step parameter
+									For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
+		
+		* ``error_type   (string)``:  Method of error estimation.
+				Currently accepted method as follows:
+				
+				* ``error = 'std'``   : Standard Deviation
+				* ``error = 'acf'``   : Standard error using autocorrelation time (requires: g_analyze)
+				* ``error = 'block'`` : Standard error using block averaging method (requires: g_analyze)
+
+			.. warning::
+					to calculate errors by using ``error = 'acf'`` or ``error = 'block'`` , GROMACS tool ``g_analyze`` should be present in ``$PATH``.
+			
+		* ``bp_range (bool)``: Shown above. if True, bp should be range otherwise list or numpy array
+	    
+		* ``merge_bp  (int)``: Number of base-pairs or steps to merge for creating the small DNA segments
+		
+		* ``merge_method  (string)``: Method to calculate the parameter of a DNA segment from local parameters of all base-pairs/steps that are between the range given through ``bp``. 
+				Currently accepted keywords are as follows:
+
+				* ``merge_method = mean``: Average of local parameters
+				* ``merge_method = sum``: Sum of local parameters
+            
+			
+
+	Returns : bpRef, bpSubj, deviation, error
+		* ``bpRef       (1D array)``: base-pair/step numbers of reference DNA. If ``merge_bp>1``, middle number will is returned.`
+		* ``bpSubj      (1D array)``: base-pair/step numbers of subject DNA. If ``merge_bp>1``, middle number will is returned.`
+		* ``deviation   (1D array)``: Deviation in the parameter of subject DNA with respect to reference DNA.
+		* ``error       (1D array)``: Standard error of respective deviation
+	"""
+
+	bpRef, RefAvgValue, RefError = dnaRef.get_mean_error(bpRef, parameter, err_type = err_type, bp_range=True, merge_bp=merge_bp, merge_method=merge_method)
+
+	bpSubj, SubjAvgValue, SubjError = dnaSubj.get_mean_error(bpSubj, parameter, err_type = err_type, bp_range=True, merge_bp=merge_bp, merge_method=merge_method)
+	
+	if len(bpRef) != len(bpSubj):
+		raise ValueError("Number (%d) of bp/bps/segments in reference DNA does not match with the number (%d) of subject DNA." % (len(bpRef), len(bpSubj)))
+		exit(1)
+
+	deviation = RefAvgValue-SubjAvgValue
+	error = np.sqrt((RefError**2)+(SubjError**2))
+
+	return bpRef, bpSubj, deviation, error
+
 def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis ='Z', bp_range=True, windows=10, err_type='block'):
 	"""To calculate deviation in the given parameters of a Subject DNA to Reference DNA along the given axis.
 	
@@ -857,6 +1045,7 @@ def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis ='Z', bp_range=T
 		* ``dnaSubj (DNA object)``:   Subject DNA. Number of base-pairs in Reference and Subject DNA **should be** same.
 		
 		* ``parameter (string)``:   Name of a base-pair or base-step or helical base-step parameter
+									For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
 		
 		* ``bp (1D list) or (1D array)``: base-pairs or base-steps to analyze
 				Example: ::
@@ -873,10 +1062,10 @@ def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis ='Z', bp_range=T
 		* ``windows  (int)``: Number of bins along the axis
 
 	Returns : deviation, deviation_error, axis, axis_error
-		* ``deviation        (1D array)``: length = no. of windows; Deviation in the parameter for two given DNA
-		* ``deviation_error  (1D array)``: length = no. of windows; Standard error in deviation fo each window/bin
-		* ``axis             (1D array)``: length = no. of windows; average position of window/bin along given axis
-		* ``axis_error       (1D array)``: length = no. of windows; Standard error in average position of window/bin along given axis
+		* ``deviation       (1D array)``: length = no. of windows; Deviation in the parameter for two given DNA
+		* ``deviation_error (1D array)``: length = no. of windows; Standard error in deviation fo each window/bin
+		* ``axis         (1D array)``: length = no. of windows; average position of window/bin along given axis
+		* ``axis_error   (1D array)``: length = no. of windows; Standard error in average position of window/bin along given axis
 	"""
 	RefParam, ref_bp_idx = dnaRef.get_parameters(parameter,bp,bp_range)
 	RefAxis, dummy = dnaRef.get_parameters('Helical {0}-axis' .format(axis),bp,bp_range)
@@ -1058,9 +1247,11 @@ def get_idx_of_bp_parameters(bp,parameters,bp_range):
 		bp_idx = np.arange(bp[0]-1,bp[1])
 	else:
 		bp_idx = np.subtract(bp,1)
-	
+
 	if(len(parameters)!=0):
-		param_idx = np.hstack((np.subtract(parameters,1),[parameters[-1]]))
+		#param_idx = np.hstack((np.subtract(parameters,1),[parameters[-1]]))
+		param_idx = np.subtract(parameters,1)
+	
 	return bp_idx, param_idx
 
 def read_param_file(FileName,parameters,bp,bp_range):
@@ -1068,7 +1259,7 @@ def read_param_file(FileName,parameters,bp,bp_range):
 	sys.stdout.write("\nReading file : %s\n" % FileName)
 	sys.stdout.flush()
 	
-	def get_frame_data(block,parameters,bp_idx):
+	def get_frame_data(block, parameters, bp_idx):
 		block = np.array(block).T
 		temp_data = (block[parameters,:])[:,bp_idx].copy()
 		return temp_data
