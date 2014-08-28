@@ -26,6 +26,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="do_x3dna Documentation" href="index.html" />
     <link rel="up" title="Tutorial" href="tutorial.html" />
+    <link rel="next" title="Analysis of local base-steps parameters" href="base_steps_tutorial.html" />
     <link rel="prev" title="Tutorial" href="tutorial.html" />
  
 <script type="text/javascript">
@@ -51,6 +52,8 @@
         <div class="rel">
           <a href="tutorial.html" title="Tutorial"
              accesskey="P">previous</a> |
+          <a href="base_steps_tutorial.html" title="Analysis of local base-steps parameters"
+             accesskey="N">next</a> |
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |
           <a href="genindex.html" title="General Index"
@@ -254,7 +257,7 @@ the MD trajectory are sometime useful.</li>
 <li>The distribution could be calculated using the function
 <a class="reference external" href="http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.parameter_distribution">**``dnaMD.DNA.parameter_distribution(...)``**</a>
 as shown in the following examples.</li>
-<li>The normalized distribution is calculated directly using
+<li>The normalized distribution is calculated using
 <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html">**``numpy.histogram(...)``**</a>.</li>
 </ul>
 <hr class="docutils" />
@@ -396,9 +399,10 @@ using function
 as shown in the following example.</p>
 <hr class="docutils" />
 <div class="code python highlight-python"><div class="highlight"><pre><span class="c">#### Deviation in shear, stretch, stagger, buckle, propeller and opening</span>
+<span class="c">#### Deviation = Bound DNA(parameter) - Free DNA(parameter)</span>
 
 <span class="c">### Deviation in Shear</span>
-<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
+<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
                                                               <span class="s">&#39;Shear&#39;</span><span class="p">,</span> <span class="n">err_type</span><span class="o">=</span><span class="s">&#39;block&#39;</span><span class="p">,</span> <span class="n">bp_range</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">merge_bp</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
 <span class="c"># plot these values</span>
@@ -414,7 +418,7 @@ as shown in the following example.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="c">### Deviation in Stretch</span>
-<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
+<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
                                                               <span class="s">&#39;Stretch&#39;</span><span class="p">,</span> <span class="n">err_type</span><span class="o">=</span><span class="s">&#39;block&#39;</span><span class="p">,</span> <span class="n">bp_range</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">merge_bp</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
 <span class="c"># plot these values</span>
@@ -430,7 +434,7 @@ as shown in the following example.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="c">### Deviation in Stagger</span>
-<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
+<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
                                                               <span class="s">&#39;Stagger&#39;</span><span class="p">,</span> <span class="n">err_type</span><span class="o">=</span><span class="s">&#39;block&#39;</span><span class="p">,</span> <span class="n">bp_range</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">merge_bp</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
 <span class="c"># plot these values</span>
@@ -445,7 +449,7 @@ as shown in the following example.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="c">### Deviation in Buckle</span>
-<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
+<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
                                                               <span class="s">&#39;Buckle&#39;</span><span class="p">,</span> <span class="n">err_type</span><span class="o">=</span><span class="s">&#39;block&#39;</span><span class="p">,</span> <span class="n">bp_range</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">merge_bp</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
 <span class="c"># plot these values</span>
@@ -460,7 +464,7 @@ as shown in the following example.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="c">### Deviation in Propeller</span>
-<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
+<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
                                                               <span class="s">&#39;Propeller&#39;</span><span class="p">,</span> <span class="n">err_type</span><span class="o">=</span><span class="s">&#39;block&#39;</span><span class="p">,</span> <span class="n">bp_range</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">merge_bp</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
 <span class="c"># plot these values</span>
@@ -475,7 +479,7 @@ as shown in the following example.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="c">### Deviation in Opening</span>
-<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
+<span class="n">fdna_bp</span><span class="p">,</span> <span class="n">pdna_bp</span><span class="p">,</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dnaMD</span><span class="o">.</span><span class="n">dev_bps_vs_parameter</span><span class="p">(</span><span class="n">pdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span> <span class="n">fdna</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">55</span><span class="p">],</span>
                                                               <span class="s">&#39;Opening&#39;</span><span class="p">,</span> <span class="n">err_type</span><span class="o">=</span><span class="s">&#39;block&#39;</span><span class="p">,</span> <span class="n">bp_range</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">merge_bp</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
 <span class="c"># plot these values</span>
@@ -533,6 +537,8 @@ as shown in the following example.</p>
         <div class="left">
           <a href="tutorial.html" title="Tutorial"
              >previous</a> |
+          <a href="base_steps_tutorial.html" title="Analysis of local base-steps parameters"
+             >next</a> |
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |
           <a href="genindex.html" title="General Index"

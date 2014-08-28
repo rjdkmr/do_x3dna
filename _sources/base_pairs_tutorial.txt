@@ -227,7 +227,7 @@ Distribution of local base-pairs parameters during MD simulations
    `**``dnaMD.DNA.parameter_distribution(...)``** <http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.parameter_distribution>`__
    as shown in the following examples.
 
--  The normalized distribution is calculated directly using
+-  The normalized distribution is calculated using
    `**``numpy.histogram(...)``** <http://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html>`__.
 
 --------------
@@ -395,9 +395,10 @@ as shown in the following example.
 .. code:: python
 
     #### Deviation in shear, stretch, stagger, buckle, propeller and opening
+    #### Deviation = Bound DNA(parameter) - Free DNA(parameter)
     
     ### Deviation in Shear
-    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(fdna, [5,55], pdna, [5,55], 
+    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(pdna, [5,55], fdna, [5,55], 
                                                                   'Shear', err_type='block', bp_range=True, merge_bp=4)
     
     # plot these values
@@ -413,7 +414,7 @@ as shown in the following example.
     plt.show()
     
     ### Deviation in Stretch
-    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(fdna, [5,55], pdna, [5,55], 
+    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(pdna, [5,55], fdna, [5,55], 
                                                                   'Stretch', err_type='block', bp_range=True, merge_bp=4)
     
     # plot these values
@@ -429,7 +430,7 @@ as shown in the following example.
     plt.show()
     
     ### Deviation in Stagger
-    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(fdna, [5,55], pdna, [5,55], 
+    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(pdna, [5,55], fdna, [5,55], 
                                                                   'Stagger', err_type='block', bp_range=True, merge_bp=4)
     
     # plot these values
@@ -444,7 +445,7 @@ as shown in the following example.
     plt.show()
     
     ### Deviation in Buckle
-    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(fdna, [5,55], pdna, [5,55], 
+    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(pdna, [5,55], fdna, [5,55], 
                                                                   'Buckle', err_type='block', bp_range=True, merge_bp=4)
     
     # plot these values
@@ -459,7 +460,7 @@ as shown in the following example.
     plt.show()
     
     ### Deviation in Propeller
-    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(fdna, [5,55], pdna, [5,55], 
+    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(pdna, [5,55], fdna, [5,55], 
                                                                   'Propeller', err_type='block', bp_range=True, merge_bp=4)
     
     # plot these values
@@ -474,7 +475,7 @@ as shown in the following example.
     plt.show()
     
     ### Deviation in Opening
-    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(fdna, [5,55], pdna, [5,55], 
+    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(pdna, [5,55], fdna, [5,55], 
                                                                   'Opening', err_type='block', bp_range=True, merge_bp=4)
     
     # plot these values

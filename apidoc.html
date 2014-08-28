@@ -25,6 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="do_x3dna Documentation" href="index.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
     <link rel="prev" title="Usage" href="usage.html" />
  
 <script type="text/javascript">
@@ -50,6 +51,8 @@
         <div class="rel">
           <a href="usage.html" title="Usage"
              accesskey="P">previous</a> |
+          <a href="tutorial.html" title="Tutorial"
+             accesskey="N">next</a> |
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |
           <a href="genindex.html" title="General Index"
@@ -81,7 +84,7 @@
 <p>This class also contains several methods (functions) that are discussed in following sections.</p>
 <dl class="method">
 <dt id="dnaMD.DNA.get_mean_error">
-<tt class="descname">get_mean_error</tt><big>(</big><em>bp</em>, <em>parameter</em>, <em>err_type='std'</em>, <em>bp_range=True</em>, <em>merge_bp=1</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.get_mean_error" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_mean_error</tt><big>(</big><em>bp</em>, <em>parameter</em>, <em>err_type='std'</em>, <em>bp_range=True</em>, <em>merge_bp=1</em>, <em>merge_method='mean'</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.get_mean_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>To calculate average and error of the given parameter for the gieven set of base-pairs/steps</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -125,6 +128,18 @@
 <li><p class="first"><tt class="docutils literal"><span class="pre">bp_range</span> <span class="pre">(bool)</span></tt>: Shown above. if True, bp should be a range otherwise list or numpy array</p>
 </li>
 <li><p class="first"><tt class="docutils literal"><span class="pre">merge_bp</span> <span class="pre">(integer)</span></tt>: Number of base-pairs or steps to merge for creating the small DNA segments</p>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">merge_method</span>&nbsp; <span class="pre">(string)</span></tt>: Method to calculate the parameter of a DNA segment from local parameters of all base-pairs/steps that are between the range given through <tt class="docutils literal"><span class="pre">bp</span></tt>. </dt>
+<dd><p class="first">Currently accepted keywords are as follows:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">merge_method</span> <span class="pre">=</span> <span class="pre">mean</span></tt>: Average of local parameters</li>
+<li><tt class="docutils literal"><span class="pre">merge_method</span> <span class="pre">=</span> <span class="pre">sum</span></tt>: Sum of local parameters</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
 </li>
 </ul>
 </dd>
@@ -598,7 +613,7 @@
 
 <dl class="function">
 <dt id="dnaMD.dev_bps_vs_parameter">
-<tt class="descclassname">dnaMD.</tt><tt class="descname">dev_bps_vs_parameter</tt><big>(</big><em>dnaRef</em>, <em>bpRef</em>, <em>dnaSubj</em>, <em>bpSubj</em>, <em>parameter</em>, <em>err_type='std'</em>, <em>bp_range=True</em>, <em>merge_bp=1</em><big>)</big><a class="headerlink" href="#dnaMD.dev_bps_vs_parameter" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">dnaMD.</tt><tt class="descname">dev_bps_vs_parameter</tt><big>(</big><em>dnaRef</em>, <em>bpRef</em>, <em>dnaSubj</em>, <em>bpSubj</em>, <em>parameter</em>, <em>err_type='std'</em>, <em>bp_range=True</em>, <em>merge_bp=1</em>, <em>merge_method='mean'</em><big>)</big><a class="headerlink" href="#dnaMD.dev_bps_vs_parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>To calculate deviation in the given parameters of a Subject DNA with respect to a Reference DNA along the base-pairs/steps.</p>
 <blockquote>
 <div><p><em>Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)</em></p>
@@ -653,6 +668,16 @@
 </li>
 <li><p class="first"><tt class="docutils literal"><span class="pre">merge_bp</span>&nbsp; <span class="pre">(int)</span></tt>: Number of base-pairs or steps to merge for creating the small DNA segments</p>
 </li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">merge_method</span>&nbsp; <span class="pre">(string)</span></tt>: Method to calculate the parameter of a DNA segment from local parameters of all base-pairs/steps that are between the range given through <tt class="docutils literal"><span class="pre">bp</span></tt>. </dt>
+<dd><p class="first">Currently accepted keywords are as follows:</p>
+<ul class="last simple">
+<li><tt class="docutils literal"><span class="pre">merge_method</span> <span class="pre">=</span> <span class="pre">mean</span></tt>: Average of local parameters</li>
+<li><tt class="docutils literal"><span class="pre">merge_method</span> <span class="pre">=</span> <span class="pre">sum</span></tt>: Sum of local parameters</li>
+</ul>
+</dd>
+</dl>
+</li>
 </ul>
 </div></blockquote>
 <dl class="docutils">
@@ -681,6 +706,7 @@
 <li class="toctree-l1"><a class="reference internal" href="install.html">Download and Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Python API Tutorial</a></li>
 </ul>
 
           <h3 style="margin-top: 1.5em;">Search</h3>
@@ -703,6 +729,8 @@
         <div class="left">
           <a href="usage.html" title="Usage"
              >previous</a> |
+          <a href="tutorial.html" title="Tutorial"
+             >next</a> |
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |
           <a href="genindex.html" title="General Index"
