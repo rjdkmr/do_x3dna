@@ -45,7 +45,7 @@ Contents
    
    Download and Installation <install>
    Usage <usage>
-   Python API <code>
+   Python API <apidoc>
 
 Indices and tables
 ------------------

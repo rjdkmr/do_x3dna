@@ -1,0 +1,17 @@
+Documentation for the Python API
+=================================
+
+
+DNA class
+---------
+
+.. autoclass:: dnaMD.DNA
+   :members: get_parameters, set_base_pair_parameters, set_helical_radius, set_base_step_parameters, get_mean_error, set_helical_axis, time_vs_parameter, parameter_distribution 
+
+
+
+Other methods or functions
+--------------------------
+
+.. automodule:: dnaMD
+	:members: get_error, dev_parameters_vs_axis, dev_bps_vs_parameter
