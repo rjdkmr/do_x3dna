@@ -5,9 +5,12 @@
 
 Introduction
 ============
-do_x3dna uses `3DNA package <http://x3dna.org>`_ to calculate several structural descriptors or parameters of DNA/RNA using the GROMACS MD trajectory. It extracts output of the 3DNA package,and saves these parameters to external output files with function of time. 
 
-**Note:** do_x3dna can be used for analyzing DNA and RNA from the trajectory files that are obtained from other MD packages such as NAMD and AMBER. A PDB file could be used in place of a GROMACS *tpr* file.
+do_x3dna has been developed for analysis of the DNA/RNA dynamics during the molecular dynamics simulations. It uses `3DNA package <http://x3dna.org>`_ to calculate several structural descriptors of DNA/RNA from the GROMACS MD trajectory. It executes 3DNA tools to calculate these descriptors and subsequently, extracts these output and saves in to external output files as a function of time.
+
+From the MD trajectory, several `output files <http://rjdkmr.github.io/do_x3dna/usage.html#output-files>`_ are generated. For easy analysis of the obtained data, do_x3dna package includes a Python code `dnaMD.py <https://github.com/rjdkmr/do_x3dna/blob/master/Python_API/dnaMD.py>`_, which contains several `methods <http://rjdkmr.github.io/do_x3dna/apidoc.html>`_ for the analysis of structural descriptors. 
+
+**Note:** do_x3dna can be used the trajectory files that are obtained from other MD packages such as NAMD and AMBER. Input trajectory files should be converted in to Gromacs format trajectory files. A PDB file could be used in place of a GROMACS *tpr* file.
 
 
 Example:

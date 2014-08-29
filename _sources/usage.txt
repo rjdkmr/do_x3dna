@@ -3,6 +3,10 @@
 Usage
 =====
 
+.. note::
+   To execute do_x3dna, `3DNA package`_ should be installed and ``$X3DNA`` environment variable (Detail is given in 3DNA manual) should be defined.
+
+
 ::
 
     do_x3dna -h
@@ -46,8 +50,6 @@ Options
 
 
 
-
-* To execute do_x3dna, `3DNA package`_ should be installed and ``$X3DNA`` environment variable (Detail is given in 3DNA manual) should be defined.
 
 .. note::
     Before running do_x3dna, make sure 3DNA package is correctly working for the input DNA/RNA structure. To check it, run do_x3dna with a input gro/pdb file containing only one frame instead of xtc/trr trajectory file as follows: ::
@@ -104,41 +106,41 @@ Following files are generated from ``do_x3dna`` with and without options:
 +----------------------------+---------------------------------------------------------------------------------+
 | SugarDihedrals_g.dat       | Sugar dihederal angles including puckring type                                  |
 +----------------------------+---------------------------------------------------------------------------------+
-| Stretch_g.xvg              | Stretch of base-pairs with function of time                                     |
+| Stretch_g.xvg              | Stretch of base-pairs as a function of time                                     |
 +----------------------------+---------------------------------------------------------------------------------+
-| Shear_g.xvg                | Shear of base-pairs with function of time                                       |
+| Shear_g.xvg                | Shear of base-pairs as a function of time                                       |
 +----------------------------+---------------------------------------------------------------------------------+
-| Stagger_g.xvg              | Stagger of base-pairs with function of time                                     |
+| Stagger_g.xvg              | Stagger of base-pairs as a function of time                                     |
 +----------------------------+---------------------------------------------------------------------------------+
-| Buckle_g.xvg               | Buckle of base-pairs with function of time                                      |
+| Buckle_g.xvg               | Buckle of base-pairs as a function of time                                      |
 +----------------------------+---------------------------------------------------------------------------------+
-| Propeller_g.xvg            | Propeller of base-pairs with function of time                                   |
+| Propeller_g.xvg            | Propeller of base-pairs as a function of time                                   |
 +----------------------------+---------------------------------------------------------------------------------+
-| Opening_g.xvg              | Opening of base-pairs with function of time                                     |
+| Opening_g.xvg              | Opening of base-pairs as a function of time                                     |
 +----------------------------+---------------------------------------------------------------------------------+
-| Shift_g.xvg                | Shift of base-steps with function of time                                       |
+| Shift_g.xvg                | Shift of base-steps as a function of time                                       |
 +----------------------------+---------------------------------------------------------------------------------+
-| Slide_g.xvg                | Slide of base-steps with function of time                                       |
+| Slide_g.xvg                | Slide of base-steps as a function of time                                       |
 +----------------------------+---------------------------------------------------------------------------------+
-| Rise_g.xvg                 | Rise of base-steps with function of time                                        |
+| Rise_g.xvg                 | Rise of base-steps as a function of time                                        |
 +----------------------------+---------------------------------------------------------------------------------+
-| Tilt_g.xvg                 | Tilt of base-steps with function of time                                        |
+| Tilt_g.xvg                 | Tilt of base-steps as a function of time                                        |
 +----------------------------+---------------------------------------------------------------------------------+
-| Roll_g.xvg                 | Roll of base-steps with function of time                                        |
+| Roll_g.xvg                 | Roll of base-steps as a function of time                                        |
 +----------------------------+---------------------------------------------------------------------------------+
-| Twist_g.xvg                | Twist of base-steps with function of time                                       |
+| Twist_g.xvg                | Twist of base-steps as a function of time                                       |
 +----------------------------+---------------------------------------------------------------------------------+
-| X-displacement_g.xvg       | Helical X-displacment of helical base-steps with function of time               |
+| X-displacement_g.xvg       | Helical X-displacment of helical base-steps as a function of time               |
 +----------------------------+---------------------------------------------------------------------------------+
-| Y-displacement_g.xvg       | Helical Y-displacment of base-steps with function of time                       |
+| Y-displacement_g.xvg       | Helical Y-displacment of base-steps as a function of time                       |
 +----------------------------+---------------------------------------------------------------------------------+
-| Tip_g.xvg                  | Tip of base-steps with function of time                                         |
+| Tip_g.xvg                  | Tip of base-steps as a function of time                                         |
 +----------------------------+---------------------------------------------------------------------------------+
-| Inclination_g.xvg          | Helical inclination of base-steps with function of time                         |
+| Inclination_g.xvg          | Helical inclination of base-steps as a function of time                         |
 +----------------------------+---------------------------------------------------------------------------------+
-| H-twist_g.xvg              | Helical twist of helical base-steps with function of time                       |
+| H-twist_g.xvg              | Helical twist of helical base-steps as a function of time                       |
 +----------------------------+---------------------------------------------------------------------------------+
-| H-rise_g.xvg               | Helical rise of base-steps with function of time                                |
+| H-rise_g.xvg               | Helical rise of base-steps as a function of time                                |
 +----------------------------+---------------------------------------------------------------------------------+
 | Avg_Local_BP_param_g.xvg   | Average and standard deviations of Base-pairs parameters with                   |
 |                            | respect to base-pairs                                                           |
