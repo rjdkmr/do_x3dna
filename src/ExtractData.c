@@ -56,7 +56,7 @@ int* extract_coulmn_integer(char *str, int col_min, int col_max)	{
 
 	buffer = strdup(str);
 	remove_leading_white_space(buffer);
-	str_data = split_by_space(buffer);
+	str_data = split_by_space(buffer, NULL);
 
 	data = (int *) malloc (sizeof(int)*size);
 	for(i=(col_min-1);i<col_max;i++){
@@ -90,7 +90,7 @@ double* extract_coulmn_double(char *str, int col_min, int col_max)	{
 
 	buffer = strdup(str);
 	remove_leading_white_space(buffer);
-	str_data = split_by_space(buffer);
+	str_data = split_by_space(buffer, NULL);
 
 	data = (double *) malloc (sizeof(double)*size);
 	for(i=(col_min-1);i<col_max;i++){
@@ -138,36 +138,34 @@ char* extract_digits(char *str)	{
 
 	char *final=NULL;
 	int i = 0, n=0;
-	final = (char *) malloc (sizeof(char));
-	while(1)	{
+	int len = strlen(str)+1;
 
-		if(str[i]=='\0')	{
-			final  = (char*) realloc (final, (sizeof(char)*(n+1)));
-			final[n] = '\0';
-			break;
-		}
+	final = (char *) malloc (sizeof(char)*len);
 
-		if((i==0) && isdigit(str[i]))	{
-			final[n] = str[i];
-			n++;
-		}
+	do {
 
-		if((i>0) && isdigit(str[i]))	{
-			final  = (char*) realloc (final, (sizeof(char)*(n+1)));
+		if isdigit(str[i])	{
 			final[n] = str[i];
 			n++;
 		}
 
 		i++;
-	}
+	} while (i<len);
+
+	final[n] = '\0';
+
 	return final;
 }
 
-char** split_by_char(char *str, char *delimeter)	{
+char** split_by_char(char *str, char *delimeter, int *num)	{
 	/*
 	 Similar to split sub-routine in perl
 	 Split input line with the given character
 	 and return the list of words in the given line
+
+	 "num" is total number of string in the array. It
+	 could be NULL also.
+
 
 	 For example:
 	 -------------------------------
@@ -189,57 +187,64 @@ char** split_by_char(char *str, char *delimeter)	{
 	 */
 
 	char **final = NULL;
-	char *buffer = NULL;
+	char *token;
+	char *input = str;
 	int n = 0;
 
-	if(str!=NULL)	{
-		final = (char **) malloc (sizeof(char*));
-		buffer = strtok(str,delimeter);
-		final[n] = buffer;
-		n++;
+	final = (char **) malloc (sizeof(char*));
 
-		while(1)	{
-			buffer = strtok(NULL, delimeter);
+	if(input!=NULL)	{
 
-			if(buffer==NULL)
-				break;
+		token = strtok(input, delimeter);
 
+		while(token != NULL)	{
 			final  = (char**) realloc (final, (sizeof(char*)*(n+1)));
-			final[n] = buffer;
+
+			final[n] = token;
 			n++;
+			token = strtok(NULL, delimeter);
 		}
 	}
+
+	if (num!=NULL)
+		*num = n;
+
 	return final;
 }
 
 
-char** split_by_space(char *str)	{
+char** split_by_space(char *str, int *num)	{
 	/*
 	 Split input line with the white spaces
-	 and return the list of words in the given line
+	 and return the list of words in the given line.
+
+	 "num" is total number of string in the array. It
+	 could be NULL also.
 	 */
 
 	char **final = NULL;
-	char *buffer = NULL;
+	char *token = NULL;
+	char *input = str;
 	int n = 0;
 
-	if(str!=NULL)	{
-		final = (char **) malloc (sizeof(char*));
-		buffer = strtok(str," \t\n\v\f\r");
-		final[n] = buffer;
-		n++;
+	final = (char **) malloc (sizeof(char*));
 
-		while(1)	{
-			buffer = strtok(NULL," \t\n\v\f\r");
+	if(input!=NULL)	{
 
-			if(buffer==NULL)
-				break;
+		token = strtok(input, " \t\n\v\f\r");
 
+		while(token != NULL)	{
 			final  = (char**) realloc (final, (sizeof(char*)*(n+1)));
-			final[n] = buffer;
+
+			final[n] = token;
 			n++;
+			token = strtok(NULL, " \t\n\v\f\r");
 		}
 	}
+
+	if (num!=NULL)
+		*num = n;
+
 	return final;
 }
 
@@ -250,36 +255,31 @@ void remove_leading_white_space(char *str)	{
 	 */
 
 	char *final=NULL;
-	int i = 0, n =0;
-	bool got_char = FALSE;
+	int i = 0, nspace=0;
+	int len = strlen(str)+1;
 
+	final = (char *) malloc (sizeof(char)*len);
 
-	final = (char *) malloc (sizeof(char));
-	while(1)	{
+	for(i=0; i<=len; i++)	{
 
-		if (str[i]=='\0')	{
-			final  = (char*) realloc (final, (sizeof(char)*(n+1)));
-			final[n] = '\0';
+		if isspace(str[i])	{
+			nspace += 1;
+			continue;
+		}
+		else
 			break;
-		}
-
-		if ((!got_char) && (!isspace(str[i])))	{
-				got_char = TRUE;
-		}
-
-		if(got_char) {
-			if (n==0)
-				final[n] = str[i];
-
-			if(n!=0)	{
-				final  = (char*) realloc (final, (sizeof(char)*(n+1)));
-				final[n] = str[i];
-			}
-			n++;
-		}
-		i++;
 	}
+
+	for (i=nspace; i<=len; i++)	{
+
+		final[i-nspace] = str[i];
+
+		if (str[i]=='\0')
+			break;
+	}
+
 	strcpy(str,final);
+
 	free(final);
 }
 
@@ -290,54 +290,49 @@ char* get_line(FILE *fp)	{
 	 Each line/string end with '\0' null terminator.
 	 */
 
-	char c, *str =NULL;
-	char *final=NULL;
-	int count = 0;
+	char c, *str;
+	char *final;
+	int count = 0, mult=1, len;
 
-	str = (char *) malloc (sizeof(char));
+	str = (char *) malloc (sizeof(char)*STRLEN);
 
 	do {
 
 		//Getting character from file
 		c = fgetc(fp);
 
-		if(c==EOF)	{
-			str  = (char*) realloc (str, (sizeof(char)*(count+1)));
-			str[count] = '\0';
+		if ((mult*STRLEN)<count)	{
+			mult += 1;
+			str  = (char*) realloc (str, (sizeof(char)*STRLEN*mult));
+		}
+
+		//Checking end of file
+		if (c==EOF)	{
+			str[count] = '\n';
+			str[count+1] = '\0';
+			count += 2;
 			break;
 		}
 
 		//Checking end of the line
-		if((c=='\n') && (count!=0))	{
-			str  = (char*) realloc (str, (sizeof(char)*(count+1)));
+		if(c=='\n') 	{
 			str[count] = c;
-			str  = (char*) realloc (str, (sizeof(char)*(count+2)));
 			str[count+1] = '\0';
+			count += 2;
 			break;
 		}
 
-		//First character, no memory allocation
-		if (count==0)	{
-				str[count] = c;
-
-				//If first character either new line or end of file
-				if((c=='\n') || feof(fp))	{
-					str  = (char*) realloc (str, (sizeof(char)*(count+2)));
-					str[count+1] = '\0';
-				}
-
-		}
-		//Any other characters
-		else	{
-			str  = (char*) realloc (str, (sizeof(char)*(count+1)));
-			str[count] = c;
-		}
+		str[count] = c;
 
 		count++;
+
 	} while (c != EOF);
 
-	final= strdup(str);
+	len = strlen(str)+1;
+	final = (char*) malloc (sizeof(char)*len);
+	strcpy(final, str);
 	free(str);
+
 	return final;
 }
 
@@ -382,7 +377,9 @@ char** get_all_lines(FILE *fp, int *num_line)	{
 			}
 
 			count++;
+
 	} while(!feof(fp));
+
 
 	*num_line = (count-1);
 	return data;
@@ -396,6 +393,10 @@ char** get_block_lines(FILE *fp, char *delimeter, int *num_line)	{
 
 	data = (char **) malloc (sizeof(char*));
 	while(1) {
+
+		if(feof(fp))
+			break;
+
 			buffer = get_line(fp);
 
 			if (buffer==NULL)

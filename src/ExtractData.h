@@ -50,6 +50,10 @@ typedef int bool;
 #  define TRUE    1
 #endif
 
+#ifndef STRLEN
+#define STRLEN 256
+#endif
+
 double* extract_coulmn_double(char *str, int col_min, int col_max);
 /*
  return pointer of array of size [(col_max-col_min)+1]
@@ -104,17 +108,27 @@ void remove_leading_white_space(char *str);
  and replace input string with new line/string.
  */
 
-char** split_by_space(char *str);
+char** split_by_space(char *str,  int *num);
 /*
  Split input line with the white spaces
  and return the list of words in the given line
+
+
+ "num" is total number of string in the array. It
+ could be NULL also.
+
  */
 
-char** split_by_char(char *str, char *delimeter);
+char** split_by_char(char *str, char *delimeter, int *num);
 /*
  Similar to split sub-routine in perl
  Split input line with the given character
  and return the list of words in the given line
+
+
+ "num" is total number of string in the array. It
+ could be NULL also.
+
 
  For example:
  -------------------------------

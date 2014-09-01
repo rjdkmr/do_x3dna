@@ -106,7 +106,7 @@ void CopyRightMsg() {
     int i = 0;
     char *str;
     for(i=0; i<42; i++) {
-        str = strdup(copyright[i]);
+        str = copyright[i];
         fprintf(stderr,"%s\n", str);
     }
 }
@@ -185,7 +185,7 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 	}
 
 
-	time_temp = split_by_char(buff2, "=");
+	time_temp = split_by_char(buff2, "=", NULL);
 	time[0] = strtof(time_temp[1],NULL);
 
 
@@ -240,7 +240,7 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 		timer2++;
 
 
-		time_temp = split_by_char(lines1[num1], "=");
+		time_temp = split_by_char(lines1[num1], "=", NULL);
 		time[timer1] = strtof(time_temp[1],NULL);
 
 
@@ -432,7 +432,7 @@ int local_base_pair_out(gmx_bool bAvg, char *ComName[], int nframe, int **max_bp
 	}
 
 
-	time_temp = split_by_char(buff2, "=");
+	time_temp = split_by_char(buff2, "=", NULL);
 	time[0] = strtof(time_temp[1],NULL);
 
 
@@ -470,7 +470,7 @@ int local_base_pair_out(gmx_bool bAvg, char *ComName[], int nframe, int **max_bp
 		timer2++;
 
 
-		time_temp = split_by_char(lines1[num1], "=");
+		time_temp = split_by_char(lines1[num1], "=", NULL);
 		time[timer1] = strtof(time_temp[1],NULL);
 
 
@@ -645,7 +645,7 @@ void hbond_process(int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_p
 	}
 
 
-	time_temp = split_by_char(buff1, "=");
+	time_temp = split_by_char(buff1, "=", NULL);
 	time[0] = strtof(time_temp[1],NULL);
 
 
@@ -675,7 +675,7 @@ void hbond_process(int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_p
 		timer2++;
 
 
-		time_temp = split_by_char(lines1[num1], "=");
+		time_temp = split_by_char(lines1[num1], "=", NULL);
 		time[timer1] = strtof(time_temp[1],NULL);
 
 
@@ -975,8 +975,8 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 	int i = 0, j= 0, bp = 0;
 	gmx_bool bProp[10], bS1=FALSE, bS2=FALSE;
 	FILE *f_input;
-	int number=0;
-	char **data=NULL, **two_strand=NULL, *tmp_str;
+	int number=0, elem=0;
+	char **data=NULL, **two_strand=NULL, *tmp_str, *bp1, *bp2;
 	char **SplitData = NULL;
 	int num_bp=0;
 
@@ -992,8 +992,9 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 			continue;
 
 		if(strstr(data[i],"Number of base-pairs")!=NULL)	{
-			SplitData = split_by_char(data[i], ":");
+			SplitData = split_by_char(data[i], ":", NULL);
 			num_bp = atoi(SplitData[1]);
+			free(SplitData);
 		}
 
 		if(strstr(data[i],"****************")!=NULL)	{
@@ -1122,55 +1123,63 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 				continue;
 
 		if(bProp[eBasePairs])	{
-			SplitData = split_by_char(data[i], ":");
-			fprintf(f_cum_data[eBasePairs],"%s   %s\n",extract_digits(SplitData[1]),extract_digits(SplitData[3]));
+			SplitData = split_by_char(data[i], ":", &elem);
+			bp1 = extract_digits(SplitData[1]);
+			bp2 = extract_digits(SplitData[3]);
+			fprintf(f_cum_data[eBasePairs],"%s   %s\n",bp1,bp2);
+			//for (j=0; j<elem; j++)
+				//free(SplitData[j]);
 			free(SplitData);
+			free(bp1);
+			free(bp2);
 		}
 
 		if(bProp[eHbond])	{
-			SplitData = split_by_space(data[i]);
-			fprintf(f_cum_data[eHbond],"%s\n",extract_digits(SplitData[2]));
+			SplitData = split_by_space(data[i], NULL);
+			bp1 = extract_digits(SplitData[2]);
+			fprintf(f_cum_data[eHbond],"%s\n", bp1);
 			free(SplitData);
+			free(bp1);
 		}
 
 		if(bProp[eLBP])	{
-			SplitData = split_by_space(data[i]);
+			SplitData = split_by_space(data[i], NULL);
 			fprintf(f_cum_data[eLBP],"%s   %s   %s   %s   %s   %s\n",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7]);
 			free(SplitData);
 		}
 
 		if(bProp[eLBPS])	{
-			SplitData = split_by_space(data[i]);
+			SplitData = split_by_space(data[i], NULL);
 			fprintf(f_cum_data[eLBPS],"%s   %s   %s   %s   %s   %s\n",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7]);
 			free(SplitData);
 		}
 
 		if(bProp[eLBPH])	{
-			SplitData = split_by_space(data[i]);
+			SplitData = split_by_space(data[i], NULL);
 			fprintf(f_cum_data[eLBPH],"%s   %s   %s   %s   %s   %s\n",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7]);
 			free(SplitData);
 		}
 
 		if(bProp[eMgroove])	{
-			SplitData = split_by_space(data[i]);
+			SplitData = split_by_space(data[i], NULL);
 			fprintf(f_cum_data[eMgroove],"%s   %s   %s   %s\n",SplitData[2],SplitData[3],SplitData[4],SplitData[5]);
 			free(SplitData);
 		}
 
 		if(bProp[eHelAxis])	{
-			SplitData = split_by_space(data[i]);
+			SplitData = split_by_space(data[i], NULL);
 			fprintf(f_cum_data[eHelAxis],"%s   %s   %s   %s   %s   %s\n",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7]);
 			free(SplitData);
 		}
 
 		if(bProp[eHelixRad])	{
-			SplitData = split_by_space(data[i]);
+			SplitData = split_by_space(data[i], NULL);
 			fprintf(f_cum_data[eHelixRad],"%s   %s   %s   %s   %s   %s\n",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7]);
 			free(SplitData);
 		}
 
 		if(bProp[eBBnDihedral])	{
-			SplitData = split_by_space(data[i]);
+			SplitData = split_by_space(data[i], NULL);
 			tmp_str = (char *) malloc (80 * sizeof(char));
 			if (bS1)	{
 				sprintf(tmp_str, "%s   %s   %s   %s   %s   %s  %s  ",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7],SplitData[8]);
@@ -1180,7 +1189,7 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 
 			if (bS2)	{
 				sprintf(tmp_str, "%s   %s   %s   %s   %s   %s  %s",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7],SplitData[8]);
-				strcat(two_strand[bp], strdup(tmp_str));
+				strcat(two_strand[bp], tmp_str);
 				bp += 1;
 			}
 			free(SplitData);
@@ -1188,7 +1197,7 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 		}
 
 		if(bProp[eSugarConf])	{
-			SplitData = split_by_space(data[i]);
+			SplitData = split_by_space(data[i], NULL);
 			tmp_str = (char *) malloc (100 * sizeof(char));
 			if (bS1)	{
 				sprintf(tmp_str, "%s   %s   %s   %s   %s   %s  %s  %s  ",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7],SplitData[8],SplitData[9]);
@@ -1198,7 +1207,7 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 
 			if (bS2)	{
 				sprintf(tmp_str, "%s   %s   %s   %s   %s   %s  %s  %s",SplitData[2],SplitData[3],SplitData[4],SplitData[5],SplitData[6],SplitData[7],SplitData[8],SplitData[9]);
-				strcat(two_strand[bp], strdup(tmp_str));
+				strcat(two_strand[bp], tmp_str);
 				bp += 1;
 			}
 			free(SplitData);
@@ -1207,7 +1216,7 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 
 	}
 
-	for(i=0;i<number;i++)
+	for(i=0;i<number+1;i++)
 		free(data[i]);
 	free(data);
 	return num_bp;
