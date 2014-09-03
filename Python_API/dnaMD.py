@@ -91,6 +91,22 @@ class base_pair():
 		self.radS1 = []
 		self.radS2 = []
 
+		self.alpha_s1 = []
+		self.beta_s1 = []
+		self.gamma_s1 = []
+		self.delta_s1 = []
+		self.epsilon_s1 = []
+		self.zeta_s1 = []
+		self.chi_s1 = []
+		
+		self.alpha_s2 = []
+		self.beta_s2 = []
+		self.gamma_s2 = []
+		self.delta_s2 = []
+		self.epsilon_s2 = []
+		self.zeta_s2 = []
+		self.chi_s2 = []
+
 class DNA:
 	"""DNA class stores all data obtained from the input files.
 		
@@ -149,7 +165,21 @@ class DNA:
 					* ``Major Groove Refined``
 					* ``Minor Groove``
 					* ``Minor Groove Refined``
-					
+					* ``alpha S-1``
+					* ``beta S-1``
+					* ``gamma S-1``
+					* ``delta S-1``
+					* ``epsilon S-1``
+					* ``zeta S-1``
+					* ``chi S-1``
+					* ``alpha S-2``
+					* ``beta S-2``
+					* ``gamma S-2``
+					* ``delta S-2``
+					* ``epsilon S-2``
+					* ``zeta S-2``
+					* ``chi S-2``
+
 			* ``bp (1D list) or (1D array)``: base-pairs to analyze
 				Example: ::
 
@@ -475,6 +505,159 @@ class DNA:
 					data.append(self.base_steps[bp_idx[i]].minor_refine)
 					append = True
 		
+		if(parameter=='alpha S-1'):
+			key = 'alpha S-1'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].alpha_s1)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].alpha_s1)
+					append = True
+		
+		if(parameter=='beta S-1'):
+			key = 'beta S-1'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].beta_s1)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].beta_s1)
+					append = True
+		
+		if(parameter=='gamma S-1'):
+			key = 'gamma S-1'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].gamma_s1)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].gamma_s1)
+					append = True
+		
+		if(parameter=='delta S-1'):
+			key = 'delta S-1'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].delta_s1)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].delta_s1)
+					append = True
+		
+		if(parameter=='epsilon S-1'):
+			key = 'epsilon S-1'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].epsilon_s1)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].epsilon_s1)
+					append = True
+		
+		if(parameter=='zeta S-1'):
+			key = 'zeta S-1'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].zeta_s1)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].zeta_s1)
+					append = True
+		
+		if(parameter=='chi S-1'):
+			key = 'chi S-1'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].chi_s1)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].chi_s1)
+					append = True
+		
+		if(parameter=='alpha S-2'):
+			key = 'alpha S-2'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].alpha_s2)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].alpha_s2)
+					append = True
+		
+		if(parameter=='beta S-2'):
+			key = 'beta S-2'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].beta_s2)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].beta_s2)
+					append = True
+		
+		if(parameter=='gamma S-2'):
+			key = 'gamma S-2'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].gamma_s2)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].gamma_s2)
+					append = True
+		
+		if(parameter=='delta S-2'):
+			key = 'delta S-2'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].delta_s2)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].delta_s2)
+					append = True
+		
+		if(parameter=='epsilon S-2'):
+			key = 'epsilon S-2'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].epsilon_s2)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].epsilon_s2)
+					append = True
+		
+		if(parameter=='zeta S-2'):
+			key = 'zeta S-2'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].zeta_s2)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].zeta_s2)
+					append = True
+		
+		if(parameter=='chi S-2'):
+			key = 'chi S-2'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].chi_s2)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].chi_s2)
+					append = True
 		
 		if(empty):
 			raise ValueError('ERROR: The parameter \"{0}\" for base pair/step \"{1}\" is not set/loaded.\n' .format(key,idx+1))
@@ -774,6 +957,125 @@ class DNA:
 				
 				if (3==param_idx[j]) and (data[i][j][0] != None):
 					self.base_steps[bp_idx[i]].major_refine = data[i][j]
+
+	def set_backbone_dihedrals(self, filename, bp, parameters=range(1,15), bp_range=True):
+		"""	To read and store backbone dihedrals (alpha, beta, gamma, delta, epsilon and zeta) and chi dihedral of both strands from an input file.
+
+		.. note::
+
+			* alpha:   O3'(i-1)-P-O5'-C5'
+			* beta:    P-O5'-C5'-C4'
+			* gamma:   O5'-C5'-C4'-C3'
+			* delta:   C5'-C4'-C3'-O3'
+			* epsilon: C4'-C3'-O3'-P(i+1)
+			* zeta:    C3'-O3'-P(i+1)-O5'(i+1)
+			* chi for pyrimidines(Y): O4'-C1'-N1-C2
+			* chi for purines(R): O4'-C1'-N9-C4
+
+		
+		Args:
+		
+			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
+		    
+			* ``bp (1D list) or (1D array)``: base-pairs to analyze
+				Example: ::
+
+							bp = [6]                                # bp_range = False
+							bp = [4,15]                             # bp_range = True
+							bp = range(4,15)                        # bp_range = False
+							bp = np.arange(4,15)                    # bp_range = False
+							bp = [2,5,6,7,9,12,18]                  # bp_range = False
+							
+			
+			* ``parameters (1D list)``: List of numbers corrosponding to base-pairs parameters as follows:
+						
+						* ``Alpha Strand I    ->   1``
+						* ``Beta Strand I     ->   2``
+						* ``Gamma Strand I    ->   3``
+						* ``Delta Strand I    ->   4``
+						* ``Epsilon Strand I  ->   5``
+						* ``Zeta Strand I     ->   6``
+						* ``Chi Strand I      ->   7``
+						* ``Alpha Strand II   ->   8``
+						* ``Beta Strand II    ->   9``
+						* ``Gamma Strand II   ->  10``
+						* ``Delta Strand II   ->  11``
+						* ``Epsilon Strand II ->  12``
+						* ``Zeta Strand II    ->  13``
+						* ``Chi Strand II     ->  14``
+				
+				Example:
+				
+					*For alpha, delta, and zeta of strand I:*
+					
+								``parameters = [1,4,6]``
+		            
+					*For beta, gamma, delta, and epsilon of strand II:*
+		                
+								``parameters = range(9,13)``
+		                
+								``parameters = [9, 10, 11, 12]``
+		
+			* ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
+
+		Return:
+				``None``
+
+		"""
+		if not (isinstance(bp,list) or isinstance(bp,np.ndarray)):
+			raise AssertionError("type %s is not list or np.ndarray" % type(bp))
+		if not (isinstance(parameters,list) or isinstance(parameters, np.ndarray)):
+			raise AssertionError("type %s is not list or np.ndarray" % type(parameters))
+
+		for parameter in parameters:
+			if(parameter>14):
+				print '\nWARNING: number of requested parameters exceeded to {0} as contrast to six !!\n' .format(parameter)
+				print 'Setting number of parameters from one to six\n\n'
+				parameters = range(1,15)
+				break
+
+		data, time = read_param_file(filename,parameters,bp,bp_range)
+		
+		if(len(self.time)==0):
+			self.time = time
+		else:
+			if(len(time)!=len(self.time)):
+				print '\nTime or number of frame mismatch in input files.\n Exiting...\n'
+				exit(1)
+		
+		bp_idx, param_idx = get_idx_of_bp_parameters(bp,parameters,bp_range)	
+		
+		for i in range(len(data)):
+			for j in range(len(data[i])):
+				if (0==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].alpha_s1 = data[i][j]
+				if (1==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].beta_s1 = data[i][j]
+				if (2==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].gamma_s1 = data[i][j]
+				if (3==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].delta_s1 = data[i][j]
+				if (4==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].epsilon_s1 = data[i][j]
+				if (5==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].zeta_s1 = data[i][j]
+				if (6==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].chi_s1 = data[i][j]
+				if (7==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].alpha_s2 = data[i][j]
+				if (8==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].beta_s2 = data[i][j]
+				if (9==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].gamma_s2 = data[i][j]
+				if (10==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].delta_s2 = data[i][j]
+				if (11==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].epsilon_s2 = data[i][j]
+				if (12==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].zeta_s2 = data[i][j]
+				if (13==param_idx[j]) and (data[i][j][0] != None):
+					self.base_pairs[bp_idx[i]].chi_s2 = data[i][j]
+
 
 
 	def set_helical_radius(self, filename, bp, atomname='P', full=False, bp_range=True):
