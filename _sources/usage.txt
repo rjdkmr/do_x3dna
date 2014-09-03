@@ -56,16 +56,16 @@ Options
     
         do_x3dna -s topol.tpr -f check.gro -n index.ndx -noisy
 
-    ``-noisy`` option switch on the output message from the 3DNA package on the display, that would be necessary to troubleshoot problems related to the 3DNA package. Most common problem is the residue names mismatch in input DNA/RNA structure and the 3DNA package dictionary. ``-noisy`` option switch on the output message from the 3DNA package on the display, that would be necessary to troubleshoot problems related to the 3DNA package. Most common problem is the residue names mismatch in input DNA/RNA structure and the 3DNA package dictionary.
+    ``-noisy`` option enables the display of output messages raised by 3DNA tools (``find_pair`` and ``analyze``), and these messages would be necessary to troubleshoot problems related to the 3DNA package. Most common problem is the mismatch of residue names in input DNA/RNA structure and 3DNA package dictionary.
 
 .. note::
     Only PBC corrected trajectory and tpr files should be used as inputs. PBC corrected PDB/GRO file can be used in place of tpr file. Index file **SHOULD BE** used to select ONLY DNA/RNA in the input trajectory file.
 
 .. note::
-    If ``-ref`` option is used, all base-pairs/steps parameters will be calculated on the basis of the structure of the DNA/RNA present in the input tpr/pdb file with ``-s`` option. ``-ref`` option **SHOULD BE** used if output files are further used as input files in Python APIs or Scripts that are provided with do_x3dna package. To analyze the formation or breaking of base-pairs during MD simulations, either ``-noref`` could be used or do not include ``-ref`` option because this option is switched off by default.
+    If ``-ref`` option is used, all structural descriptors are calculated on the basis of the structure of the DNA/RNA present in the input tpr/pdb file, which is provided with ``-s`` option. ``-ref`` option **SHOULD BE** used if output files are further used as input files in `Python APIs <http://rjdkmr.github.io/do_x3dna/apidoc.html>`_. To analyze the formation or breaking of base-pairs during MD simulations, either ``-noref`` could be used or do not include ``-ref`` option because this option is switched-off by default.
 
 .. note::
-    If ``-fit`` is enabled, during fitting procedure the DNA/RNA is translated to origin such that its center of mass is located at the origin. Most of the parameters are unaffected by this fitting, however coordinates of the local helical axis could mismatch with the input coordinates with the DNA/RNA.
+    If ``-fit`` is enabled, the structure of DNA/RNA is fitted on the reference structure, which is provided with ``-s`` option. During fitting procedure, DNA/RNA is translated to origin such that its center of mass is located at the origin. Most of the parameters are unaffected by this fitting procedure, however co-ordinates of the local helical axis could mismatch with the input structure of the DNA/RNA.
 
 *  ``hbond`` option extracts hydrogen bonds for each base pair. A map.log ( ``-g`` ) file is generated containing the base pair information as per index of the hydrogen bond map ( ``-map`` ).
 

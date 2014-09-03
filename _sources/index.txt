@@ -10,7 +10,7 @@ do_x3dna has been developed for analysis of the DNA/RNA dynamics during the mole
 
 From the MD trajectory, several `output files <http://rjdkmr.github.io/do_x3dna/usage.html#output-files>`_ are generated. For easy analysis of the obtained data, do_x3dna package includes a Python code `dnaMD.py <https://github.com/rjdkmr/do_x3dna/blob/master/Python_API/dnaMD.py>`_, which contains several `methods <http://rjdkmr.github.io/do_x3dna/apidoc.html>`_ for the analysis of structural descriptors. 
 
-**Note:** do_x3dna can be used the trajectory files that are obtained from other MD packages such as NAMD and AMBER. Input trajectory files should be converted in to Gromacs format trajectory files. A PDB file could be used in place of a GROMACS *tpr* file.
+**Note:** do_x3dna can be used with trajectory files that are obtained from other MD packages such as NAMD and AMBER. Input trajectory files should be converted in to Gromacs format trajectory files. A PDB file could be used in place of a GROMACS *tpr* file.
 
 
 Example:
