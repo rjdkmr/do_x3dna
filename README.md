@@ -10,7 +10,7 @@ From the MD trajectory, several [output files](http://rjdkmr.github.io/do_x3dna/
 
 To execute do_x3dna, 3DNA package should be installed and `$X3DNA` environment variable (Detail is given in 3DNA manual) should be defined.
 
-<strong> To get detail documentation about the do\_x3dna, please visit  [do\_x3dna home-page](http://rjdkmr.github.io/do_x3dna). </strong>
+<strong> For detailed documentation about the do\_x3dna, please visit  [do\_x3dna home-page](http://rjdkmr.github.io/do_x3dna). </strong>
 
 
 <strong> Please cite the follwoing publication and the current github page:</strong>               
