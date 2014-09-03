@@ -68,6 +68,11 @@ class base_step:
 		self.tip = []
 		self.h_twist = []
 
+		self.major_pp = []
+		self.minor_pp = []
+		self.major_refine = []
+		self.minor_refine = []
+
 		self.hel_Xaxis = []
 		self.hel_Yaxis = []
 		self.hel_Zaxis = []
@@ -140,6 +145,10 @@ class DNA:
 					* ``Helical Z-axis``
 					* ``Radius S-1``
 					* ``Radius S-2``
+					* ``Major Groove``
+					* ``Major Groove Refined``
+					* ``Minor Groove``
+					* ``Minor Groove Refined``
 					
 			* ``bp (1D list) or (1D array)``: base-pairs to analyze
 				Example: ::
@@ -159,17 +168,17 @@ class DNA:
 		bp_idx, dum = get_idx_of_bp_parameters(bp,[],bp_range)
 		append = False
 		empty = False
-		Key = 'dum'
+		key = 'dummy'
 		idx = 0
 		data=[]
 		
 		#Extracting data for given base pairs and parameters combination
 		#Base pair parameters
 		if(parameter=='Shear'):
+			key = 'Shear'
 			for i in range(len(bp_idx)):
 				if (len(self.base_pairs[bp_idx[i]].shear) == 0):
 					empty = True
-					key = 'Shear'
 					idx = bp_idx[i]
 					break
 				else:
@@ -177,10 +186,10 @@ class DNA:
 					append =True
 
 		if(parameter=='Stretch'):
+			key = 'Stretch'
 			for i in range(len(bp_idx)):
 				if (len(self.base_pairs[bp_idx[i]].stretch)==0):
 					empty = True
-					key = 'Stretch'
 					idx = bp_idx[i]
 					break
 				else:
@@ -188,10 +197,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Stagger'):
+			key = 'Stagger'
 			for i in range(len(bp_idx)):
 				if(len(self.base_pairs[bp_idx[i]].stagger)==0):
 					empty = True
-					key = 'Stagger'
 					idx = bp_idx[i]
 					break
 				else:
@@ -199,10 +208,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Buckle'):
+			key = 'Buckle'
 			for i in range(len(bp_idx)):
 				if(len(self.base_pairs[bp_idx[i]].buckle)==0):
 					empty = True
-					key = 'Buckle'
 					idx = bp_idx[i]
 					break
 				else:
@@ -210,10 +219,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Propeller'):
+			key = 'Propeller'
 			for i in range(len(bp_idx)):
 				if(len(self.base_pairs[bp_idx[i]].propeller)==0):
 					empty = True
-					key = 'Propeller'
 					idx = bp_idx[i]
 					break
 				else:
@@ -221,10 +230,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Opening'):
+			key = 'Opening'
 			for i in range(len(bp_idx)):
 				if(len(self.base_pairs[bp_idx[i]].opening)==0):
 					empty = True
-					key = 'Opening'
 					idx = bp_idx[i]
 					break
 				else:
@@ -232,10 +241,10 @@ class DNA:
 					append = True
 		
 		if(parameter=='Radius S-1'):
+			key = 'Radius S-1'
 			for i in range(len(bp_idx)):
 				if(len(self.base_pairs[bp_idx[i]].radS1)==0):
 					empty = True
-					key = 'Radius S-1'
 					idx = bp_idx[i]
 					break
 				else:
@@ -244,10 +253,10 @@ class DNA:
 
 
 		if(parameter=='Radius S-2'):
+			key = 'Radius S-2'
 			for i in range(len(bp_idx)):
 				if(len(self.base_pairs[bp_idx[i]].radS2)==0):
 					empty = True
-					key = 'Radius S-2'
 					idx = bp_idx[i]
 					break
 				else:
@@ -256,10 +265,10 @@ class DNA:
 
 		#Base step parameters
 		if(parameter=='Shift'):
+			key = 'Shift'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].shift)==0):
 					empty = True
-					key = 'Shift'
 					idx = bp_idx[i]
 					break
 				else:
@@ -267,10 +276,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Slide'):
+			key = 'Slide'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].slide)==0):
 					empty = True
-					key = 'Slide'
 					idx = bp_idx[i]
 					break
 				else:
@@ -278,10 +287,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Rise'):
+			key = 'Rise'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].rise)==0):
 					empty = True
-					key = 'Rise'
 					idx = bp_idx[i]
 					break
 				else:
@@ -289,10 +298,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Tilt'):
+			key = 'Tilt'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].tilt)==0):
 					empty = True
-					key = 'Tilt'
 					idx = bp_idx[i]
 					break
 				else:
@@ -300,10 +309,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Roll'):
+			key = 'Roll'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].roll)==0):
 					empty = True
-					key = 'Roll'
 					idx = bp_idx[i]
 					break
 				else:
@@ -311,10 +320,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Twist'):
+			key = 'Twist'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].twist)==0):
 					empty = True
-					key = 'Twist'
 					idx = bp_idx[i]
 					break
 				else:
@@ -323,10 +332,10 @@ class DNA:
 
 		#Base step helical parameters
 		if(parameter=='X-disp'):
+			key = 'X-disp'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].x_disp)==0):
 					empty = True
-					key = 'X-disp'
 					idx = bp_idx[i]
 					break
 				else:
@@ -334,10 +343,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Y-disp'):
+			key = 'Y-disp'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].y_disp)==0):
 					empty = True
-					key = 'Y-disp'
 					idx = bp_idx[i]
 					break
 				else:
@@ -345,10 +354,10 @@ class DNA:
 					append = True
 
 		if(parameter=='h-Rise'):
+			key = 'h-Rise'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].h_rise)==0):
 					empty = True
-					key = 'h-Rise'
 					idx = bp_idx[i]
 					break
 				else:
@@ -356,10 +365,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Inclination'):
+			key = 'Inclination'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].inclination)==0):
 					empty = True
-					key = 'Inclination'
 					idx = bp_idx[i]
 					break
 				else:
@@ -367,10 +376,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Tip'):
+			key = 'Tip'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].tip)==0):
 					empty = True
-					key = 'Tip'
 					idx = bp_idx[i]
 					break
 				else:
@@ -378,10 +387,10 @@ class DNA:
 					append = True
 
 		if(parameter=='h-Twist'):
+			key = 'h-Twist'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].h_twist)==0):
 					empty = True
-					key = 'h-Twist'
 					idx = bp_idx[i]
 					break
 				else:
@@ -389,10 +398,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Helical X-axis'):
+			key = 'Helical X-axis'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].hel_Xaxis)==0):
 					empty = True
-					key = 'Helical X-axis'
 					idx = bp_idx[i]
 					break
 				else:
@@ -400,10 +409,10 @@ class DNA:
 					append = True
 
 		if(parameter=='Helical Y-axis'):
+			key = 'Helical Y-axis'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].hel_Yaxis)==0):
 					empty = True
-					key = 'Helical Y-axis'
 					idx = bp_idx[i]
 					break
 				else:
@@ -411,20 +420,70 @@ class DNA:
 					append = True
 
 		if(parameter=='Helical Z-axis'):
+			key = 'Helical Z-axis'
 			for i in range(len(bp_idx)):
 				if(len(self.base_steps[bp_idx[i]].hel_Zaxis)==0):
 					empty = True
-					key = 'Helical Z-axis'
 					idx = bp_idx[i]
 					break
 				else:
 					data.append(self.base_steps[bp_idx[i]].hel_Zaxis)
 					append = True
 
+		if(parameter=='Major Groove'):
+			key = 'Major Groove'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].major_pp)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].major_pp)
+					append = True
+		
+		if(parameter=='Major Groove Refined'):
+			key = 'Major Groove Refined'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].major_refine)==0):
+					empty = True
+					key = 'Major Groove Refined'
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].major_refine)
+					append = True
+		
+		if(parameter=='Minor Groove'):
+			key = 'Minor Groove'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].minor_pp)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].minor_pp)
+					append = True
+		
+		if(parameter=='Minor Groove Refined'):
+			key = 'Minor Groove Refined'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].minor_refine)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].minor_refine)
+					append = True
+		
+		
 		if(empty):
-			print 'ERROR: The parameter \"{0}\" for base pair/step \"{1}\" is not set/loaded.\n' .format(key,idx+1)
+			raise ValueError('ERROR: The parameter \"{0}\" for base pair/step \"{1}\" is not set/loaded.\n' .format(key,idx+1))
 			exit(1)
 
+		if(key=='dummy'):
+			raise ValueError('ERROR: Incorrect parameter keyword: \"{0}\" .\n' .format(parameter))
+			exit(1)
+		
 		return data, bp_idx
 
 	def time_vs_parameter(self, parameter, bp, merge=False, merge_method='mean'):
@@ -549,7 +608,7 @@ class DNA:
 
 		return np.array(values), density
 
-	def set_base_pair_parameters(self, filename, bp, parameters=range(1,7), bp_range=True):
+	def set_base_pair_parameters(self, filename, bp, parameters=[1,2,3,4,5,6], bp_range=True):
 		"""	To read and store basepairs parameters (shear, stretch, stagger, buckle, propeller and opening) from an input file.
 		
 		Args:
@@ -602,7 +661,7 @@ class DNA:
 			if(parameter>6):
 				print '\nWARNING: number of requested parameters exceeded to {0} as contrast to six !!\n' .format(parameter)
 				print 'Setting number of parameters from one to six\n\n'
-				parameters=range(1,6)
+				parameters = [1, 2, 3, 4, 5, 6]
 				break
 
 		data, time = read_param_file(filename,parameters,bp,bp_range)
@@ -630,6 +689,91 @@ class DNA:
 					self.base_pairs[bp_idx[i]].propeller = data[i][j]
 				if(5==param_idx[j]):
 					self.base_pairs[bp_idx[i]].opening = data[i][j]
+
+
+	def set_major_minor_groove(self, filename, bp_step, parameters=[1,2,3,4], step_range=True):
+		"""	To read and store Major and Minor grooves from an input file.
+
+			* Minor groove : direct P-P distance
+			* Minor Grrove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones
+			* Major groove : direct P-P distance
+			* Major Grrove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones
+			
+			.. warning::
+
+				* The major and minor grooves (direct P-P) cannot be calculated for first and last two base-steps
+				* The major and minor grooves (refined P-P) cannot be calculated for first and last three base-steps
+
+		Args:
+		
+			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
+		    
+			* ``bp_step (1D list) or (1D array)``: bases-steps to analyze
+				Example: ::
+
+							bp_step = [6]                                # step_range = False
+							bp_step = [4,15]                             # step_range = True
+							bp_step = range(4,15)                        # step_range = False
+							bp_step = np.arange(4,15)                    # step_range = False
+							bp_step = [2,5,6,7,9,12,18]                  # step_range = False
+							
+			
+			* ``parameters (1D list)``: List of numbers corrosponding to base-pairs parameters as follows:
+						
+						* ``Minor Groove          ->  1``
+						* ``Minor Grrove Refined  ->  2``
+						* ``Major Groove          ->  3``
+						* ``Major Grrove Refined  ->  4``
+				
+				Example:
+				
+					*For minor (refined) and major (refined) grooves:*
+					
+								``parameters = [2,4]``
+		            
+		
+			* ``step_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array
+
+		Return:
+				``None``
+
+		"""
+		if not (isinstance(bp_step,list) or isinstance(bp_step,np.ndarray)):
+			raise AssertionError("type %s is not list or np.ndarray" % type(bp_step))
+		if not (isinstance(parameters,list) or isinstance(parameters, np.ndarray)):
+			raise AssertionError("type %s is not list or np.ndarray" % type(parameters))
+
+		for parameter in parameters:
+			if(parameter>4):
+				print '\nWARNING: number of requested parameters exceeded to {0} as contrast to four !!\n' .format(parameter)
+				print 'Setting number of parameters from one to six\n\n'
+				parameters = [1, 2, 3, 4]
+				break
+
+		data, time = read_param_file(filename, parameters, bp_step, step_range, word=True)
+		
+		if(len(self.time)==0):
+			self.time = time
+		else:
+			if(len(time)!=len(self.time)):
+				print '\nTime or number of frame mismatch in input files.\n Exiting...\n'
+				exit(1)
+		
+		bp_idx, param_idx = get_idx_of_bp_parameters(bp_step, parameters, step_range)	
+		
+		for i in range(len(data)):
+			for j in range(len(data[i])):
+				if (0==param_idx[j]) and (data[i][j][0] != None):
+					self.base_steps[bp_idx[i]].minor_pp = data[i][j]
+						
+				if (1==param_idx[j]) and (data[i][j][0] != None):
+					self.base_steps[bp_idx[i]].minor_refine = data[i][j]
+				
+				if (2==param_idx[j]) and (data[i][j][0] != None):
+					self.base_steps[bp_idx[i]].major_pp = data[i][j]
+				
+				if (3==param_idx[j]) and (data[i][j][0] != None):
+					self.base_steps[bp_idx[i]].major_refine = data[i][j]
 
 
 	def set_helical_radius(self, filename, bp, atomname='P', full=False, bp_range=True):
@@ -694,21 +838,21 @@ class DNA:
 				self.base_pairs[bp_idx[i]].radS1 = data[i][2]
 				self.base_pairs[bp_idx[i]].radS2 = data[i][5]
 
-	def set_base_step_parameters(self, filename, bp_step, parameters=range(1,7), step_range=True,helical=False):
+	def set_base_step_parameters(self, filename, bp_step, parameters=[1,2,3,4,5,6], step_range=True,helical=False):
 		"""	To read and store base-step (Shift, Slide, Rise, Tilt, Roll and Twist) and helical base-step (X-disp, Y-disp, h-Rise, Inclination, Tip and h-Twist) parameters from an input file
 		
 		Args:
 		
 			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. ``L-BPS_g.dat`` or ``L-BPH_g.dat``
 		    
-			* ``bp (1D list) or (1D array)``: base-pairs to analyze
+			* ``bp_step (1D list) or (1D array)``: base-steps to analyze
 				Example: ::
 
-							bp = [6]                                # bp_range = False
-							bp = [4,15]                             # bp_range = True
-							bp = range(4,15)                        # bp_range = False
-							bp = np.arange(4,15)                    # bp_range = False
-							bp = [2,5,6,7,9,12,18]                  # bp_range = False
+							bp_step = [6]                                # step_range = False
+							bp_step = [4,15]                             # step_range = True
+							bp_step = range(4,15)                        # step_range = False
+							bp_step = np.arange(4,15)                    # step_range = False
+							bp_step = [2,5,6,7,9,12,18]                  # step_range = False
 							
 			
 			* ``parameters (1D list)``: List of numbers corrosponding to base-steps parameters as follows:
@@ -741,7 +885,7 @@ class DNA:
 								
 								``parameters = [2,3,4,5]``
 			
-			* ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
+			* ``step_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array
 
 		Return:
 				``None``
@@ -1241,7 +1385,7 @@ def read_data_file(FileName,cols_equal=True):
 	data = np.array(data).T
 	return data
 
-def get_idx_of_bp_parameters(bp,parameters,bp_range):
+def get_idx_of_bp_parameters(bp, parameters, bp_range):
 	param_idx = []
 	if(bp_range):
 		bp_idx = np.arange(bp[0]-1,bp[1])
@@ -1254,7 +1398,7 @@ def get_idx_of_bp_parameters(bp,parameters,bp_range):
 	
 	return bp_idx, param_idx
 
-def read_param_file(FileName,parameters,bp,bp_range):
+def read_param_file(FileName,parameters, bp, bp_range, word=False):
 
 	sys.stdout.write("\nReading file : %s\n" % FileName)
 	sys.stdout.flush()
@@ -1310,7 +1454,17 @@ def read_param_file(FileName,parameters,bp,bp_range):
 		if(re.match('#',line)!=None):
 			continue
 		
-		block.append(map(float,line.split()))
+		if not word:
+			block.append(map(float,line.split()))
+		else:
+			temp = []
+			split_line = line.split()
+			for word in split_line:
+				if word != '---':
+					temp.append(float(word))
+				else:
+					temp.append(None)
+			block.append(temp)
 	
 	#For last frame
 	data.append(get_frame_data(block,param_idx,bp_idx))
