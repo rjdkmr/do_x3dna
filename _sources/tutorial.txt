@@ -10,3 +10,5 @@ Tutorial
     Analysis of local base-steps parameters <base_steps_tutorial>
 
     Analysis of local helical parameters <helical_steps_tutorial>
+    
+    Analysis of major and minor grooves <major_minor_groove_tutorial>

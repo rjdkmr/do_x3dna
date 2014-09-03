@@ -189,6 +189,10 @@
 <li><tt class="docutils literal"><span class="pre">Helical</span> <span class="pre">Z-axis</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">Radius</span> <span class="pre">S-1</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">Radius</span> <span class="pre">S-2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Major</span> <span class="pre">Groove</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Major</span> <span class="pre">Groove</span> <span class="pre">Refined</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Minor</span> <span class="pre">Groove</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Minor</span> <span class="pre">Groove</span> <span class="pre">Refined</span></tt></li>
 </ul>
 </dd>
 </dl>
@@ -340,13 +344,13 @@
 <li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Input file, which is generated from do_x3dna. e.g. <tt class="docutils literal"><span class="pre">L-BPS_g.dat</span></tt> or <tt class="docutils literal"><span class="pre">L-BPH_g.dat</span></tt></p>
 </li>
 <li><dl class="first docutils">
-<dt><tt class="docutils literal"><span class="pre">bp</span> <span class="pre">(1D</span> <span class="pre">list)</span> <span class="pre">or</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: base-pairs to analyze</dt>
+<dt><tt class="docutils literal"><span class="pre">bp_step</span> <span class="pre">(1D</span> <span class="pre">list)</span> <span class="pre">or</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: base-steps to analyze</dt>
 <dd><p class="first">Example:</p>
-<div class="last highlight-python"><div class="highlight"><pre><span class="n">bp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">]</span>                                <span class="c"># bp_range = False</span>
-<span class="n">bp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>                             <span class="c"># bp_range = True</span>
-<span class="n">bp</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>                        <span class="c"># bp_range = False</span>
-<span class="n">bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>                    <span class="c"># bp_range = False</span>
-<span class="n">bp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">18</span><span class="p">]</span>                  <span class="c"># bp_range = False</span>
+<div class="last highlight-python"><div class="highlight"><pre><span class="n">bp_step</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">]</span>                                <span class="c"># step_range = False</span>
+<span class="n">bp_step</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>                             <span class="c"># step_range = True</span>
+<span class="n">bp_step</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>                        <span class="c"># step_range = False</span>
+<span class="n">bp_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>                    <span class="c"># step_range = False</span>
+<span class="n">bp_step</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">18</span><span class="p">]</span>                  <span class="c"># step_range = False</span>
 </pre></div>
 </div>
 </dd>
@@ -390,7 +394,7 @@
 </div></blockquote>
 </div></blockquote>
 </li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">bp_range</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=True</span></tt>: As shown above, if <tt class="docutils literal"><span class="pre">True</span></tt>, bp is taken as a range otherwise list or numpy array</p>
+<li><p class="first"><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=True</span></tt>: As shown above, if <tt class="docutils literal"><span class="pre">True</span></tt>, bp_step is taken as a range otherwise list or numpy array</p>
 </li>
 </ul>
 </div></blockquote>
@@ -478,6 +482,72 @@
 </div></blockquote>
 <dl class="docutils">
 <dt>Return: </dt>
+<dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dnaMD.DNA.set_major_minor_groove">
+<tt class="descname">set_major_minor_groove</tt><big>(</big><em>filename, bp_step, parameters=[1, 2, 3, 4], step_range=True</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.set_major_minor_groove" title="Permalink to this definition">¶</a></dt>
+<dd><p>To read and store Major and Minor grooves from an input file.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Minor groove : direct P-P distance</li>
+<li>Minor Grrove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones</li>
+<li>Major groove : direct P-P distance</li>
+<li>Major Grrove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<ul class="last simple">
+<li>The major and minor grooves (direct P-P) cannot be calculated for first and last two base-steps</li>
+<li>The major and minor grooves (refined P-P) cannot be calculated for first and last three base-steps</li>
+</ul>
+</div>
+</div></blockquote>
+<p>Args:</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat</p>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">bp_step</span> <span class="pre">(1D</span> <span class="pre">list)</span> <span class="pre">or</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: bases-steps to analyze</dt>
+<dd><p class="first">Example:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="n">bp_step</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">]</span>                                <span class="c"># step_range = False</span>
+<span class="n">bp_step</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>                             <span class="c"># step_range = True</span>
+<span class="n">bp_step</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>                        <span class="c"># step_range = False</span>
+<span class="n">bp_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>                    <span class="c"># step_range = False</span>
+<span class="n">bp_step</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">18</span><span class="p">]</span>                  <span class="c"># step_range = False</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">parameters</span> <span class="pre">(1D</span> <span class="pre">list)</span></tt>: List of numbers corrosponding to base-pairs parameters as follows:</p>
+<blockquote>
+<div><blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Minor</span> <span class="pre">Groove</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp; <span class="pre">1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Minor</span> <span class="pre">Grrove</span> <span class="pre">Refined</span>&nbsp; <span class="pre">-&gt;</span>&nbsp; <span class="pre">2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Major</span> <span class="pre">Groove</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp; <span class="pre">3</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Major</span> <span class="pre">Grrove</span> <span class="pre">Refined</span>&nbsp; <span class="pre">-&gt;</span>&nbsp; <span class="pre">4</span></tt></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<blockquote>
+<div><p><em>For minor (refined) and major (refined) grooves:</em></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">parameters</span> <span class="pre">=</span> <span class="pre">[2,4]</span></tt></p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=True</span></tt>: As shown above, if <tt class="docutils literal"><span class="pre">True</span></tt>, bp_step is taken as a range otherwise list or numpy array</p>
+</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt>Return:</dt>
 <dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
 </dl>
 </dd></dl>

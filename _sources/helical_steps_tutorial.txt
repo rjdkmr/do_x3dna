@@ -226,24 +226,24 @@ the given base-pairs/step or segment
 Distribution of local helical parameters during MD simulations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  As shown in above plot of Time vs Rise, comparison between bound and
-   free DNA is very difficult. Therefore, to compare the parameters of
-   either different DNAs or same DNAs in different environment or
-   different segment of same DNAs, the distribution of parameters over
-   the MD trajectory are sometime useful.
+-  As shown in above plot of Time vs Helical Rise, comparison between
+   bound and free DNA is very difficult. Therefore, to compare the
+   parameters of either different DNAs or same DNAs in different
+   environment or different segment of same DNAs, the distribution of
+   parameters over the MD trajectory are sometime useful.
 
 -  The distribution could be calculated using the function
-   `**``dnaMD.DNA.parameter_distribution(...)``** <http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.parameter_distribution>`__
+   `dnaMD.DNA.parameter\_distribution(...) <http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.parameter_distribution>`__
    as shown in the following examples.
 
 -  The normalized distribution is calculated using
-   `**``numpy.histogram(...)``** <http://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html>`__.
+   `numpy.histogram(...) <http://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html>`__.
 
 --------------
 
 .. code:: python
 
-    #### Helical Rise distribution for 25-40 bp segment
+    #### Helical Rise distribution for 20-45 bp segment
     plt.title('Helical Rise distribution for 20-45 bp segment')
     
     ### Bound DNA ###

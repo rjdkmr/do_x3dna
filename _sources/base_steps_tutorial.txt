@@ -231,17 +231,17 @@ Distribution of local base-steps parameters during MD simulations
    the MD trajectory are sometime useful.
 
 -  The distribution could be calculated using the function
-   `**``dnaMD.DNA.parameter_distribution(...)``** <http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.parameter_distribution>`__
+   `dnaMD.DNA.parameter\_distribution(...) <http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.parameter_distribution>`__
    as shown in the following examples.
 
 -  The normalized distribution is calculated using
-   `**``numpy.histogram(...)``** <http://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html>`__.
+   `numpy.histogram(...) <http://docs.scipy.org/doc/numpy/reference/generated/numpy.histogram.html>`__.
 
 --------------
 
 .. code:: python
 
-    #### Rise distribution for 25-40 bp segment
+    #### Rise distribution for 20-45 bp segment
     plt.title('Rise distribution for 20-45 bp segment')
     
     ### Bound DNA ###
