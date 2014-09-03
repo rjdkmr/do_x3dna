@@ -193,6 +193,20 @@
 <li><tt class="docutils literal"><span class="pre">Major</span> <span class="pre">Groove</span> <span class="pre">Refined</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">Minor</span> <span class="pre">Groove</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">Minor</span> <span class="pre">Groove</span> <span class="pre">Refined</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">alpha</span> <span class="pre">S-1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">beta</span> <span class="pre">S-1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">gamma</span> <span class="pre">S-1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">delta</span> <span class="pre">S-1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">epsilon</span> <span class="pre">S-1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">zeta</span> <span class="pre">S-1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">chi</span> <span class="pre">S-1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">alpha</span> <span class="pre">S-2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">beta</span> <span class="pre">S-2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">gamma</span> <span class="pre">S-2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">delta</span> <span class="pre">S-2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">epsilon</span> <span class="pre">S-2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">zeta</span> <span class="pre">S-2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">chi</span> <span class="pre">S-2</span></tt></li>
 </ul>
 </dd>
 </dl>
@@ -273,6 +287,85 @@
 <li><tt class="docutils literal"><span class="pre">density</span>&nbsp; <span class="pre">(1D</span> <span class="pre">array)</span></tt>: array containing density for respective parameter values</li>
 </ul>
 </dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dnaMD.DNA.set_backbone_dihedrals">
+<tt class="descname">set_backbone_dihedrals</tt><big>(</big><em>filename, bp, parameters=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], bp_range=True</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.set_backbone_dihedrals" title="Permalink to this definition">¶</a></dt>
+<dd><p>To read and store backbone dihedrals (alpha, beta, gamma, delta, epsilon and zeta) and chi dihedral of both strands from an input file.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>alpha:   O3&#8217;(i-1)-P-O5&#8217;-C5&#8217;</li>
+<li>beta:    P-O5&#8217;-C5&#8217;-C4&#8217;</li>
+<li>gamma:   O5&#8217;-C5&#8217;-C4&#8217;-C3&#8217;</li>
+<li>delta:   C5&#8217;-C4&#8217;-C3&#8217;-O3&#8217;</li>
+<li>epsilon: C4&#8217;-C3&#8217;-O3&#8217;-P(i+1)</li>
+<li>zeta:    C3&#8217;-O3&#8217;-P(i+1)-O5&#8217;(i+1)</li>
+<li>chi for pyrimidines(Y): O4&#8217;-C1&#8217;-N1-C2</li>
+<li>chi for purines(R): O4&#8217;-C1&#8217;-N9-C4</li>
+</ul>
+</div>
+<p>Args:</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat</p>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">bp</span> <span class="pre">(1D</span> <span class="pre">list)</span> <span class="pre">or</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: base-pairs to analyze</dt>
+<dd><p class="first">Example:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="n">bp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">]</span>                                <span class="c"># bp_range = False</span>
+<span class="n">bp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>                             <span class="c"># bp_range = True</span>
+<span class="n">bp</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>                        <span class="c"># bp_range = False</span>
+<span class="n">bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>                    <span class="c"># bp_range = False</span>
+<span class="n">bp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">18</span><span class="p">]</span>                  <span class="c"># bp_range = False</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">parameters</span> <span class="pre">(1D</span> <span class="pre">list)</span></tt>: List of numbers corrosponding to base-pairs parameters as follows:</p>
+<blockquote>
+<div><blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Alpha</span> <span class="pre">Strand</span> <span class="pre">I</span>&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp;&nbsp; <span class="pre">1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Beta</span> <span class="pre">Strand</span> <span class="pre">I</span>&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp;&nbsp; <span class="pre">2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Gamma</span> <span class="pre">Strand</span> <span class="pre">I</span>&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp;&nbsp; <span class="pre">3</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Delta</span> <span class="pre">Strand</span> <span class="pre">I</span>&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp;&nbsp; <span class="pre">4</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Epsilon</span> <span class="pre">Strand</span> <span class="pre">I</span>&nbsp; <span class="pre">-&gt;</span>&nbsp;&nbsp; <span class="pre">5</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Zeta</span> <span class="pre">Strand</span> <span class="pre">I</span>&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp;&nbsp; <span class="pre">6</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Chi</span> <span class="pre">Strand</span> <span class="pre">I</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp;&nbsp; <span class="pre">7</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Alpha</span> <span class="pre">Strand</span> <span class="pre">II</span>&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp;&nbsp; <span class="pre">8</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Beta</span> <span class="pre">Strand</span> <span class="pre">II</span>&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp;&nbsp; <span class="pre">9</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Gamma</span> <span class="pre">Strand</span> <span class="pre">II</span>&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp; <span class="pre">10</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Delta</span> <span class="pre">Strand</span> <span class="pre">II</span>&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp; <span class="pre">11</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Epsilon</span> <span class="pre">Strand</span> <span class="pre">II</span> <span class="pre">-&gt;</span>&nbsp; <span class="pre">12</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Zeta</span> <span class="pre">Strand</span> <span class="pre">II</span>&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp; <span class="pre">13</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Chi</span> <span class="pre">Strand</span> <span class="pre">II</span>&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">-&gt;</span>&nbsp; <span class="pre">14</span></tt></li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<blockquote>
+<div><p><em>For alpha, delta, and zeta of strand I:</em></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">parameters</span> <span class="pre">=</span> <span class="pre">[1,4,6]</span></tt></p>
+</div></blockquote>
+<p><em>For beta, gamma, delta, and epsilon of strand II:</em></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">parameters</span> <span class="pre">=</span> <span class="pre">range(9,13)</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">parameters</span> <span class="pre">=</span> <span class="pre">[9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12]</span></tt></p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">bp_range</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=True</span></tt>: As shown above, if <tt class="docutils literal"><span class="pre">True</span></tt>, bp is taken as a range otherwise list or numpy array</p>
+</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
 </dl>
 </dd></dl>
 
