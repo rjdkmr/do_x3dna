@@ -3,12 +3,28 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. |3DNA package| raw:: html
+
+   <a href="http://x3dna.org" target="_blank">3DNA package</a>
+
+.. |dnaMD.py| raw:: html
+
+   <a href="https://github.com/rjdkmr/do_x3dna/blob/master/Python_API/dnaMD.py" target="_blank">dnaMD.py</a>
+
+.. |mitochondiral DNA| raw:: html
+   
+   <a href="http://pdb.org/pdb/explore/explore.do?structureId=3tmm" target="_blank">mitochondiral DNA</a>
+
+.. |nucleosome| raw:: html
+   
+   <a href="http://pdb.org/pdb/explore/explore.do?structureId=3Ut9" target="_blank">mitochondiral DNA</a>
+
 Introduction
 ============
 
-do_x3dna has been developed for analysis of the DNA/RNA dynamics during the molecular dynamics simulations. It uses `3DNA package <http://x3dna.org>`_ to calculate several structural descriptors of DNA/RNA from the GROMACS MD trajectory. It executes 3DNA tools to calculate these descriptors and subsequently, extracts these output and saves in to external output files as a function of time.
+do_x3dna has been developed for analysis of the DNA/RNA dynamics during the molecular dynamics simulations. It uses |3DNA package| to calculate several structural descriptors of DNA/RNA from the GROMACS MD trajectory. It executes 3DNA tools to calculate these descriptors and subsequently, extracts these output and saves in to external output files as a function of time.
 
-From the MD trajectory, several `output files <http://rjdkmr.github.io/do_x3dna/usage.html#output-files>`_ are generated. For easy analysis of the obtained data, do_x3dna package includes a Python code `dnaMD.py <https://github.com/rjdkmr/do_x3dna/blob/master/Python_API/dnaMD.py>`_, which contains several `methods <http://rjdkmr.github.io/do_x3dna/apidoc.html>`_ for the analysis of structural descriptors. 
+From the MD trajectory, several `output files <http://rjdkmr.github.io/do_x3dna/usage.html#output-files>`_ are generated. For easy analysis of the obtained data, do_x3dna package includes a Python code |dnaMD.py|, which contains several `methods <http://rjdkmr.github.io/do_x3dna/apidoc.html>`_ for the analysis of structural descriptors. 
 
 **Note:** do_x3dna can be used with trajectory files that are obtained from other MD packages such as NAMD and AMBER. Input trajectory files should be converted in to Gromacs format trajectory files. A PDB file could be used in place of a GROMACS *tpr* file.
 
@@ -16,7 +32,7 @@ From the MD trajectory, several `output files <http://rjdkmr.github.io/do_x3dna/
 Example:
 --------
 
-* Bending in the helical axis of a `mitochondiral DNA <http://pdb.org/pdb/explore/explore.do?structureId=3tmm>`_:
+* Bending in the helical axis of a |mitochondiral DNA|:
 
 .. image:: ./images/p3tmm.png
    :scale: 60 %
@@ -24,7 +40,7 @@ Example:
 
 -------
 
-* Bending in the helical axis of a DNA in the `nucleosome <http://pdb.org/pdb/explore/explore.do?structureId=3Ut9>`_:
+* Bending in the helical axis of a DNA in the |nucleosome|:
 
 .. image:: ./images/p3ut9.png
    :scale: 50 %
@@ -50,6 +66,8 @@ Contents
    Usage <usage>
    Python API <apidoc>
    Python API Tutorial <tutorial>
+   View on GitHub <https://github.com/rjdkmr/do_x3dna>
+
 
 Indices and tables
 ------------------

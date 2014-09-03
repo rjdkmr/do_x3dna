@@ -1,10 +1,12 @@
-.. _3DNA package: http://www.x3dna.org
+.. |3DNA package| raw:: html
+   
+    <a href="http://www.x3dna.org" target="_blank">3DNA package</a>
 
 Usage
 =====
 
 .. note::
-   To execute do_x3dna, `3DNA package`_ should be installed and ``$X3DNA`` environment variable (Detail is given in 3DNA manual) should be defined.
+   To execute do_x3dna, |3DNA package| should be installed and ``$X3DNA`` environment variable (Detail is given in 3DNA manual) should be defined.
 
 
 ::
