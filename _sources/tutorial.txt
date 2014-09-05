@@ -12,3 +12,5 @@ Tutorial
     Analysis of local helical parameters <helical_steps_tutorial>
     
     Analysis of major and minor grooves <major_minor_groove_tutorial>
+    
+    Analysis of helical axis <helical_axis_tutorial>

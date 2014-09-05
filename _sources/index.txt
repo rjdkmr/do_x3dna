@@ -43,7 +43,7 @@ Example:
 * Bending in the helical axis of a DNA in the |nucleosome|:
 
 .. image:: ./images/p3ut9.png
-   :scale: 50 %
+   :scale: 80 %
    :align: center
 
 --------

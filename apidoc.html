@@ -78,17 +78,171 @@
 <dt id="dnaMD.DNA">
 <em class="property">class </em><tt class="descclassname">dnaMD.</tt><tt class="descname">DNA</tt><big>(</big><em>num_bp</em><big>)</big><a class="headerlink" href="#dnaMD.DNA" title="Permalink to this definition">¶</a></dt>
 <dd><p>DNA class stores all data obtained from the input files.</p>
-<p><em>To initialize this class:</em></p>
+<p><strong>To initialize this class:</strong></p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">dna</span> <span class="o">=</span> <span class="n">DNA</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>       <span class="c"># 60 is the number of basepairs</span>
 </pre></div>
 </div>
 <p>This class also contains several methods (functions) that are discussed in following sections.</p>
 <dl class="method">
+<dt id="dnaMD.DNA.calculate_angle_bw_tangents">
+<tt class="descname">calculate_angle_bw_tangents</tt><big>(</big><em>base_step</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.calculate_angle_bw_tangents" title="Permalink to this definition">¶</a></dt>
+<dd><p>To calculate angle (Radian) between two tangent vectors of smoothed helical axis.</p>
+<dl class="docutils">
+<dt><strong>Arguments:</strong></dt>
+<dd><ul class="first last">
+<li><p class="first"><tt class="docutils literal"><span class="pre">base_step</span> <span class="pre">(1D</span> <span class="pre">list)</span></tt>: List of two base-steps for which angle will be calculated.</p>
+<blockquote>
+<div><p><em>Example:</em></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">[5,</span> <span class="pre">50]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">#</span> <span class="pre">Calculate</span> <span class="pre">angle</span> <span class="pre">between</span> <span class="pre">tangent</span> <span class="pre">vectors</span> <span class="pre">of</span> <span class="pre">5th</span> <span class="pre">and</span> <span class="pre">50th</span> <span class="pre">base-steps</span></tt></p>
+</div></blockquote>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+<dt><strong>Returns:</strong></dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">angle</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: Array of calculated angle of length is equal to number of frames.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dnaMD.DNA.calculate_curvature_tangent">
+<tt class="descname">calculate_curvature_tangent</tt><big>(</big><em>step_range=False</em>, <em>step=None</em>, <em>store_tangent=False</em>, <em>filename='curvature_axis.pdb'</em>, <em>write_pdb=False</em>, <em>scale=1</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.calculate_curvature_tangent" title="Permalink to this definition">¶</a></dt>
+<dd><p>To calculate curvatures and tangent vectors along the helical axis. The curvature and tangent vectors are calculated using Frenet-Serret formula. The calculated values are stored in DNA object.</p>
+<p><strong>Arguments:</strong></p>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">(bool)</span></tt>:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">=</span> <span class="pre">True</span></tt> : Calculate curvature and tangent vectors for the given range of base-steps</li>
+<li><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">=</span> <span class="pre">False</span></tt>: Calculate curvature and tangent vectors for entire DNA. If smoothed helical-axis of any base-step will be found to be not available, error will be raised.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">step</span> <span class="pre">(list)</span></tt>: list containing lower and higher limit of base-steps range</dt>
+<dd><blockquote class="first">
+<div><ul class="simple">
+<li>This option only works with <tt class="docutils literal"><span class="pre">step_range=True</span></tt>.</li>
+<li>This list should not contain more than two number.</li>
+<li>First number should be less than second number.</li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt><em>For base-step 4 to 15</em>:</dt>
+<dd><p class="first last"><tt class="docutils literal"><span class="pre">step</span> <span class="pre">=</span> <span class="pre">[4,15]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">#</span> <span class="pre">step_range</span> <span class="pre">=</span> <span class="pre">True</span></tt></p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">store_tangent</span> <span class="pre">(bool)</span></tt>:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">store_tangent</span> <span class="pre">=</span> <span class="pre">True</span></tt> : The calculated tangent vectors will be stored for later use.</li>
+<li><tt class="docutils literal"><span class="pre">store_tangent</span> <span class="pre">=</span> <span class="pre">False</span></tt>:  The calculated tangent vectors will be discarded.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Name of a PDB format file, which will be generated if <tt class="docutils literal"><span class="pre">write_pdb</span> <span class="pre">=</span> <span class="pre">True</span></tt>. This is a trajectory file, which contains coordinates of the smoothed axis and its b-factor column stores the value of curvature. Therefore, smoothed helical axis could be visualized in color as a function of curvature.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">write_pdb</span> <span class="pre">(bool)</span></tt>: If <tt class="docutils literal"><span class="pre">True</span></tt>, a PDB format file of name <tt class="docutils literal"><span class="pre">filename</span> <span class="pre">=</span> <span class="pre">'curvature_axis.pdb'</span></tt> will be generated. See above for description of this file.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">scale</span> <span class="pre">(int)</span></tt>: The calculated curvature is multiplied by this value. This multiplication will be only done when <tt class="docutils literal"><span class="pre">write_pdb</span> <span class="pre">=</span> <span class="pre">False</span></tt> and scaled value of curvature will be written in PDB file. However, the scaling does not affect the curvature stored in the DNA object that could be used later for analysis.</p>
+</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt><strong>Returns:</strong></dt>
+<dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dnaMD.DNA.generate_smooth_axis">
+<tt class="descname">generate_smooth_axis</tt><big>(</big><em>step_range=False</em>, <em>step=None</em>, <em>smooth=1000</em>, <em>spline=3</em>, <em>fill_point=6</em>, <em>write_pdb=False</em>, <em>filename='helical_axis.pdb'</em>, <em>orig_axis_pdb=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.generate_smooth_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>To smoothen the helical axis using spline interpolation.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function requires <a class="reference external" href="http://www.scipy.org/">SciPy package</a>.</p>
+</div>
+<p><strong>Arguments:</strong></p>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">(bool)</span></tt>:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">=</span> <span class="pre">True</span></tt> : Smoothen axis for the given range of base-steps</li>
+<li><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">=</span> <span class="pre">False</span></tt>: Smoothen axis for entire DNA. If original helical-axis of any base-step will be found to be not available, error will be raised.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">step</span> <span class="pre">(list)</span></tt>: list containing lower and higher limit of base-steps range</dt>
+<dd><blockquote class="first">
+<div><ul class="simple">
+<li>This option only works with <tt class="docutils literal"><span class="pre">step_range=True</span></tt>.</li>
+<li>This list should not contain more than two number.</li>
+<li>First number should be less than second number.</li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt><em>For base-step 4 to 15</em>:</dt>
+<dd><p class="first last"><tt class="docutils literal"><span class="pre">step</span> <span class="pre">=</span> <span class="pre">[4,15]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">#</span> <span class="pre">step_range</span> <span class="pre">=</span> <span class="pre">True</span></tt></p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">smooth</span> <span class="pre">(float)</span></tt>: A smoothing condition. For more details, see about <tt class="docutils literal"><span class="pre">s</span> <span class="pre">=</span> <span class="pre">None</span></tt>, which is paased into  <a class="reference external" href="http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html#scipy.interpolate.splprep">scipy.interpolate.splprep()</a> method. </dt>
+<dd><div class="first last admonition warning">
+<p class="first admonition-title">Warning</p>
+<ul class="last simple">
+<li>Lower value may lead to an artifact of local sharp kink in the smoothed axis.</li>
+<li>Higher value may lead to the calculation of wrong helical axis.</li>
+</ul>
+</div>
+</dd>
+</dl>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">spline</span> <span class="pre">(int)</span></tt>: Degree of spline. For more details, see about <tt class="docutils literal"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">3</span></tt>, which is paased into  <a class="reference external" href="http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html#scipy.interpolate.splprep">scipy.interpolate.splprep()</a> method.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">fill_point</span> <span class="pre">(int)</span></tt>: Number of intrapolated points between two adjacent helical-axis coordinates.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">write_pdb</span> <span class="pre">(bool)</span></tt>: If <tt class="docutils literal"><span class="pre">True</span></tt>, a PDB format file of name <tt class="docutils literal"><span class="pre">filename</span> <span class="pre">=</span> <span class="pre">'helical_axis.pdb'</span></tt> will be generated. See below for description of this file.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Name of a PDB format file, which will be generated if <tt class="docutils literal"><span class="pre">write_pdb</span> <span class="pre">=</span> <span class="pre">True</span></tt>. This is a trajectory file, which contains coordinates of the smoothed axis  as a <strong>Chain A</strong>. If <tt class="docutils literal"><span class="pre">orig_axis_pdb</span> <span class="pre">=</span> <span class="pre">True</span></tt>, coordinates of the original axis (output from <tt class="docutils literal"><span class="pre">do_x3dna</span></tt>) will be also dumped as <strong>Chain B</strong> in this trajectory file.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">orig_axis_pdb</span> <span class="pre">(bool)</span></tt>: If <tt class="docutils literal"><span class="pre">True</span></tt>, coordinates of the original axis (output from <tt class="docutils literal"><span class="pre">do_x3dna</span></tt>) will be dumped as <strong>Chain B</strong> in the PDB trajectory file. It might be useful to compare the smoothened and original axis for optimization of smoothness.</p>
+</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt><strong>Returns:</strong></dt>
+<dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="dnaMD.DNA.get_mean_error">
 <tt class="descname">get_mean_error</tt><big>(</big><em>bp</em>, <em>parameter</em>, <em>err_type='std'</em>, <em>bp_range=True</em>, <em>merge_bp=1</em>, <em>merge_method='mean'</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.get_mean_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>To calculate average and error of the given parameter for the gieven set of base-pairs/steps</p>
 <dl class="docutils">
-<dt>Args:</dt>
+<dt><strong>Arguments:</strong></dt>
 <dd><ul class="first last">
 <li><dl class="first docutils">
 <dt><tt class="docutils literal"><span class="pre">bp</span> <span class="pre">(1D</span> <span class="pre">list)</span> <span class="pre">or</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: base-pairs or base-steps to analyze</dt>
@@ -144,7 +298,7 @@
 </li>
 </ul>
 </dd>
-<dt>Returns <span class="classifier-delimiter">:</span> <span class="classifier">basepairs or basesteps, avg_values, error</span></dt>
+<dt><strong>Returns:</strong></dt>
 <dd><ul class="first last simple">
 <li><tt class="docutils literal"><span class="pre">basepairs/steps</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: Number of base pair-steps. If <tt class="docutils literal"><span class="pre">merge_bp&gt;1</span></tt>, middle number will be returned.</li>
 <li><tt class="docutils literal"><span class="pre">avg.</span> <span class="pre">parameter</span> <span class="pre">values</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: average values of the parameter</li>
@@ -159,9 +313,9 @@
 <tt class="descname">get_parameters</tt><big>(</big><em>parameter</em>, <em>bp</em>, <em>bp_range=True</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.get_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>To get the parameters over all frame for the given range of base pair/steps</p>
 <blockquote>
-<div><p>Args:</p>
-<blockquote>
-<div><ul>
+<div><dl class="docutils">
+<dt><strong>Arguments:</strong></dt>
+<dd><ul class="first">
 <li><dl class="first docutils">
 <dt><tt class="docutils literal"><span class="pre">parameter</span> <span class="pre">(string)</span></tt>: [Name of the prameter]</dt>
 <dd><dl class="first last docutils">
@@ -188,6 +342,11 @@
 <li><tt class="docutils literal"><span class="pre">Helical</span> <span class="pre">X-axis</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">Helical</span> <span class="pre">Y-axis</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">Helical</span> <span class="pre">Z-axis</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Helical</span> <span class="pre">X-axis</span> <span class="pre">smooth</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Helical</span> <span class="pre">Y-axis</span> <span class="pre">smooth</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Helical</span> <span class="pre">Z-axis</span> <span class="pre">smooth</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Helical</span> <span class="pre">axis</span> <span class="pre">curvature</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Helical</span> <span class="pre">axis</span> <span class="pre">tangent</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">Radius</span> <span class="pre">S-1</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">Radius</span> <span class="pre">S-2</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">Major</span> <span class="pre">Groove</span></tt></li>
@@ -227,14 +386,19 @@
 </dd>
 </dl>
 </li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">bp_range</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=True</span></tt>: As shown above, if <tt class="docutils literal"><span class="pre">True</span></tt>, bp is taken as a range otherwise list or numpy array</p>
-</li>
 </ul>
-</div></blockquote>
+<ul class="last simple">
+<li><tt class="docutils literal"><span class="pre">bp_range</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=True</span></tt>: As shown above, if <tt class="docutils literal"><span class="pre">True</span></tt>, bp is taken as a range otherwise list or numpy array</li>
+</ul>
+</dd>
+</dl>
 </div></blockquote>
 <dl class="docutils">
-<dt>Returns <span class="classifier-delimiter">:</span> <span class="classifier">parameters</span></dt>
-<dd><tt class="docutils literal"><span class="pre">parameters[bp][nframe]</span> <span class="pre">(2D</span> <span class="pre">list)</span></tt>: where bp is number of base pairs/steps and nframe is total number of frames in the trajectory.</dd>
+<dt><strong>Returns:</strong></dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">parameters[bp][nframe]</span> <span class="pre">(2D</span> <span class="pre">list)</span></tt>: where bp is number of base pairs/steps and nframe is total number of frames in the trajectory.</li>
+</ul>
+</dd>
 </dl>
 </dd></dl>
 
@@ -243,7 +407,7 @@
 <tt class="descname">parameter_distribution</tt><big>(</big><em>parameter</em>, <em>bp</em>, <em>bins=30</em>, <em>merge=False</em>, <em>merge_method='mean'</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.parameter_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>To get the parameter distribution of either a specfic base-pair/step or a DNA segment over the MD simulation.</p>
 <blockquote>
-<div><p>Args:</p>
+<div><p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul>
 <li><dl class="first docutils">
@@ -282,7 +446,7 @@
 </div></blockquote>
 </div></blockquote>
 <dl class="docutils">
-<dt>Returns <span class="classifier-delimiter">:</span> <span class="classifier">values, density</span></dt>
+<dt><strong>Returns:</strong></dt>
 <dd><ul class="first last simple">
 <li><tt class="docutils literal"><span class="pre">values</span>&nbsp;&nbsp; <span class="pre">(1D</span> <span class="pre">array)</span></tt>: array containing parameter values</li>
 <li><tt class="docutils literal"><span class="pre">density</span>&nbsp; <span class="pre">(1D</span> <span class="pre">array)</span></tt>: array containing density for respective parameter values</li>
@@ -308,7 +472,7 @@
 <li>chi for purines(R): O4&#8217;-C1&#8217;-N9-C4</li>
 </ul>
 </div>
-<p>Args:</p>
+<p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat</p>
@@ -365,7 +529,7 @@
 </ul>
 </div></blockquote>
 <dl class="docutils">
-<dt>Return:</dt>
+<dt><strong>Returns:</strong></dt>
 <dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
 </dl>
 </dd></dl>
@@ -374,7 +538,7 @@
 <dt id="dnaMD.DNA.set_base_pair_parameters">
 <tt class="descname">set_base_pair_parameters</tt><big>(</big><em>filename, bp, parameters=[1, 2, 3, 4, 5, 6], bp_range=True</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.set_base_pair_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>To read and store basepairs parameters (shear, stretch, stagger, buckle, propeller and opening) from an input file.</p>
-<p>Args:</p>
+<p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat</p>
@@ -423,7 +587,7 @@
 </ul>
 </div></blockquote>
 <dl class="docutils">
-<dt>Return:</dt>
+<dt><strong>Returns:</strong></dt>
 <dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
 </dl>
 </dd></dl>
@@ -432,7 +596,7 @@
 <dt id="dnaMD.DNA.set_base_step_parameters">
 <tt class="descname">set_base_step_parameters</tt><big>(</big><em>filename, bp_step, parameters=[1, 2, 3, 4, 5, 6], step_range=True, helical=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.set_base_step_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>To read and store base-step (Shift, Slide, Rise, Tilt, Roll and Twist) and helical base-step (X-disp, Y-disp, h-Rise, Inclination, Tip and h-Twist) parameters from an input file</p>
-<p>Args:</p>
+<p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Input file, which is generated from do_x3dna. e.g. <tt class="docutils literal"><span class="pre">L-BPS_g.dat</span></tt> or <tt class="docutils literal"><span class="pre">L-BPH_g.dat</span></tt></p>
@@ -493,16 +657,16 @@
 </ul>
 </div></blockquote>
 <dl class="docutils">
-<dt>Return:</dt>
+<dt><strong>Returns:</strong></dt>
 <dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="dnaMD.DNA.set_helical_axis">
-<tt class="descname">set_helical_axis</tt><big>(</big><em>filename</em>, <em>step_range=False</em>, <em>step=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#dnaMD.DNA.set_helical_axis" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">set_helical_axis</tt><big>(</big><em>filename</em>, <em>step_range=False</em>, <em>step=None</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.set_helical_axis" title="Permalink to this definition">¶</a></dt>
 <dd><p>To read and set local helical-axis postions from an input file.</p>
-<p>Args:</p>
+<p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Input file, which is generated from do_x3dna. e.g. HelAxis_g.dat</p>
@@ -539,7 +703,7 @@
 </ul>
 </div></blockquote>
 <dl class="docutils">
-<dt>Returns:</dt>
+<dt><strong>Returns:</strong></dt>
 <dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
 </dl>
 </dd></dl>
@@ -548,7 +712,7 @@
 <dt id="dnaMD.DNA.set_helical_radius">
 <tt class="descname">set_helical_radius</tt><big>(</big><em>filename</em>, <em>bp</em>, <em>atomname='P'</em>, <em>full=False</em>, <em>bp_range=True</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.set_helical_radius" title="Permalink to this definition">¶</a></dt>
 <dd><p>To read and set local helical radius of both strand</p>
-<p>Args:</p>
+<p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Input file, which is generated from do_x3dna. e.g. HelixRad_g.dat</p>
@@ -575,7 +739,7 @@
 </ul>
 </div></blockquote>
 <dl class="docutils">
-<dt>Return: </dt>
+<dt><strong>Returns:</strong> </dt>
 <dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
 </dl>
 </dd></dl>
@@ -599,7 +763,7 @@
 </ul>
 </div>
 </div></blockquote>
-<p>Args:</p>
+<p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat</p>
@@ -641,7 +805,7 @@
 </ul>
 </div></blockquote>
 <dl class="docutils">
-<dt>Return:</dt>
+<dt><strong>Returns:</strong></dt>
 <dd><tt class="docutils literal"><span class="pre">None</span></tt></dd>
 </dl>
 </dd></dl>
@@ -651,7 +815,7 @@
 <tt class="descname">time_vs_parameter</tt><big>(</big><em>parameter</em>, <em>bp</em>, <em>merge=False</em>, <em>merge_method='mean'</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.time_vs_parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>To get the parameter of either a specfic base-pair/step or a DNA segment as a function of time.</p>
 <blockquote>
-<div><p>Args:</p>
+<div><p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul>
 <li><dl class="first docutils">
@@ -688,7 +852,7 @@
 </div></blockquote>
 </div></blockquote>
 <dl class="docutils">
-<dt>Returns <span class="classifier-delimiter">:</span> <span class="classifier">time, value</span></dt>
+<dt><strong>Returns:</strong></dt>
 <dd><ul class="first last simple">
 <li><tt class="docutils literal"><span class="pre">time</span>&nbsp; <span class="pre">(1D</span> <span class="pre">array)</span></tt>: array containing time of length number of frames</li>
 <li><tt class="docutils literal"><span class="pre">value</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: array containing parameter values of length number of frames</li>
@@ -710,7 +874,7 @@
 <p class="first admonition-title">Warning</p>
 <p class="last">It requires <tt class="docutils literal"><span class="pre">g_analyze</span></tt> of GROMACS package. <tt class="docutils literal"><span class="pre">g_analyze</span></tt> should be present in <tt class="docutils literal"><span class="pre">$PATH</span></tt>.</p>
 </div>
-<p>Args:</p>
+<p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul class="simple">
 <li><tt class="docutils literal"><span class="pre">time</span> <span class="pre">(1D</span> <span class="pre">list)</span> <span class="pre">or</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: time</li>
@@ -720,7 +884,7 @@
 </ul>
 </div></blockquote>
 <dl class="docutils">
-<dt>Return:</dt>
+<dt><strong>Return:</strong></dt>
 <dd><tt class="docutils literal"><span class="pre">error</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: Of length = number of sets (<em>nset</em>)</dd>
 </dl>
 </dd></dl>
@@ -731,7 +895,7 @@
 <dd><p>To calculate deviation in the given parameters of a Subject DNA to Reference DNA along the given axis.</p>
 <blockquote>
 <div><em>Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)</em></div></blockquote>
-<p>Args:</p>
+<p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">dnaRef</span>&nbsp; <span class="pre">(DNA</span> <span class="pre">object)</span></tt>:   Reference DNA</p>
@@ -764,7 +928,7 @@
 </ul>
 </div></blockquote>
 <dl class="docutils">
-<dt>Returns <span class="classifier-delimiter">:</span> <span class="classifier">deviation, deviation_error, axis, axis_error</span></dt>
+<dt><strong>Returns:</strong></dt>
 <dd><ul class="first last simple">
 <li><tt class="docutils literal"><span class="pre">deviation</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">(1D</span> <span class="pre">array)</span></tt>: length = no. of windows; Deviation in the parameter for two given DNA</li>
 <li><tt class="docutils literal"><span class="pre">deviation_error</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: length = no. of windows; Standard error in deviation fo each window/bin</li>
@@ -786,7 +950,7 @@
 <p class="last">Number of base-pairs/steps should be similar in reference and subject DNA.</p>
 </div>
 </div></blockquote>
-<p>Args:</p>
+<p><strong>Arguments:</strong></p>
 <blockquote>
 <div><ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">dnaRef</span>&nbsp; <span class="pre">(DNA</span> <span class="pre">object)</span></tt>:   Reference DNA</p>
@@ -847,7 +1011,7 @@
 </ul>
 </div></blockquote>
 <dl class="docutils">
-<dt>Returns <span class="classifier-delimiter">:</span> <span class="classifier">bpRef, bpSubj, deviation, error</span></dt>
+<dt><strong>Returns:</strong></dt>
 <dd><ul class="first last simple">
 <li><tt class="docutils literal"><span class="pre">bpRef</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">(1D</span> <span class="pre">array)</span></tt>: base-pair/step numbers of reference DNA. If <tt class="docutils literal"><span class="pre">merge_bp&gt;1</span></tt>, middle number will is returned.`</li>
 <li><tt class="docutils literal"><span class="pre">bpSubj</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">(1D</span> <span class="pre">array)</span></tt>: base-pair/step numbers of subject DNA. If <tt class="docutils literal"><span class="pre">merge_bp&gt;1</span></tt>, middle number will is returned.`</li>
