@@ -50,6 +50,8 @@
 import numpy as np
 import re, os, sys
 import string, random
+# from scipy.interpolate import splprep, splev
+import math
 import subprocess as sub
 
 class base_step:
@@ -76,6 +78,13 @@ class base_step:
 		self.hel_Xaxis = []
 		self.hel_Yaxis = []
 		self.hel_Zaxis = []
+		
+		self.hel_Xaxis_smth = []
+		self.hel_Yaxis_smth = []
+		self.hel_Zaxis_smth = []
+
+		self.curvature = []
+		self.tangent = []
 
 class base_pair():
 	def __init__(self):
@@ -110,7 +119,7 @@ class base_pair():
 class DNA:
 	"""DNA class stores all data obtained from the input files.
 		
-		*To initialize this class:* ::
+		**To initialize this class:** ::
 		
 				dna = DNA(60)       # 60 is the number of basepairs
 
@@ -121,6 +130,7 @@ class DNA:
 	def __init__(self,num_bp):
 		self.num_bp = num_bp
 		self.num_step = num_bp-1
+		self.smooth_axis = False
 		self.time = []
 		self.base_steps = []
 		self.base_pairs = []
@@ -134,9 +144,8 @@ class DNA:
 	def get_parameters(self,parameter, bp, bp_range=True):
 		"""To get the parameters over all frame for the given range of base pair/steps
 		
-		Args:
-
-			* ``parameter (string)``: [Name of the prameter]
+		**Arguments:**
+			- ``parameter (string)``: [Name of the prameter]
 				Currently accepted keywords are as follows:
 					* ``Shear``
 					* ``Stretch``
@@ -159,6 +168,11 @@ class DNA:
 					* ``Helical X-axis``
 					* ``Helical Y-axis``
 					* ``Helical Z-axis``
+					* ``Helical X-axis smooth``
+					* ``Helical Y-axis smooth``
+					* ``Helical Z-axis smooth``
+					* ``Helical axis curvature``
+					* ``Helical axis tangent``
 					* ``Radius S-1``
 					* ``Radius S-2``
 					* ``Major Groove``
@@ -180,7 +194,7 @@ class DNA:
 					* ``zeta S-2``
 					* ``chi S-2``
 
-			* ``bp (1D list) or (1D array)``: base-pairs to analyze
+			- ``bp (1D list) or (1D array)``: base-pairs to analyze
 				Example: ::
 
 							bp = [6]                                # bp_range = False
@@ -191,8 +205,8 @@ class DNA:
 					
 			* ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
             
-        Returns : parameters
-            ``parameters[bp][nframe] (2D list)``: where bp is number of base pairs/steps and nframe is total number of frames in the trajectory.
+        **Returns:**
+            - ``parameters[bp][nframe] (2D list)``: where bp is number of base pairs/steps and nframe is total number of frames in the trajectory.
 		
 		"""
 		bp_idx, dum = get_idx_of_bp_parameters(bp,[],bp_range)
@@ -426,7 +440,8 @@ class DNA:
 				else:
 					data.append(self.base_steps[bp_idx[i]].h_twist)
 					append = True
-
+		
+		# Helical axis related stuffs
 		if(parameter=='Helical X-axis'):
 			key = 'Helical X-axis'
 			for i in range(len(bp_idx)):
@@ -460,6 +475,62 @@ class DNA:
 					data.append(self.base_steps[bp_idx[i]].hel_Zaxis)
 					append = True
 
+		if(parameter=='Helical X-axis smooth'):
+			key = 'Helical X-axis smooth'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].hel_Xaxis_smth)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].hel_Xaxis_smth)
+					append = True
+
+		if(parameter=='Helical Y-axis smooth'):
+			key = 'Helical Y-axis smooth'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].hel_Yaxis_smth)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].hel_Yaxis_smth)
+					append = True
+
+		if(parameter=='Helical Z-axis smooth'):
+			key = 'Helical Z-axis smooth'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].hel_Zaxis_smth)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].hel_Zaxis_smth)
+					append = True
+
+		if(parameter=='Helical axis curvature'):
+			key = 'Helical axis curvature'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].curvature)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].curvature)
+					append = True
+
+		if(parameter=='Helical axis tangent'):
+			key = 'Helical axis tangent'
+			for i in range(len(bp_idx)):
+				if(len(self.base_steps[bp_idx[i]].tangent)==0):
+					empty = True
+					idx = bp_idx[i]
+					break
+				else:
+					data.append(self.base_steps[bp_idx[i]].tangent)
+					append = True
+		
+		# Major and minor grooves
 		if(parameter=='Major Groove'):
 			key = 'Major Groove'
 			for i in range(len(bp_idx)):
@@ -505,6 +576,7 @@ class DNA:
 					data.append(self.base_steps[bp_idx[i]].minor_refine)
 					append = True
 		
+		# Backbone dihedrals
 		if(parameter=='alpha S-1'):
 			key = 'alpha S-1'
 			for i in range(len(bp_idx)):
@@ -672,7 +744,7 @@ class DNA:
 	def time_vs_parameter(self, parameter, bp, merge=False, merge_method='mean'):
 		"""To get the parameter of either a specfic base-pair/step or a DNA segment as a function of time.
 		
-		Args:
+		**Arguments:**
 
 			* ``parameter (string)``: Name of a base-pair or base-step or helical parameter
 									For details about accepted keywords, see ``parameter`` in the method :meth:`dnaMD.DNA.get_parameters`.
@@ -690,7 +762,7 @@ class DNA:
 					* ``merge_method = mean``: Average of local parameters
 					* ``merge_method = sum``: Sum of local parameters
             
-        Returns : time, value
+        **Returns:**
             * ``time  (1D array)``: array containing time of length number of frames
             * ``value (1D array)``: array containing parameter values of length number of frames
 		
@@ -728,7 +800,7 @@ class DNA:
 	def parameter_distribution(self, parameter, bp, bins=30, merge=False, merge_method='mean'):
 		"""To get the parameter distribution of either a specfic base-pair/step or a DNA segment over the MD simulation.
 		
-		Args:
+		**Arguments:**
 
 			* ``parameter (string)``: Name of a base-pair or base-step or helical parameter
 									For details about accepted keywords, see ``parameter`` in the method :meth:`dnaMD.DNA.get_parameters`.
@@ -750,7 +822,7 @@ class DNA:
 					* ``merge_method = sum``: Sum of local parameters
             
 
-        Returns : values, density
+        **Returns:**
             * ``values   (1D array)``: array containing parameter values
             * ``density  (1D array)``: array containing density for respective parameter values
 		
@@ -794,7 +866,7 @@ class DNA:
 	def set_base_pair_parameters(self, filename, bp, parameters=[1,2,3,4,5,6], bp_range=True):
 		"""	To read and store basepairs parameters (shear, stretch, stagger, buckle, propeller and opening) from an input file.
 		
-		Args:
+		**Arguments:**
 		
 			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
 		    
@@ -831,7 +903,7 @@ class DNA:
 		
 			* ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
 
-		Return:
+		**Returns:**
 				``None``
 
 		"""
@@ -887,7 +959,7 @@ class DNA:
 				* The major and minor grooves (direct P-P) cannot be calculated for first and last two base-steps
 				* The major and minor grooves (refined P-P) cannot be calculated for first and last three base-steps
 
-		Args:
+		**Arguments:**
 		
 			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
 		    
@@ -917,7 +989,7 @@ class DNA:
 		
 			* ``step_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array
 
-		Return:
+		**Returns:**
 				``None``
 
 		"""
@@ -973,7 +1045,7 @@ class DNA:
 			* chi for purines(R): O4'-C1'-N9-C4
 
 		
-		Args:
+		**Arguments:**
 		
 			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
 		    
@@ -1018,7 +1090,7 @@ class DNA:
 		
 			* ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
 
-		Return:
+		**Returns:**
 				``None``
 
 		"""
@@ -1081,7 +1153,7 @@ class DNA:
 	def set_helical_radius(self, filename, bp, atomname='P', full=False, bp_range=True):
 		"""	To read and set local helical radius of both strand
 		
-		Args:
+		**Arguments:**
 			
 			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. HelixRad_g.dat
 			
@@ -1101,7 +1173,7 @@ class DNA:
 			
 			* ``bp_range (bool)``: Shown above. if True, bp should be a range otherwise list or numpy array
 
-		Return: 
+		**Returns:** 
 				``None``
 		"""
 		if not (isinstance(bp,list) or isinstance(bp,np.ndarray)):
@@ -1143,7 +1215,7 @@ class DNA:
 	def set_base_step_parameters(self, filename, bp_step, parameters=[1,2,3,4,5,6], step_range=True,helical=False):
 		"""	To read and store base-step (Shift, Slide, Rise, Tilt, Roll and Twist) and helical base-step (X-disp, Y-disp, h-Rise, Inclination, Tip and h-Twist) parameters from an input file
 		
-		Args:
+		**Arguments:**
 		
 			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. ``L-BPS_g.dat`` or ``L-BPH_g.dat``
 		    
@@ -1189,7 +1261,7 @@ class DNA:
 			
 			* ``step_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array
 
-		Return:
+		**Returns:**
 				``None``
 		"""
 		if not (isinstance(bp_step,list) or isinstance(bp_step,np.ndarray)):
@@ -1247,7 +1319,7 @@ class DNA:
 	def get_mean_error(self,bp,parameter,err_type='std',bp_range=True, merge_bp=1, merge_method='mean'):
 		"""To calculate average and error of the given parameter for the gieven set of base-pairs/steps
 		
-		Args:
+		**Arguments:**
 			* ``bp (1D list) or (1D array)``: base-pairs or base-steps to analyze
 				Example: ::
 					
@@ -1279,7 +1351,7 @@ class DNA:
 					* ``merge_method = sum``: Sum of local parameters
             
 			
-		Returns : basepairs or basesteps, avg_values, error
+		**Returns:**
 				* ``basepairs/steps (1D array)``: Number of base pair-steps. If ``merge_bp>1``, middle number will be returned.
 				* ``avg. parameter values (1D array)``: average values of the parameter
 				* ``error (1D array)``: Error values for corresponding average values
@@ -1348,10 +1420,11 @@ class DNA:
 		else:
 			return bp_number, np.mean(data,axis=1), error
 
-	def set_helical_axis(self, filename, step_range=False,step=[]):
-		"""	To read and set local helical-axis postions from an input file.
-		
-		Args:
+	def set_helical_axis(self, filename, step_range=False,step=None):
+		"""
+		To read and set local helical-axis postions from an input file.
+	
+		**Arguments:**
 		
 			* ``filename (string)``: Input file, which is generated from do_x3dna. e.g. HelAxis_g.dat
 			
@@ -1369,7 +1442,7 @@ class DNA:
 						*For base-step 4 to 15*:
 							``step = [4,15]         # step_range = True``
 							
-		Returns:
+		**Returns:**
 					``None``
 
 		"""
@@ -1380,11 +1453,20 @@ class DNA:
 			if (len(step)>2):
 				print ("ERROR: Range for helical axis should be list of two numbers, e.g. step=[1, 20] \n")
 				exit(1)
+		
+		if (step_range) and (step == None):
+			raise ValueError("See, documentation for step  and step_range usage!!!")
+			
 
 		if (step_range):
-			data, time = read_param_file(filename,range(1,3),step,True)
+			if (len(step) != 2):
+				raise ValueError("See, documentation for step usage!!!")
+			
+			if step[0] > step[1]:
+				raise ValueError("See, documentation for step usage!!!")
+			data, time = read_param_file(filename, [1,2,3], step, True)
 		else:
-			data, time = read_param_file(filename,range(1,3),[1,self.num_step],True)
+			data, time = read_param_file(filename, [1,2,3], [1,self.num_step], True)
 		
 		if(len(self.time)==0):
 			self.time = time
@@ -1406,6 +1488,302 @@ class DNA:
 					self.base_steps[bp_idx[i]].hel_Yaxis = data[i][j]
 				if(2==j):
 					self.base_steps[bp_idx[i]].hel_Zaxis = data[i][j]
+	
+	def generate_smooth_axis(self, step_range=False, step=None, smooth=1000, spline=3, fill_point=6, write_pdb=False, filename='helical_axis.pdb', orig_axis_pdb=False):
+		"""	To smoothen the helical axis using spline interpolation.
+
+		.. warning::
+			This function requires `SciPy package <http://www.scipy.org/>`_.
+		
+		**Arguments:**
+			
+			* ``step_range (bool)``:
+					* ``step_range = True`` : Smoothen axis for the given range of base-steps
+					* ``step_range = False``: Smoothen axis for entire DNA. If original helical-axis of any base-step will be found to be not available, error will be raised.
+					
+			* ``step (list)``: list containing lower and higher limit of base-steps range
+							* This option only works with ``step_range=True``.
+							* This list should not contain more than two number. 
+							* First number should be less than second number.
+							
+					Example:
+						
+						*For base-step 4 to 15*:
+							``step = [4,15]         # step_range = True``
+
+			* ``smooth (float)``: A smoothing condition. For more details, see about ``s = None``, which is paased into  `scipy.interpolate.splprep() <http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html#scipy.interpolate.splprep>`_ method. 
+				.. warning ::
+
+					* Lower value may lead to an artifact of local sharp kink in the smoothed axis. 
+					* Higher value may lead to the calculation of wrong helical axis.
+
+
+			* ``spline (int)``: Degree of spline. For more details, see about ``k = 3``, which is paased into  `scipy.interpolate.splprep() <http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html#scipy.interpolate.splprep>`_ method.
+
+			
+			* ``fill_point (int)``: Number of intrapolated points between two adjacent helical-axis coordinates.
+			
+			
+			* ``write_pdb (bool)``: If ``True``, a PDB format file of name ``filename = 'helical_axis.pdb'`` will be generated. See below for description of this file.
+			
+			
+			* ``filename (string)``: Name of a PDB format file, which will be generated if ``write_pdb = True``. This is a trajectory file, which contains coordinates of the smoothed axis  as a **Chain A**. If ``orig_axis_pdb = True``, coordinates of the original axis (output from ``do_x3dna``) will be also dumped as **Chain B** in this trajectory file.
+
+
+			* ``orig_axis_pdb (bool)``: If ``True``, coordinates of the original axis (output from ``do_x3dna``) will be dumped as **Chain B** in the PDB trajectory file. It might be useful to compare the smoothened and original axis for optimization of smoothness.
+
+
+		**Returns:**
+					``None``
+
+		"""
+		
+		try:
+			from scipy.interpolate import splprep, splev
+		except:
+			raise ImportError("SciPy package is not available. Please visit http://www.scipy.org/install.html for download and installation instructions.\n") 
+
+		if (step_range) and (step == None):
+			raise ValueError("See, documentation for step  and step_range usage!!!")
+		
+		if step_range:
+			if (len(step) != 2):
+				raise ValueError("See, documentation for step usage!!!")
+			
+			if step[0] > step[1]:
+				raise ValueError("See, documentation for step usage!!!")
+			RawX, bp_idx = self.get_parameters('Helical X-axis', step, bp_range=True)
+			RawY, dummy = self.get_parameters('Helical Y-axis', step, bp_range=True)
+			RawZ, dummy = self.get_parameters('Helical Z-axis', step, bp_range=True)
+		else:
+			RawX, bp_idx = self.get_parameters('Helical X-axis', [1, self.num_step], bp_range=True)
+			RawY, dummy = self.get_parameters('Helical Y-axis', [1, self.num_step], bp_range=True)
+			RawZ, dummy = self.get_parameters('Helical Z-axis', [1, self.num_step], bp_range=True)
+
+		nest=-1
+		points = fill_point * len(bp_idx)
+
+		RawX = np.array(RawX).T
+		RawY = np.array(RawY).T
+		RawZ = np.array(RawZ).T
+
+		smoothX, smoothY, smoothZ = [], [], []
+
+		if (write_pdb):
+			f = open(filename, 'w')
+
+		for i in range(len(self.time)):
+			orig_x = RawX[i].copy()
+			orig_y = RawY[i].copy()
+			orig_z = RawZ[i].copy()
+			
+			xsmooth, ysmooth, zsmooth = [], [], []
+
+			bsmooth = False
+			while not bsmooth:
+				
+				tckp,u = splprep([orig_x, orig_y, orig_z], s=smooth, k=spline, nest=-1)
+				xnew, ynew,znew = splev(np.linspace(0,1, points), tckp)
+				
+				new_axis = np.array([ xnew, ynew, znew ]).T
+
+				angle = []
+				
+				for count in range(len(bp_idx)):
+					start = count * fill_point
+					end = start + fill_point
+					xsmooth.append(xnew[start:end].mean())
+					ysmooth.append(ynew[start:end].mean())
+					zsmooth.append(znew[start:end].mean())
+				
+				for j in range(1, len(xsmooth)-1):
+					prev = np.array([xsmooth[j-1], ysmooth[j-1], zsmooth[j-1]])
+					curr = np.array([xsmooth[j], ysmooth[j], zsmooth[j]])
+					nex = np.array([xsmooth[j+1], ysmooth[j+1], zsmooth[j+1]])
+					angle.append( math.degrees(vector_angle((prev-curr),(curr-nex))) )
+
+				for j in range(len(angle)):
+					if angle[j] > 20.0 and not angle[j] > 160.0:
+						bsmooth = False
+						orig_x = np.delete(orig_x, j)
+						orig_y = np.delete(orig_y, j)
+						orig_z = np.delete(orig_z, j)
+						xsmooth, ysmooth, zsmooth = [], [], []
+						break
+					else:
+						bsmooth = True
+
+			smoothX.append(xsmooth)
+			smoothY.append(ysmooth)
+			smoothZ.append(zsmooth)
+
+			if(write_pdb):
+				f.write('%-6s    %4d\n' % ("MODEL",i+1))
+				for j in range(len(xsmooth)):
+					f.write('%-6s%5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f\n' % ("ATOM",j+1,"CA"," ","AXS","A",j+1, " ", xsmooth[j],ysmooth[j],zsmooth[j], 1.00, 0.00))
+
+				for j in range(len(xsmooth)-1):
+					f.write('CONECT %4d %4d\n' % (j+1, j+2))
+				
+				f.write("TER\n")
+				
+				if (orig_axis_pdb):
+					for j in range(len(RawX[i])):
+						f.write('%-6s%5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f\n' % ("ATOM",j+1+len(xsmooth),"O"," ","AXS","B",j+1, " ", RawX[i][j],RawY[i][j],RawZ[i][j], 1.00, 0.00))
+
+					for j in range(len(xsmooth)-1):
+						f.write('CONECT %4d %4d\n' % (j+1+len(xsmooth), j+2+len(xsmooth)))
+					f.write("TER\n")
+
+				f.write("ENDMDL\n")
+		
+		smoothX = np.asarray(smoothX).T
+		smoothY = np.asarray(smoothY).T
+		smoothZ = np.asarray(smoothZ).T
+
+		self.smooth_axis = True
+		for i in range(len(bp_idx)):
+			self.base_steps[bp_idx[i]].hel_Xaxis_smth = smoothX[i]
+			self.base_steps[bp_idx[i]].hel_Yaxis_smth = smoothY[i]
+			self.base_steps[bp_idx[i]].hel_Zaxis_smth = smoothZ[i]
+
+	def calculate_curvature_tangent(self, step_range=False, step=None, store_tangent=False, filename='curvature_axis.pdb', write_pdb=False, scale=1):
+		"""	
+		To calculate curvatures and tangent vectors along the helical axis. The curvature and tangent vectors are calculated using Frenet-Serret formula. The calculated values are stored in DNA object.
+		
+		**Arguments:**
+			
+			* ``step_range (bool)``:
+					* ``step_range = True`` : Calculate curvature and tangent vectors for the given range of base-steps
+					* ``step_range = False``: Calculate curvature and tangent vectors for entire DNA. If smoothed helical-axis of any base-step will be found to be not available, error will be raised.
+					
+			* ``step (list)``: list containing lower and higher limit of base-steps range
+							* This option only works with ``step_range=True``.
+							* This list should not contain more than two number. 
+							* First number should be less than second number.
+							
+					Example:
+						
+						*For base-step 4 to 15*:
+							``step = [4,15]         # step_range = True``
+
+			
+			* ``store_tangent (bool)``:
+					* ``store_tangent = True`` : The calculated tangent vectors will be stored for later use.
+					* ``store_tangent = False``:  The calculated tangent vectors will be discarded.
+			
+
+			* ``filename (string)``: Name of a PDB format file, which will be generated if ``write_pdb = True``. This is a trajectory file, which contains coordinates of the smoothed axis and its b-factor column stores the value of curvature. Therefore, smoothed helical axis could be visualized in color as a function of curvature.
+							
+			
+			* ``write_pdb (bool)``: If ``True``, a PDB format file of name ``filename = 'curvature_axis.pdb'`` will be generated. See above for description of this file.
+
+
+			* ``scale (int)``: The calculated curvature is multiplied by this value. This multiplication will be only done when ``write_pdb = False`` and scaled value of curvature will be written in PDB file. However, the scaling does not affect the curvature stored in the DNA object that could be used later for analysis.
+
+			
+		**Returns:**
+					``None``
+
+		"""
+		
+		
+		if not self.smooth_axis:
+			raise ValueError("The helical axis is not smooth. At first, smooth the axis using generate_smooth_axis() method as described in http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.generate_smooth_axis.")
+
+		if (step_range) and (step == None):
+			raise ValueError("See, documentation for step  and step_range usage!!!")
+		
+		if step_range:
+			if (len(step) != 2):
+				raise ValueError("See, documentation for step usage!!!")
+			
+			if step[0] > step[1]:
+				raise ValueError("See, documentation for step usage!!!")
+			
+			X, bp_idx = self.get_parameters('Helical X-axis smooth', step, bp_range=True)
+			Y, bp_idx = self.get_parameters('Helical Y-axis smooth', step, bp_range=True)
+			Z, bp_idx = self.get_parameters('Helical Z-axis smooth', step, bp_range=True)
+		else:
+			X, bp_idx = self.get_parameters('Helical X-axis smooth', [1, self.num_step], bp_range=True)
+			Y, bp_idx = self.get_parameters('Helical Y-axis smooth', [1, self.num_step], bp_range=True)
+			Z, bp_idx = self.get_parameters('Helical Z-axis smooth', [1, self.num_step], bp_range=True)
+
+		X = np.asarray(X).T
+		Y = np.asarray(Y).T
+		Z = np.asarray(Z).T
+
+		curvature, tangent = [], []
+		
+		if(write_pdb):
+			f = open(filename,"w")
+
+		for i in range(len(self.time)):
+		
+			#Curvature calculation
+			xyz=np.vstack((X[i], Y[i], Z[i])).T
+			T, N, B, k_temp, t_temp = frenet_serret(xyz)
+			
+			curvature.append(k_temp.flatten())
+			tangent.append(T)
+			
+			if(write_pdb):
+				f.write('%-6s    %4d\n' % ("MODEL",i+1))
+				for j in range(len(X[i])):
+					f.write('%-6s%5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f\n' % ("ATOM",j+1,"CA"," ","AXS","A",j+1, " ", X[i][j],Y[i][j],Z[i][j], 1.00, scale*curvature[i][j]))
+				
+				f.write("TER\n")
+				
+				for j in range(len(X[i])-1):
+					f.write('CONECT %4d %4d\n' % (j+1, j+2))
+				
+				f.write("ENDMDL\n")
+
+		curvature = np.asarray(curvature).T
+		for i in range(len(bp_idx)):
+			self.base_steps[bp_idx[i]].curvature = curvature[i]
+
+		if(store_tangent):
+			tangent = np.asarray(tangent)
+			final_tan = []
+			for i in range(len(tangent[0])):
+				temp = []
+				for j in range(len(tangent)):
+					temp.append(tangent[j][i])
+				final_tan.append(temp)
+			
+			for i in range(len(bp_idx)):
+				self.base_steps[bp_idx[i]].tangent = final_tan[i]
+
+
+	def calculate_angle_bw_tangents(self, base_step):
+		"""
+		To calculate angle (Radian) between two tangent vectors of smoothed helical axis.
+
+		**Arguments:**
+				* ``base_step (1D list)``: List of two base-steps for which angle will be calculated.
+
+					*Example:*
+						
+						``[5, 50]          # Calculate angle between tangent vectors of 5th and 50th base-steps``
+
+		**Returns:**
+			* ``angle (1D array)``: Array of calculated angle of length is equal to number of frames.
+
+		"""
+
+		if (len(base_step) != 2):
+			raise ValueError("See, documentation for step usage!!!")
+		
+		tangent1, idx1 = self.get_parameters('Helical axis tangent', bp=[base_step[0]], bp_range=False)	
+		tangent2, idx2 = self.get_parameters('Helical axis tangent', bp=[base_step[1]], bp_range=False)
+
+		angle = []
+		for i in range(len(tangent1[0])):
+			tmp_angle = vector_angle(tangent1[0][i], tangent2[0][i])
+			angle.append(tmp_angle)
+
+		return np.asarray(angle)
 
 def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='std', bp_range=True, merge_bp=1, merge_method='mean'):
 	"""To calculate deviation in the given parameters of a Subject DNA with respect to a Reference DNA along the base-pairs/steps.
@@ -1414,7 +1792,7 @@ def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='st
 
 		.. warning:: Number of base-pairs/steps should be similar in reference and subject DNA.
 		
-	Args:
+	**Arguments:**
 	
 		* ``dnaRef  (DNA object)``:   Reference DNA
 		
@@ -1459,7 +1837,7 @@ def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='st
             
 			
 
-	Returns : bpRef, bpSubj, deviation, error
+	**Returns:**
 		* ``bpRef       (1D array)``: base-pair/step numbers of reference DNA. If ``merge_bp>1``, middle number will is returned.`
 		* ``bpSubj      (1D array)``: base-pair/step numbers of subject DNA. If ``merge_bp>1``, middle number will is returned.`
 		* ``deviation   (1D array)``: Deviation in the parameter of subject DNA with respect to reference DNA.
@@ -1484,7 +1862,7 @@ def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis ='Z', bp_range=T
 	
 		*Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)*
 		
-	Args:
+	**Arguments:**
 	
 		* ``dnaRef  (DNA object)``:   Reference DNA
 		
@@ -1507,7 +1885,7 @@ def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis ='Z', bp_range=T
 	    
 		* ``windows  (int)``: Number of bins along the axis
 
-	Returns : deviation, deviation_error, axis, axis_error
+	**Returns:**
 		* ``deviation       (1D array)``: length = no. of windows; Deviation in the parameter for two given DNA
 		* ``deviation_error (1D array)``: length = no. of windows; Standard error in deviation fo each window/bin
 		* ``axis         (1D array)``: length = no. of windows; average position of window/bin along given axis
@@ -1578,14 +1956,14 @@ def get_error(time,x,sets,err_type='block'):
 	.. warning::
 				It requires ``g_analyze`` of GROMACS package. ``g_analyze`` should be present in ``$PATH``.
 
-	Args:
+	**Arguments:**
 	
 		* ``time (1D list) or (1D array)``: time
 		* ``x	 (2D list) or (2D array)``: Shape of (nset, nframe); where *nset* is number of set and *nframe* is total number of frames. *nframe* should be equal to length of time list/array
 		* ``sets (int)``: Number of sets (*nset*)
 		* ``err_type (string)``: Error estimation by autocorrelation method ``err_type='acf'`` or block avearaging method ``err_type='block'``
 	
-	Return:
+	**Return:**
 			``error (1D array)``: Of length = number of sets (*nset*)
 
 	"""
@@ -1664,6 +2042,106 @@ def get_deviation(Ref,RefErr,x,xerr):
 
 	return deviation, error
 	
+def frenet_serret(xyz):
+	r''' Frenet-Serret Space Curve Invariants
+
+	Taken from "Diffusion Imaging in Python" `DiPy package<http://nipy.org/dipy/>`_
+
+	Calculates the 3 vector and 2 scalar invariants of a space curve defined by vectors r = (x,y,z).  If z is omitted (i.e. the array xyz has shape (N,2), then the curve is only 2D (planar), but the equations are still valid.
+	
+	Similar to http://www.mathworks.com/matlabcentral/fileexchange/11169
+	
+	In the following equations the prime ($'$) indicates differentiation with respect to the parameter $s$ of a parametrised curve $\mathbf{r}(s)$.
+	
+	- $\mathbf{T}=\mathbf{r'}/|\mathbf{r'}|\qquad$ (Tangent vector)}
+	
+	- $\mathbf{N}=\mathbf{T'}/|\mathbf{T'}|\qquad$ (Normal vector)
+	
+	- $\mathbf{B}=\mathbf{T}\times\mathbf{N}\qquad$ (Binormal vector)
+	
+	- $\kappa=|\mathbf{T'}|\qquad$ (Curvature)
+	
+	- $\mathrm{\tau}=-\mathbf{B'}\cdot\mathbf{N}$ (Torsion)
+	
+	**Arguments:**	
+    
+    		* xyz : array-like shape (N,3)
+				array representing x,y,z of N points in a track
+      
+    **Returns:**
+			
+			* T : array shape (N,3)
+				array representing the tangent of the curve xyz
+			* N : array shape (N,3)
+				array representing the normal of the curve xyz    
+    		* B : array shape (N,3)
+        		array representing the binormal of the curve xyz
+    		* k : array shape (N,1)
+        		array representing the curvature of the curve xyz
+    		* t : array shape (N,1)
+        		array representing the torsion of the curve xyz
+
+	Examples:
+	
+	Create a helix and calculate its tangent, normal, binormal, curvature and torsion
+	
+	>>> from dipy.tracking import metrics as tm
+	>>> import numpy as np
+	>>> theta = 2*np.pi*np.linspace(0,2,100)
+	>>> x=np.cos(theta)
+	>>> y=np.sin(theta)
+	>>> z=theta/(2*np.pi)
+	>>> xyz=np.vstack((x,y,z)).T
+	>>> T,N,B,k,t=tm.frenet_serret(xyz)
+	
+	'''
+
+	def magn(xyz, n=1):
+		''' magnitude of vector
+
+
+		'''
+		mag=np.sum(xyz**2,axis=1)**0.5
+		imag=np.where(mag==0)
+		mag[imag]=np.finfo(float).eps
+
+		if n>1:
+			return np.tile(mag,(n,1)).T
+			
+		return mag.reshape(len(mag),1) 
+
+	xyz = np.asarray(xyz)
+	n_pts = xyz.shape[0]
+	
+	if n_pts == 0:
+		raise ValueError('xyz array cannot be empty')
+    
+	dxyz=np.gradient(xyz)[0]
+	ddxyz=np.gradient(dxyz)[0]
+	
+	#Tangent
+	T=np.divide(dxyz,magn(dxyz,3))
+	
+	#Derivative of Tangent
+	dT=np.gradient(T)[0]    
+	
+	#Normal
+	N = np.divide(dT,magn(dT,3))    
+	
+	#Binormal
+	B = np.cross(T,N)    
+    
+	#Curvature
+	k = magn(np.cross(dxyz,ddxyz),1)/(magn(dxyz,1)**3)    
+    
+	#Torsion 
+	#(In matlab was t=dot(-B,N,2))
+	t = np.sum(-B*N,axis=1)
+	#return T,N,B,k,t,dxyz,ddxyz,dT   
+    
+	
+	return T,N,B,k,t
+
 
 def read_data_file(FileName,cols_equal=True):
 	infile = open(FileName,'r')
@@ -1777,3 +2255,10 @@ def read_param_file(FileName,parameters, bp, bp_range, word=False):
 	sys.stdout.flush()
 
 	return data_transpose, time
+
+def vector_angle(x,y):
+	dot = np.dot(x,y)
+	cross = np.cross(x,y)
+	cross_modulus = np.sqrt((cross*cross).sum())
+	angle = np.arctan2(cross_modulus, dot)
+	return angle
