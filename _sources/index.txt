@@ -17,7 +17,7 @@
 
 .. |nucleosome| raw:: html
    
-   <a href="http://pdb.org/pdb/explore/explore.do?structureId=3Ut9" target="_blank">mitochondiral DNA</a>
+   <a href="http://pdb.org/pdb/explore/explore.do?structureId=3Ut9" target="_blank">nucleosome</a>
 
 Introduction
 ============
