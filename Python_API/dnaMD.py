@@ -1489,7 +1489,7 @@ class DNA:
 				if(2==j):
 					self.base_steps[bp_idx[i]].hel_Zaxis = data[i][j]
 	
-	def generate_smooth_axis(self, step_range=False, step=None, smooth=1000, spline=3, fill_point=6, write_pdb=False, filename='helical_axis.pdb', orig_axis_pdb=False):
+	def generate_smooth_axis(self, step_range=False, step=None, smooth=1000, spline=3, fill_point=6):
 		"""	To smoothen the helical axis using spline interpolation.
 
 		.. warning::
@@ -1524,15 +1524,6 @@ class DNA:
 			* ``fill_point (int)``: Number of intrapolated points between two adjacent helical-axis coordinates.
 			
 			
-			* ``write_pdb (bool)``: If ``True``, a PDB format file of name ``filename = 'helical_axis.pdb'`` will be generated. See below for description of this file.
-			
-			
-			* ``filename (string)``: Name of a PDB format file, which will be generated if ``write_pdb = True``. This is a trajectory file, which contains coordinates of the smoothed axis  as a **Chain A**. If ``orig_axis_pdb = True``, coordinates of the original axis (output from ``do_x3dna``) will be also dumped as **Chain B** in this trajectory file.
-
-
-			* ``orig_axis_pdb (bool)``: If ``True``, coordinates of the original axis (output from ``do_x3dna``) will be dumped as **Chain B** in the PDB trajectory file. It might be useful to compare the smoothened and original axis for optimization of smoothness.
-
-
 		**Returns:**
 					``None``
 
@@ -1568,9 +1559,6 @@ class DNA:
 		RawZ = np.array(RawZ).T
 
 		smoothX, smoothY, smoothZ = [], [], []
-
-		if (write_pdb):
-			f = open(filename, 'w')
 
 		for i in range(len(self.time)):
 			orig_x = RawX[i].copy()
@@ -1617,25 +1605,7 @@ class DNA:
 			smoothY.append(ysmooth)
 			smoothZ.append(zsmooth)
 
-			if(write_pdb):
-				f.write('%-6s    %4d\n' % ("MODEL",i+1))
-				for j in range(len(xsmooth)):
-					f.write('%-6s%5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f\n' % ("ATOM",j+1,"CA"," ","AXS","A",j+1, " ", xsmooth[j],ysmooth[j],zsmooth[j], 1.00, 0.00))
-
-				for j in range(len(xsmooth)-1):
-					f.write('CONECT %4d %4d\n' % (j+1, j+2))
-				
-				f.write("TER\n")
-				
-				if (orig_axis_pdb):
-					for j in range(len(RawX[i])):
-						f.write('%-6s%5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f\n' % ("ATOM",j+1+len(xsmooth),"O"," ","AXS","B",j+1, " ", RawX[i][j],RawY[i][j],RawZ[i][j], 1.00, 0.00))
-
-					for j in range(len(xsmooth)-1):
-						f.write('CONECT %4d %4d\n' % (j+1+len(xsmooth), j+2+len(xsmooth)))
-					f.write("TER\n")
-
-				f.write("ENDMDL\n")
+		
 		
 		smoothX = np.asarray(smoothX).T
 		smoothY = np.asarray(smoothY).T
@@ -1647,7 +1617,142 @@ class DNA:
 			self.base_steps[bp_idx[i]].hel_Yaxis_smth = smoothY[i]
 			self.base_steps[bp_idx[i]].hel_Zaxis_smth = smoothZ[i]
 
-	def calculate_curvature_tangent(self, step_range=False, step=None, store_tangent=False, filename='curvature_axis.pdb', write_pdb=False, scale=1):
+	def write_haxis_pdb(self, filename='helical_axis.pdb', step_range=False, step=None, write_smooth_axis=True, write_orig_axis=False, write_curv=False, scale_curv=1):
+		"""
+		To write trajectory of helcial-axis as a PDB format file. Helical axis could be original or smoothed. For smoothed axis, curvature could be written in B-factor field of PDB file.
+
+		**Arguments:**
+			
+			* ``filename (string)``: Name of the output PDB format file.
+			
+			* ``step_range (bool)``:
+					* ``step_range = True`` : Smoothen axis for the given range of base-steps
+					* ``step_range = False``: Smoothen axis for entire DNA. If original helical-axis of any base-step will be found to be not available, error will be raised.
+					
+			* ``step (list)``: list containing lower and higher limit of base-steps range
+							* This option only works with ``step_range=True``.
+							* This list should not contain more than two number. 
+							* First number should be less than second number.
+							
+					Example:
+						
+						*For base-step 4 to 15*:
+							``step = [4,15]         # step_range = True``
+
+			* ``write_smooth_axis (bool)``: Write coordinates of smoothed helical axis as chain A.
+			
+			* ``write_orig_axis (bool)``: Write coordinates of original helical axis (output from do_x3dna) as chain B.
+			
+			* ``write_curv (bool)``: Write curvature of smoothed helical axis in B-factor coloumn of PDB file.
+			
+			* ``scale_curv (int)``: Scaling of curvature. ``curvature * scale_curv`` is written in  B-factor coloumn of PDB file.
+			
+		**Returns:**
+
+				None
+
+		"""
+		
+		if (step_range) and (step == None):
+			raise ValueError("See, documentation for step  and step_range usage!!!")
+		
+		if not write_orig_axis and not write_smooth_axis:
+			raise ValueError("Nothing to write as both \"write_orig_axis=Flase\" and \"write_smooth_axis=False\" !!!")
+
+
+		if step_range:
+			if (len(step) != 2):
+				raise ValueError("See, documentation for step usage!!!")
+			
+			if step[0] > step[1]:
+				raise ValueError("See, documentation for step usage!!!")
+			
+			# Orignal helical axis
+			if (write_orig_axis):
+				RawX, bp_idx = self.get_parameters('Helical X-axis', step, bp_range=True)
+				RawY, dummy = self.get_parameters('Helical Y-axis', step, bp_range=True)
+				RawZ, dummy = self.get_parameters('Helical Z-axis', step, bp_range=True)
+			
+			# Smoothed helical axis
+			if (write_smooth_axis):
+				SmoothX, bp_idx = self.get_parameters('Helical X-axis smooth', step, bp_range=True)
+				SmoothY, bp_idx = self.get_parameters('Helical Y-axis smooth', step, bp_range=True)
+				SmoothZ, bp_idx = self.get_parameters('Helical Z-axis smooth', step, bp_range=True)
+
+			# Helical axis curvature
+			if (write_curv):
+				curvature, bp_idx = self.get_parameters('Helical axis curvature', step, bp_range=True)
+		
+		else:
+
+			# Orignal helical axis
+			if (write_orig_axis):
+				RawX, bp_idx = self.get_parameters('Helical X-axis', [1, self.num_step], bp_range=True)
+				RawY, dummy = self.get_parameters('Helical Y-axis', [1, self.num_step], bp_range=True)
+				RawZ, dummy = self.get_parameters('Helical Z-axis', [1, self.num_step], bp_range=True)
+			
+			# Smoothed helical axis
+			if (write_smooth_axis):
+				SmoothX, bp_idx = self.get_parameters('Helical X-axis smooth', [1, self.num_step], bp_range=True)
+				SmoothY, bp_idx = self.get_parameters('Helical Y-axis smooth', [1, self.num_step], bp_range=True)
+				SmoothZ, bp_idx = self.get_parameters('Helical Z-axis smooth', [1, self.num_step], bp_range=True)
+			
+			# Helical axis curvature
+			if (write_curv):
+				curvature, bp_idx = self.get_parameters('Helical axis curvature', [1, self.num_step], bp_range=True)
+	
+		if (write_orig_axis):
+			RawX = np.array(RawX).T
+			RawY = np.array(RawY).T
+			RawZ = np.array(RawZ).T
+		
+		if (write_smooth_axis):
+			SmoothX = np.array(SmoothX).T
+			SmoothY = np.array(SmoothY).T
+			SmoothZ = np.array(SmoothZ).T
+		
+		if (write_curv):
+			curvature = np.array(curvature).T
+
+		f = open(filename, 'w')
+
+		for i in range(len(self.time)):
+			f.write('%-6s    %4d\n' % ("MODEL",i+1))
+			
+			bfactor = 0.00
+
+			if (write_smooth_axis):
+				for j in range(len(SmoothX[i])):
+					
+					if (write_curv):
+						bfactor = curvature[i][j]*scale_curv
+					
+					f.write('%-6s%5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f\n' % ("ATOM",j+1,"CA"," ","AXS","A",j+1, " ", SmoothX[i][j], SmoothY[i][j], SmoothZ[i][j], 1.00, bfactor))
+
+				for j in range(len(SmoothX[i])-1):
+					f.write('CONECT %4d %4d\n' % (j+1, j+2))
+				
+				f.write("TER\n")
+				
+			if (write_orig_axis):
+				atomstart = 0
+				if (write_smooth_axis):
+					atomstart = len(SmoothX[i])
+
+				for j in range(len(RawX[i])):
+					f.write('%-6s%5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f\n' % ("ATOM",j+1+atomstart,"O"," ","AXS","B",j+1, " ", RawX[i][j],RawY[i][j],RawZ[i][j], 1.00, 0.00))
+
+				for j in range(len(RawX[i])-1):
+					f.write('CONECT %4d %4d\n' % (j+1+atomstart, j+2+atomstart))
+				
+				f.write("TER\n")
+
+			f.write("ENDMDL\n")
+	
+		f.close()
+
+
+	def calculate_curvature_tangent(self, step_range=False, step=None, store_tangent=False):
 		"""	
 		To calculate curvatures and tangent vectors along the helical axis. The curvature and tangent vectors are calculated using Frenet-Serret formula. The calculated values are stored in DNA object.
 		
@@ -1673,15 +1778,6 @@ class DNA:
 					* ``store_tangent = False``:  The calculated tangent vectors will be discarded.
 			
 
-			* ``filename (string)``: Name of a PDB format file, which will be generated if ``write_pdb = True``. This is a trajectory file, which contains coordinates of the smoothed axis and its b-factor column stores the value of curvature. Therefore, smoothed helical axis could be visualized in color as a function of curvature.
-							
-			
-			* ``write_pdb (bool)``: If ``True``, a PDB format file of name ``filename = 'curvature_axis.pdb'`` will be generated. See above for description of this file.
-
-
-			* ``scale (int)``: The calculated curvature is multiplied by this value. This multiplication will be only done when ``write_pdb = False`` and scaled value of curvature will be written in PDB file. However, the scaling does not affect the curvature stored in the DNA object that could be used later for analysis.
-
-			
 		**Returns:**
 					``None``
 
@@ -1715,9 +1811,6 @@ class DNA:
 
 		curvature, tangent = [], []
 		
-		if(write_pdb):
-			f = open(filename,"w")
-
 		for i in range(len(self.time)):
 		
 			#Curvature calculation
@@ -1727,17 +1820,6 @@ class DNA:
 			curvature.append(k_temp.flatten())
 			tangent.append(T)
 			
-			if(write_pdb):
-				f.write('%-6s    %4d\n' % ("MODEL",i+1))
-				for j in range(len(X[i])):
-					f.write('%-6s%5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f\n' % ("ATOM",j+1,"CA"," ","AXS","A",j+1, " ", X[i][j],Y[i][j],Z[i][j], 1.00, scale*curvature[i][j]))
-				
-				f.write("TER\n")
-				
-				for j in range(len(X[i])-1):
-					f.write('CONECT %4d %4d\n' % (j+1, j+2))
-				
-				f.write("ENDMDL\n")
 
 		curvature = np.asarray(curvature).T
 		for i in range(len(bp_idx)):
