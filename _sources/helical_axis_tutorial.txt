@@ -136,13 +136,7 @@ the calculation of wrong helical axis.
 .. code:: python
 
     ### Smoothening of helical axis
-    fdna.generate_smooth_axis()
-    
-    # If you want a PDB trajectory file of smoothed helical axis; use following line
-    # fdna.generate_smooth_axis(write_pdb=True, filename='helical_axis.pdb')
-    
-    # If you want a PDB trajectory file of both smoothed and original helical axis; use following line
-    #fdna.generate_smooth_axis(write_pdb=True, filename='helical_axis.pdb', orig_axis_pdb=True)
+    fdna.generate_smooth_axis(smooth=1000, spline=3, fill_point=6)
 --------------
 
 --------------
@@ -230,8 +224,7 @@ To calculate curvature and tangent vectors along helical axis
 
     ### Calculating curvature and tangent vectors
     # If store_tangent=True; then tangent vectors will be stored for later use, otherwise it will be discarded
-    # If write_pdb=True; A pdb file will be generated
-    fdna.calculate_curvature_tangent(store_tangent=True, write_pdb=True)
+    fdna.calculate_curvature_tangent(store_tangent=True)
     fdna.calculate_angle_bw_tangents([5,50])
     
     
@@ -262,6 +255,48 @@ To calculate curvature and tangent vectors along helical axis
 .. image:: helical_axis_tutorial_files/helical_axis_tutorial_10_1.png
 
 
+--------------
+
+--------------
+
+Writing trajectory of Helical Axis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Calculated helical axis from do\_x3dna and smoothed helical axis
+   could be written as trajectory in PDB format file using
+   `dnaMD.DNA.write\_haxis\_pdb(...) <http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.write_haxis_pdb>`__
+
+-  If ``write_smooth_axis=True``: Coordinates of smoothed helical axis
+   will be written
+
+-  If ``write_orig_axis=True``: Coordinates of original helical axis
+   will be written
+
+-  If ``write_curv=True``: The calculated curvature of smooth helical
+   axis will be written in B-factor field of PDB file. This might be
+   helpful to visualize the helical axis according to its bending in
+   color scale.
+
+-  The values of curvature might be very small ( < 0.01 ). Therefore,
+   scaling up of curvature by 100 to 1000 times may help in better
+   visualization on color scale.
+
+--------------
+
+.. code:: python
+
+    # Only smoothed helical axis
+    fdna.write_haxis_pdb(filename='only_smoothed_axis.pdb', write_smooth_axis=True)
+    
+    # Only original helical axis
+    fdna.write_haxis_pdb(filename='only_original_axis.pdb', write_smooth_axis=False, write_orig_axis=True)
+    
+    # Both original and smoothed axis
+    fdna.write_haxis_pdb(filename='original_smoothed_axis.pdb', write_smooth_axis=True, write_orig_axis=True)
+    
+    # Both original and smoothed axis with curvature scaled-up by 1000 times
+    fdna.write_haxis_pdb(filename='original_smoothed_axis_curvature_.pdb', write_smooth_axis=True, write_orig_axis=True, 
+                         write_curv=True, scale_curv=1000)
 --------------
 
 --------------
@@ -346,21 +381,21 @@ Angle between tangent vectors
     plt.show()
 
 
-.. image:: helical_axis_tutorial_files/helical_axis_tutorial_12_0.png
+.. image:: helical_axis_tutorial_files/helical_axis_tutorial_14_0.png
 
 
 
-.. image:: helical_axis_tutorial_files/helical_axis_tutorial_12_1.png
+.. image:: helical_axis_tutorial_files/helical_axis_tutorial_14_1.png
 
 
 
-.. image:: helical_axis_tutorial_files/helical_axis_tutorial_12_2.png
+.. image:: helical_axis_tutorial_files/helical_axis_tutorial_14_2.png
 
 
 
-.. image:: helical_axis_tutorial_files/helical_axis_tutorial_12_3.png
+.. image:: helical_axis_tutorial_files/helical_axis_tutorial_14_3.png
 
 
 
-.. image:: helical_axis_tutorial_files/helical_axis_tutorial_12_4.png
+.. image:: helical_axis_tutorial_files/helical_axis_tutorial_14_4.png
 

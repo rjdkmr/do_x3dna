@@ -177,13 +177,7 @@ sharp kink in the smoothed axis. Higher value of <tt class="docutils literal"><s
 the calculation of wrong helical axis.</p>
 <hr class="docutils" />
 <div class="code python highlight-python"><div class="highlight"><pre><span class="c">### Smoothening of helical axis</span>
-<span class="n">fdna</span><span class="o">.</span><span class="n">generate_smooth_axis</span><span class="p">()</span>
-
-<span class="c"># If you want a PDB trajectory file of smoothed helical axis; use following line</span>
-<span class="c"># fdna.generate_smooth_axis(write_pdb=True, filename=&#39;helical_axis.pdb&#39;)</span>
-
-<span class="c"># If you want a PDB trajectory file of both smoothed and original helical axis; use following line</span>
-<span class="c">#fdna.generate_smooth_axis(write_pdb=True, filename=&#39;helical_axis.pdb&#39;, orig_axis_pdb=True)</span>
+<span class="n">fdna</span><span class="o">.</span><span class="n">generate_smooth_axis</span><span class="p">(</span><span class="n">smooth</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">spline</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fill_point</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>
 <hr class="docutils" />
@@ -258,8 +252,7 @@ generating the smooth helical axis.</li>
 <hr class="docutils" />
 <div class="code python highlight-python"><div class="highlight"><pre><span class="c">### Calculating curvature and tangent vectors</span>
 <span class="c"># If store_tangent=True; then tangent vectors will be stored for later use, otherwise it will be discarded</span>
-<span class="c"># If write_pdb=True; A pdb file will be generated</span>
-<span class="n">fdna</span><span class="o">.</span><span class="n">calculate_curvature_tangent</span><span class="p">(</span><span class="n">store_tangent</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">write_pdb</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">fdna</span><span class="o">.</span><span class="n">calculate_curvature_tangent</span><span class="p">(</span><span class="n">store_tangent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="n">fdna</span><span class="o">.</span><span class="n">calculate_angle_bw_tangents</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span><span class="mi">50</span><span class="p">])</span>
 
 
@@ -285,6 +278,42 @@ generating the smooth helical axis.</li>
 </div>
 <img alt="_images/helical_axis_tutorial_10_0.png" src="_images/helical_axis_tutorial_10_0.png" />
 <img alt="_images/helical_axis_tutorial_10_1.png" src="_images/helical_axis_tutorial_10_1.png" />
+<hr class="docutils" />
+</div>
+<hr class="docutils" />
+<div class="section" id="writing-trajectory-of-helical-axis">
+<h2>Writing trajectory of Helical Axis<a class="headerlink" href="#writing-trajectory-of-helical-axis" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Calculated helical axis from do_x3dna and smoothed helical axis
+could be written as trajectory in PDB format file using
+<a class="reference external" href="http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.write_haxis_pdb">dnaMD.DNA.write_haxis_pdb(...)</a></li>
+<li>If <tt class="docutils literal"><span class="pre">write_smooth_axis=True</span></tt>: Coordinates of smoothed helical axis
+will be written</li>
+<li>If <tt class="docutils literal"><span class="pre">write_orig_axis=True</span></tt>: Coordinates of original helical axis
+will be written</li>
+<li>If <tt class="docutils literal"><span class="pre">write_curv=True</span></tt>: The calculated curvature of smooth helical
+axis will be written in B-factor field of PDB file. This might be
+helpful to visualize the helical axis according to its bending in
+color scale.</li>
+<li>The values of curvature might be very small ( &lt; 0.01 ). Therefore,
+scaling up of curvature by 100 to 1000 times may help in better
+visualization on color scale.</li>
+</ul>
+<hr class="docutils" />
+<div class="code python highlight-python"><div class="highlight"><pre><span class="c"># Only smoothed helical axis</span>
+<span class="n">fdna</span><span class="o">.</span><span class="n">write_haxis_pdb</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">&#39;only_smoothed_axis.pdb&#39;</span><span class="p">,</span> <span class="n">write_smooth_axis</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># Only original helical axis</span>
+<span class="n">fdna</span><span class="o">.</span><span class="n">write_haxis_pdb</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">&#39;only_original_axis.pdb&#39;</span><span class="p">,</span> <span class="n">write_smooth_axis</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">write_orig_axis</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># Both original and smoothed axis</span>
+<span class="n">fdna</span><span class="o">.</span><span class="n">write_haxis_pdb</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">&#39;original_smoothed_axis.pdb&#39;</span><span class="p">,</span> <span class="n">write_smooth_axis</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">write_orig_axis</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># Both original and smoothed axis with curvature scaled-up by 1000 times</span>
+<span class="n">fdna</span><span class="o">.</span><span class="n">write_haxis_pdb</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">&#39;original_smoothed_axis_curvature_.pdb&#39;</span><span class="p">,</span> <span class="n">write_smooth_axis</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">write_orig_axis</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                     <span class="n">write_curv</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">scale_curv</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
 <hr class="docutils" />
 </div>
 <hr class="docutils" />
@@ -364,11 +393,11 @@ angle between the tangent vectors of the segment&#8217;s end points</li>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="_images/helical_axis_tutorial_12_0.png" src="_images/helical_axis_tutorial_12_0.png" />
-<img alt="_images/helical_axis_tutorial_12_1.png" src="_images/helical_axis_tutorial_12_1.png" />
-<img alt="_images/helical_axis_tutorial_12_2.png" src="_images/helical_axis_tutorial_12_2.png" />
-<img alt="_images/helical_axis_tutorial_12_3.png" src="_images/helical_axis_tutorial_12_3.png" />
-<img alt="_images/helical_axis_tutorial_12_4.png" src="_images/helical_axis_tutorial_12_4.png" />
+<img alt="_images/helical_axis_tutorial_14_0.png" src="_images/helical_axis_tutorial_14_0.png" />
+<img alt="_images/helical_axis_tutorial_14_1.png" src="_images/helical_axis_tutorial_14_1.png" />
+<img alt="_images/helical_axis_tutorial_14_2.png" src="_images/helical_axis_tutorial_14_2.png" />
+<img alt="_images/helical_axis_tutorial_14_3.png" src="_images/helical_axis_tutorial_14_3.png" />
+<img alt="_images/helical_axis_tutorial_14_4.png" src="_images/helical_axis_tutorial_14_4.png" />
 </div>
 </div>
 

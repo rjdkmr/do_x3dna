@@ -110,7 +110,7 @@
 
 <dl class="method">
 <dt id="dnaMD.DNA.calculate_curvature_tangent">
-<tt class="descname">calculate_curvature_tangent</tt><big>(</big><em>step_range=False</em>, <em>step=None</em>, <em>store_tangent=False</em>, <em>filename='curvature_axis.pdb'</em>, <em>write_pdb=False</em>, <em>scale=1</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.calculate_curvature_tangent" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">calculate_curvature_tangent</tt><big>(</big><em>step_range=False</em>, <em>step=None</em>, <em>store_tangent=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.calculate_curvature_tangent" title="Permalink to this definition">¶</a></dt>
 <dd><p>To calculate curvatures and tangent vectors along the helical axis. The curvature and tangent vectors are calculated using Frenet-Serret formula. The calculated values are stored in DNA object.</p>
 <p><strong>Arguments:</strong></p>
 <blockquote>
@@ -153,12 +153,6 @@
 </dd>
 </dl>
 </li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Name of a PDB format file, which will be generated if <tt class="docutils literal"><span class="pre">write_pdb</span> <span class="pre">=</span> <span class="pre">True</span></tt>. This is a trajectory file, which contains coordinates of the smoothed axis and its b-factor column stores the value of curvature. Therefore, smoothed helical axis could be visualized in color as a function of curvature.</p>
-</li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">write_pdb</span> <span class="pre">(bool)</span></tt>: If <tt class="docutils literal"><span class="pre">True</span></tt>, a PDB format file of name <tt class="docutils literal"><span class="pre">filename</span> <span class="pre">=</span> <span class="pre">'curvature_axis.pdb'</span></tt> will be generated. See above for description of this file.</p>
-</li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">scale</span> <span class="pre">(int)</span></tt>: The calculated curvature is multiplied by this value. This multiplication will be only done when <tt class="docutils literal"><span class="pre">write_pdb</span> <span class="pre">=</span> <span class="pre">False</span></tt> and scaled value of curvature will be written in PDB file. However, the scaling does not affect the curvature stored in the DNA object that could be used later for analysis.</p>
-</li>
 </ul>
 </div></blockquote>
 <dl class="docutils">
@@ -169,7 +163,7 @@
 
 <dl class="method">
 <dt id="dnaMD.DNA.generate_smooth_axis">
-<tt class="descname">generate_smooth_axis</tt><big>(</big><em>step_range=False</em>, <em>step=None</em>, <em>smooth=1000</em>, <em>spline=3</em>, <em>fill_point=6</em>, <em>write_pdb=False</em>, <em>filename='helical_axis.pdb'</em>, <em>orig_axis_pdb=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.generate_smooth_axis" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">generate_smooth_axis</tt><big>(</big><em>step_range=False</em>, <em>step=None</em>, <em>smooth=1000</em>, <em>spline=3</em>, <em>fill_point=6</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.generate_smooth_axis" title="Permalink to this definition">¶</a></dt>
 <dd><p>To smoothen the helical axis using spline interpolation.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -222,12 +216,6 @@
 <li><p class="first"><tt class="docutils literal"><span class="pre">spline</span> <span class="pre">(int)</span></tt>: Degree of spline. For more details, see about <tt class="docutils literal"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">3</span></tt>, which is paased into  <a class="reference external" href="http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html#scipy.interpolate.splprep">scipy.interpolate.splprep()</a> method.</p>
 </li>
 <li><p class="first"><tt class="docutils literal"><span class="pre">fill_point</span> <span class="pre">(int)</span></tt>: Number of intrapolated points between two adjacent helical-axis coordinates.</p>
-</li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">write_pdb</span> <span class="pre">(bool)</span></tt>: If <tt class="docutils literal"><span class="pre">True</span></tt>, a PDB format file of name <tt class="docutils literal"><span class="pre">filename</span> <span class="pre">=</span> <span class="pre">'helical_axis.pdb'</span></tt> will be generated. See below for description of this file.</p>
-</li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Name of a PDB format file, which will be generated if <tt class="docutils literal"><span class="pre">write_pdb</span> <span class="pre">=</span> <span class="pre">True</span></tt>. This is a trajectory file, which contains coordinates of the smoothed axis  as a <strong>Chain A</strong>. If <tt class="docutils literal"><span class="pre">orig_axis_pdb</span> <span class="pre">=</span> <span class="pre">True</span></tt>, coordinates of the original axis (output from <tt class="docutils literal"><span class="pre">do_x3dna</span></tt>) will be also dumped as <strong>Chain B</strong> in this trajectory file.</p>
-</li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">orig_axis_pdb</span> <span class="pre">(bool)</span></tt>: If <tt class="docutils literal"><span class="pre">True</span></tt>, coordinates of the original axis (output from <tt class="docutils literal"><span class="pre">do_x3dna</span></tt>) will be dumped as <strong>Chain B</strong> in the PDB trajectory file. It might be useful to compare the smoothened and original axis for optimization of smoothness.</p>
 </li>
 </ul>
 </div></blockquote>
@@ -859,6 +847,59 @@
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dnaMD.DNA.write_haxis_pdb">
+<tt class="descname">write_haxis_pdb</tt><big>(</big><em>filename='helical_axis.pdb'</em>, <em>step_range=False</em>, <em>step=None</em>, <em>write_smooth_axis=True</em>, <em>write_orig_axis=False</em>, <em>write_curv=False</em>, <em>scale_curv=1</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.write_haxis_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>To write trajectory of helcial-axis as a PDB format file. Helical axis could be original or smoothed. For smoothed axis, curvature could be written in B-factor field of PDB file.</p>
+<p><strong>Arguments:</strong></p>
+<blockquote>
+<div><ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">filename</span> <span class="pre">(string)</span></tt>: Name of the output PDB format file.</p>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">(bool)</span></tt>:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">=</span> <span class="pre">True</span></tt> : Smoothen axis for the given range of base-steps</li>
+<li><tt class="docutils literal"><span class="pre">step_range</span> <span class="pre">=</span> <span class="pre">False</span></tt>: Smoothen axis for entire DNA. If original helical-axis of any base-step will be found to be not available, error will be raised.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">step</span> <span class="pre">(list)</span></tt>: list containing lower and higher limit of base-steps range</dt>
+<dd><blockquote class="first">
+<div><ul class="simple">
+<li>This option only works with <tt class="docutils literal"><span class="pre">step_range=True</span></tt>.</li>
+<li>This list should not contain more than two number.</li>
+<li>First number should be less than second number.</li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt><em>For base-step 4 to 15</em>:</dt>
+<dd><p class="first last"><tt class="docutils literal"><span class="pre">step</span> <span class="pre">=</span> <span class="pre">[4,15]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">#</span> <span class="pre">step_range</span> <span class="pre">=</span> <span class="pre">True</span></tt></p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">write_smooth_axis</span> <span class="pre">(bool)</span></tt>: Write coordinates of smoothed helical axis as chain A.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">write_orig_axis</span> <span class="pre">(bool)</span></tt>: Write coordinates of original helical axis (output from do_x3dna) as chain B.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">write_curv</span> <span class="pre">(bool)</span></tt>: Write curvature of smoothed helical axis in B-factor coloumn of PDB file.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">scale_curv</span> <span class="pre">(int)</span></tt>: Scaling of curvature. <tt class="docutils literal"><span class="pre">curvature</span> <span class="pre">*</span> <span class="pre">scale_curv</span></tt> is written in  B-factor coloumn of PDB file.</p>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<div>None</div></blockquote>
 </dd></dl>
 
 </dd></dl>
