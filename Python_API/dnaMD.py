@@ -1534,36 +1534,12 @@ class DNA:
 		except:
 			raise ImportError("SciPy package is not available. Please visit http://www.scipy.org/install.html for download and installation instructions.\n") 
 
-		if (step_range) and (step == None):
-			raise ValueError("See, documentation for step  and step_range usage!!!")
-		
-		if step_range:
-			if (len(step) != 2):
-				raise ValueError("See, documentation for step usage!!!")
+		####################################
+		def fit_axis(RawX, RawY, RawZ):
 			
-			if step[0] > step[1]:
-				raise ValueError("See, documentation for step usage!!!")
-			RawX, bp_idx = self.get_parameters('Helical X-axis', step, bp_range=True)
-			RawY, dummy = self.get_parameters('Helical Y-axis', step, bp_range=True)
-			RawZ, dummy = self.get_parameters('Helical Z-axis', step, bp_range=True)
-		else:
-			RawX, bp_idx = self.get_parameters('Helical X-axis', [1, self.num_step], bp_range=True)
-			RawY, dummy = self.get_parameters('Helical Y-axis', [1, self.num_step], bp_range=True)
-			RawZ, dummy = self.get_parameters('Helical Z-axis', [1, self.num_step], bp_range=True)
-
-		nest=-1
-		points = fill_point * len(bp_idx)
-
-		RawX = np.array(RawX).T
-		RawY = np.array(RawY).T
-		RawZ = np.array(RawZ).T
-
-		smoothX, smoothY, smoothZ = [], [], []
-
-		for i in range(len(self.time)):
-			orig_x = RawX[i].copy()
-			orig_y = RawY[i].copy()
-			orig_z = RawZ[i].copy()
+			orig_x = RawX.copy()
+			orig_y = RawY.copy()
+			orig_z = RawZ.copy()
 			
 			xsmooth, ysmooth, zsmooth = [], [], []
 
@@ -1601,11 +1577,52 @@ class DNA:
 					else:
 						bsmooth = True
 
+			return xsmooth, ysmooth, zsmooth
+		#################################################
+
+
+		if (step_range) and (step == None):
+			raise ValueError("See, documentation for step  and step_range usage!!!")
+		
+		if step_range:
+			if (len(step) != 2):
+				raise ValueError("See, documentation for step usage!!!")
+			
+			if step[0] > step[1]:
+				raise ValueError("See, documentation for step usage!!!")
+			RawX, bp_idx = self.get_parameters('Helical X-axis', step, bp_range=True)
+			RawY, dummy = self.get_parameters('Helical Y-axis', step, bp_range=True)
+			RawZ, dummy = self.get_parameters('Helical Z-axis', step, bp_range=True)
+		else:
+			RawX, bp_idx = self.get_parameters('Helical X-axis', [1, self.num_step], bp_range=True)
+			RawY, dummy = self.get_parameters('Helical Y-axis', [1, self.num_step], bp_range=True)
+			RawZ, dummy = self.get_parameters('Helical Z-axis', [1, self.num_step], bp_range=True)
+
+		nest=-1
+		points = fill_point * len(bp_idx)
+
+		RawX = np.array(RawX).T
+		RawY = np.array(RawY).T
+		RawZ = np.array(RawZ).T
+
+		smoothX, smoothY, smoothZ = [], [], []
+
+		nframes = len(self.time)
+		for i in range(nframes):
+			
+			frame_number = i+1	
+			if((frame_number<100) and (frame_number%10==0)) or ((frame_number<1000) and (frame_number%100==0)) or (frame_number%1000==0):
+				sys.stdout.write("\rFitting spline curve on helcial axis of frame %d out of %d frames" % (frame_number, nframes+1))
+				sys.stdout.flush()
+
+			xsmooth, ysmooth, zsmooth = fit_axis(RawX[i], RawY[i], RawZ[i])
+			
 			smoothX.append(xsmooth)
 			smoothY.append(ysmooth)
 			smoothZ.append(zsmooth)
-
 		
+		sys.stdout.write("\nFinished spline curve fitting...\n")
+		sys.stdout.flush()
 		
 		smoothX = np.asarray(smoothX).T
 		smoothY = np.asarray(smoothY).T
@@ -1818,7 +1835,9 @@ class DNA:
 			T, N, B, k_temp, t_temp = frenet_serret(xyz)
 			
 			curvature.append(k_temp.flatten())
-			tangent.append(T)
+			
+			if(store_tangent):
+				tangent.append(T)
 			
 
 		curvature = np.asarray(curvature).T
@@ -2330,7 +2349,7 @@ def read_param_file(FileName,parameters, bp, bp_range, word=False):
 	
 	#For last frame
 	data.append(get_frame_data(block,param_idx,bp_idx))
-	block= []
+	block = []
 	data_transpose = np.array(data).T
 
 	sys.stdout.write("\nFinishid reading.... Total number of frame read =  %d\n" % frame_number)
