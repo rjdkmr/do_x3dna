@@ -50,9 +50,13 @@
 import numpy as np
 import re, os, sys
 import string, random
-# from scipy.interpolate import splprep, splev
 import math
 import subprocess as sub
+try:
+	from scipy.interpolate import splprep, splev
+	scipy_imported = True
+except:
+	scipy_imported = False
 
 class base_step:
 	def __init__(self):
@@ -132,6 +136,7 @@ class DNA:
 		self.num_step = num_bp-1
 		self.smooth_axis = False
 		self.time = []
+		self.mask = []
 		self.base_steps = []
 		self.base_pairs = []
 
@@ -141,7 +146,7 @@ class DNA:
 		for i in range(self.num_step):
 			self.base_steps.append(base_step())
 
-	def get_parameters(self,parameter, bp, bp_range=True):
+	def get_parameters(self,parameter, bp, bp_range=True, masked=False):
 		"""To get the parameters over all frame for the given range of base pair/steps
 		
 		**Arguments:**
@@ -204,18 +209,36 @@ class DNA:
 							bp = [2,5,6,7,9,12,18]                  # bp_range = False
 					
 			* ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
+			
+			
+			* ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
             
+
         **Returns:**
             - ``parameters[bp][nframe] (2D list)``: where bp is number of base pairs/steps and nframe is total number of frames in the trajectory.
 		
 		"""
+
 		bp_idx, dum = get_idx_of_bp_parameters(bp,[],bp_range)
 		append = False
 		empty = False
 		key = 'dummy'
 		idx = 0
 		data=[]
+		midx = []
+
+
+		# Masking values according to mask array
+		if masked and len(self.mask)==0:
+			raise ValueError("mask array is not set. mask array is set within generate_smooth_axis() \n")
 		
+		for i in range(len(self.time)):
+			if masked:
+				if	self.mask[i] == False:
+					midx.append(i)
+			else:
+				midx.append(i)
+
 		#Extracting data for given base pairs and parameters combination
 		#Base pair parameters
 		if(parameter=='Shear'):
@@ -226,7 +249,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_pairs[bp_idx[i]].shear)
+					data.append(self.base_pairs[bp_idx[i]].shear[midx])
 					append =True
 
 		if(parameter=='Stretch'):
@@ -237,7 +260,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_pairs[bp_idx[i]].stretch)
+					data.append(self.base_pairs[bp_idx[i]].stretch[midx])
 					append = True
 
 		if(parameter=='Stagger'):
@@ -248,7 +271,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_pairs[bp_idx[i]].stagger)
+					data.append(self.base_pairs[bp_idx[i]].stagger[midx])
 					append = True
 
 		if(parameter=='Buckle'):
@@ -259,7 +282,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_pairs[bp_idx[i]].buckle)
+					data.append(self.base_pairs[bp_idx[i]].buckle[midx])
 					append = True
 
 		if(parameter=='Propeller'):
@@ -270,7 +293,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_pairs[bp_idx[i]].propeller)
+					data.append(self.base_pairs[bp_idx[i]].propeller[midx])
 					append = True
 
 		if(parameter=='Opening'):
@@ -281,7 +304,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_pairs[bp_idx[i]].opening)
+					data.append(self.base_pairs[bp_idx[i]].opening[midx])
 					append = True
 		
 		if(parameter=='Radius S-1'):
@@ -292,7 +315,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_pairs[bp_idx[i]].radS1)
+					data.append(self.base_pairs[bp_idx[i]].radS1[midx])
 					append = True
 
 
@@ -304,7 +327,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_pairs[bp_idx[i]].radS2)
+					data.append(self.base_pairs[bp_idx[i]].radS2[midx])
 					append = True
 
 		#Base step parameters
@@ -316,7 +339,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].shift)
+					data.append(self.base_steps[bp_idx[i]].shift[midx])
 					append = True
 
 		if(parameter=='Slide'):
@@ -327,7 +350,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].slide)
+					data.append(self.base_steps[bp_idx[i]].slide[midx])
 					append = True
 
 		if(parameter=='Rise'):
@@ -338,7 +361,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].rise)
+					data.append(self.base_steps[bp_idx[i]].rise[midx])
 					append = True
 
 		if(parameter=='Tilt'):
@@ -349,7 +372,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].tilt)
+					data.append(self.base_steps[bp_idx[i]].tilt[midx])
 					append = True
 
 		if(parameter=='Roll'):
@@ -360,7 +383,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].roll)
+					data.append(self.base_steps[bp_idx[i]].roll[midx])
 					append = True
 
 		if(parameter=='Twist'):
@@ -371,7 +394,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].twist)
+					data.append(self.base_steps[bp_idx[i]].twist[midx])
 					append = True
 
 		#Base step helical parameters
@@ -383,7 +406,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].x_disp)
+					data.append(self.base_steps[bp_idx[i]].x_disp[midx])
 					append = True
 
 		if(parameter=='Y-disp'):
@@ -394,7 +417,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].y_disp)
+					data.append(self.base_steps[bp_idx[i]].y_disp[midx])
 					append = True
 
 		if(parameter=='h-Rise'):
@@ -405,7 +428,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].h_rise)
+					data.append(self.base_steps[bp_idx[i]].h_rise[midx])
 					append = True
 
 		if(parameter=='Inclination'):
@@ -416,7 +439,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].inclination)
+					data.append(self.base_steps[bp_idx[i]].inclination[midx])
 					append = True
 
 		if(parameter=='Tip'):
@@ -427,7 +450,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].tip)
+					data.append(self.base_steps[bp_idx[i]].tip[midx])
 					append = True
 
 		if(parameter=='h-Twist'):
@@ -438,7 +461,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].h_twist)
+					data.append(self.base_steps[bp_idx[i]].h_twist[midx])
 					append = True
 		
 		# Helical axis related stuffs
@@ -450,7 +473,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].hel_Xaxis)
+					data.append(self.base_steps[bp_idx[i]].hel_Xaxis[midx])
 					append = True
 
 		if(parameter=='Helical Y-axis'):
@@ -461,7 +484,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].hel_Yaxis)
+					data.append(self.base_steps[bp_idx[i]].hel_Yaxis[midx])
 					append = True
 
 		if(parameter=='Helical Z-axis'):
@@ -472,7 +495,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].hel_Zaxis)
+					data.append(self.base_steps[bp_idx[i]].hel_Zaxis[midx])
 					append = True
 
 		if(parameter=='Helical X-axis smooth'):
@@ -483,7 +506,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].hel_Xaxis_smth)
+					data.append(self.base_steps[bp_idx[i]].hel_Xaxis_smth[midx])
 					append = True
 
 		if(parameter=='Helical Y-axis smooth'):
@@ -494,7 +517,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].hel_Yaxis_smth)
+					data.append(self.base_steps[bp_idx[i]].hel_Yaxis_smth[midx])
 					append = True
 
 		if(parameter=='Helical Z-axis smooth'):
@@ -505,7 +528,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].hel_Zaxis_smth)
+					data.append(self.base_steps[bp_idx[i]].hel_Zaxis_smth[midx])
 					append = True
 
 		if(parameter=='Helical axis curvature'):
@@ -516,7 +539,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].curvature)
+					data.append(self.base_steps[bp_idx[i]].curvature[midx])
 					append = True
 
 		if(parameter=='Helical axis tangent'):
@@ -527,7 +550,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].tangent)
+					data.append(self.base_steps[bp_idx[i]].tangent[midx])
 					append = True
 		
 		# Major and minor grooves
@@ -539,7 +562,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].major_pp)
+					data.append(self.base_steps[bp_idx[i]].major_pp[midx])
 					append = True
 		
 		if(parameter=='Major Groove Refined'):
@@ -551,7 +574,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].major_refine)
+					data.append(self.base_steps[bp_idx[i]].major_refine[midx])
 					append = True
 		
 		if(parameter=='Minor Groove'):
@@ -562,7 +585,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].minor_pp)
+					data.append(self.base_steps[bp_idx[i]].minor_pp[midx])
 					append = True
 		
 		if(parameter=='Minor Groove Refined'):
@@ -573,7 +596,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].minor_refine)
+					data.append(self.base_steps[bp_idx[i]].minor_refine[midx])
 					append = True
 		
 		# Backbone dihedrals
@@ -585,7 +608,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].alpha_s1)
+					data.append(self.base_steps[bp_idx[i]].alpha_s1[midx])
 					append = True
 		
 		if(parameter=='beta S-1'):
@@ -596,7 +619,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].beta_s1)
+					data.append(self.base_steps[bp_idx[i]].beta_s1[midx])
 					append = True
 		
 		if(parameter=='gamma S-1'):
@@ -607,7 +630,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].gamma_s1)
+					data.append(self.base_steps[bp_idx[i]].gamma_s1[midx])
 					append = True
 		
 		if(parameter=='delta S-1'):
@@ -618,7 +641,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].delta_s1)
+					data.append(self.base_steps[bp_idx[i]].delta_s1[midx])
 					append = True
 		
 		if(parameter=='epsilon S-1'):
@@ -629,7 +652,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].epsilon_s1)
+					data.append(self.base_steps[bp_idx[i]].epsilon_s1[midx])
 					append = True
 		
 		if(parameter=='zeta S-1'):
@@ -640,7 +663,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].zeta_s1)
+					data.append(self.base_steps[bp_idx[i]].zeta_s1[midx])
 					append = True
 		
 		if(parameter=='chi S-1'):
@@ -651,7 +674,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].chi_s1)
+					data.append(self.base_steps[bp_idx[i]].chi_s1[midx])
 					append = True
 		
 		if(parameter=='alpha S-2'):
@@ -662,7 +685,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].alpha_s2)
+					data.append(self.base_steps[bp_idx[i]].alpha_s2[midx])
 					append = True
 		
 		if(parameter=='beta S-2'):
@@ -673,7 +696,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].beta_s2)
+					data.append(self.base_steps[bp_idx[i]].beta_s2[midx])
 					append = True
 		
 		if(parameter=='gamma S-2'):
@@ -684,7 +707,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].gamma_s2)
+					data.append(self.base_steps[bp_idx[i]].gamma_s2[midx])
 					append = True
 		
 		if(parameter=='delta S-2'):
@@ -695,7 +718,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].delta_s2)
+					data.append(self.base_steps[bp_idx[i]].delta_s2[midx])
 					append = True
 		
 		if(parameter=='epsilon S-2'):
@@ -706,7 +729,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].epsilon_s2)
+					data.append(self.base_steps[bp_idx[i]].epsilon_s2[midx])
 					append = True
 		
 		if(parameter=='zeta S-2'):
@@ -717,7 +740,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].zeta_s2)
+					data.append(self.base_steps[bp_idx[i]].zeta_s2[midx])
 					append = True
 		
 		if(parameter=='chi S-2'):
@@ -728,7 +751,7 @@ class DNA:
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].chi_s2)
+					data.append(self.base_steps[bp_idx[i]].chi_s2[midx])
 					append = True
 		
 		if(empty):
@@ -741,7 +764,7 @@ class DNA:
 		
 		return data, bp_idx
 
-	def time_vs_parameter(self, parameter, bp, merge=False, merge_method='mean'):
+	def time_vs_parameter(self, parameter, bp, merge=False, merge_method='mean', masked=False):
 		"""To get the parameter of either a specfic base-pair/step or a DNA segment as a function of time.
 		
 		**Arguments:**
@@ -761,7 +784,11 @@ class DNA:
 
 					* ``merge_method = mean``: Average of local parameters
 					* ``merge_method = sum``: Sum of local parameters
-            
+
+
+			* ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
+           
+
         **Returns:**
             * ``time  (1D array)``: array containing time of length number of frames
             * ``value (1D array)``: array containing parameter values of length number of frames
@@ -780,24 +807,36 @@ class DNA:
 		if (merge==True) and not ((merge_method == 'mean') or (merge_method == 'sum')):
 			raise AssertionError("merge method %s is not available." % merge_method)
 			exit(1)
+		
+		# Masking values according to mask array
+		midx = []
+		if masked and len(self.mask)==0:
+			raise ValueError("mask array is not set. mask array is set within generate_smooth_axis() \n")
+		for i in range(len(self.time)):
+			if masked:
+				if	self.mask[i] == False:
+					midx.append(i)
+			else:
+				midx.append(i)
+
 
 		if len(bp)==1:
-			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=False)
+			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=False, masked=masked)
 		else:
-			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=True)
+			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=True, masked=masked)
 
 		if (merge==True) and (merge_method=='mean'):
 			return self.time, np.mean(param_value, axis=0)
 
 		elif (merge==True) and (merge_method=='sum'):
-			return self.time, np.sum(param_value, axis=0)
+			return self.time[midx], np.sum(param_value, axis=0)
 
 		else:
-			return self.time, param_value[0]
+			return self.time[midx], param_value[0]
 
 
 
-	def parameter_distribution(self, parameter, bp, bins=30, merge=False, merge_method='mean'):
+	def parameter_distribution(self, parameter, bp, bins=30, merge=False, merge_method='mean', masked=False):
 		"""To get the parameter distribution of either a specfic base-pair/step or a DNA segment over the MD simulation.
 		
 		**Arguments:**
@@ -820,7 +859,10 @@ class DNA:
 
 					* ``merge_method = mean``: Average of local parameters
 					* ``merge_method = sum``: Sum of local parameters
-            
+           
+
+			* ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
+
 
         **Returns:**
             * ``values   (1D array)``: array containing parameter values
@@ -842,9 +884,9 @@ class DNA:
 			exit(1)
 
 		if len(bp)==1:
-			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=False)
+			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=False, masked=masked)
 		else:
-			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=True)
+			param_value, bp_idx = self.get_parameters(parameter,bp, bp_range=True, masked=masked)
 
 		if (merge==True) and (merge_method=='mean'):
 			param_value = np.mean(param_value, axis=0)
@@ -856,10 +898,19 @@ class DNA:
 			param_value = param_value[0]
 		
 		density, bin_edges = np.histogram(param_value, bins=bins, density=True)
+		bin_width = bin_edges[1]-bin_edges[0]
+
+		density = np.insert(density, 0, 0.0)
+		density = np.append(density, 0.0)
 
 		values = []
 		for i in range(len(bin_edges)-1):
 			values.append((bin_edges[i]+bin_edges[i+1])/2)
+		
+		bin_width
+		values = np.asarray(values)
+		values = np.append(values, values[-1]+bin_width)
+		values = np.insert(values, 0, values[0]-bin_width)
 
 		return np.array(values), density
 
@@ -922,11 +973,10 @@ class DNA:
 		data, time = read_param_file(filename,parameters,bp,bp_range)
 		
 		if(len(self.time)==0):
-			self.time = time
+			self.time = np.array(time)
 		else:
 			if(len(time)!=len(self.time)):
-				print '\nTime or number of frame mismatch in input files.\n Exiting...\n'
-				exit(1)
+				raise AssertionError("\nTime or number of frame mismatch in input files.\n Exiting...\n")
 		
 		bp_idx, param_idx = get_idx_of_bp_parameters(bp,parameters,bp_range)	
 		
@@ -1008,11 +1058,11 @@ class DNA:
 		data, time = read_param_file(filename, parameters, bp_step, step_range, word=True)
 		
 		if(len(self.time)==0):
-			self.time = time
+			self.time = np.array(time)
 		else:
 			if(len(time)!=len(self.time)):
-				print '\nTime or number of frame mismatch in input files.\n Exiting...\n'
-				exit(1)
+				raise AssertionError("\nTime or number of frame mismatch in input files.\n Exiting...\n")
+
 		
 		bp_idx, param_idx = get_idx_of_bp_parameters(bp_step, parameters, step_range)	
 		
@@ -1109,11 +1159,10 @@ class DNA:
 		data, time = read_param_file(filename,parameters,bp,bp_range)
 		
 		if(len(self.time)==0):
-			self.time = time
+			self.time = np.array(time)
 		else:
 			if(len(time)!=len(self.time)):
-				print '\nTime or number of frame mismatch in input files.\n Exiting...\n'
-				exit(1)
+				raise AssertionError("\nTime or number of frame mismatch in input files.\n Exiting...\n")
 		
 		bp_idx, param_idx = get_idx_of_bp_parameters(bp,parameters,bp_range)	
 		
@@ -1179,7 +1228,7 @@ class DNA:
 		if not (isinstance(bp,list) or isinstance(bp,np.ndarray)):
 			raise AssertionError("type %s is not list or np.ndarray" % type(bp))
 
-		if not ( (atomname=='P') or (atomname=='O4*') or (atomname=='C1*') ):
+		if not ( (atomname=='P') or (atomname=='O4*') or (atomname=='C1*') or (atomname=='O4\'') or (atomname=='C1\'')):
 			print '\n This atomname {0} is not implemented... Exiting\n' .format(atomname)
 
 		
@@ -1187,13 +1236,20 @@ class DNA:
 		if (atomname=='P') or (full):
 			parameter = [1,4]
 		
-		if (atomname=='O4*') and (not full):
+		if (atomname=='O4*' or atomname=='O4\'') and (not full):
 			parameter = [2,5]
 
-		if (atomname=='C1*') and (not full):
+		if (atomname=='C1*' or atomname=='C1\'') and (not full):
 			parameter = [3,6]
 
-		data, time = read_param_file(filename, range(1,6), bp, bp_range)
+		data, time = read_param_file(filename,[1,2,3,4,5,6], bp, bp_range)
+		
+		if(len(self.time)==0):
+			self.time = np.array(time)
+		else:
+			if(len(time)!=len(self.time)):
+				raise AssertionError("\nTime or number of frame mismatch in input files.\n Exiting...\n")
+		
 		bp_idx, param_idx = get_idx_of_bp_parameters(bp,parameter, bp_range)
 		
 		if full:
@@ -1204,11 +1260,11 @@ class DNA:
 				self.base_pairs[bp_idx[i]].radS1 = data[i][0]
 				self.base_pairs[bp_idx[i]].radS2 = data[i][3]
 
-			if (atomname=='O4*'):
+			if (atomname=='O4*' or atomname=='O4\''):
 				self.base_pairs[bp_idx[i]].radS1 = data[i][1]
 				self.base_pairs[bp_idx[i]].radS2 = data[i][4]
 
-			if (atomname=='C1*'):
+			if (atomname=='C1*' or atomname=='C1\''):
 				self.base_pairs[bp_idx[i]].radS1 = data[i][2]
 				self.base_pairs[bp_idx[i]].radS2 = data[i][5]
 
@@ -1279,11 +1335,10 @@ class DNA:
 		data, time = read_param_file(filename,parameters,bp_step,step_range)
 		
 		if(len(self.time)==0):
-			self.time = time
+			self.time = np.array(time)
 		else:
 			if(len(time)!=len(self.time)):
-				print '\nTime or number of frame mismatch in input files.\n Exiting...\n'
-				exit(1)
+				raise AssertionError("\nTime or number of frame mismatch in input files.\n Exiting...\n")
 		
 		bp_idx, param_idx = get_idx_of_bp_parameters(bp_step,parameters,step_range)	
 		
@@ -1316,7 +1371,7 @@ class DNA:
 					if(5==param_idx[j]):
 						self.base_steps[bp_idx[i]].h_twist = data[i][j]
 		
-	def get_mean_error(self,bp,parameter,err_type='std',bp_range=True, merge_bp=1, merge_method='mean'):
+	def get_mean_error(self,bp,parameter,err_type='std',bp_range=True, merge_bp=1, merge_method='mean', masked=False):
 		"""To calculate average and error of the given parameter for the gieven set of base-pairs/steps
 		
 		**Arguments:**
@@ -1350,7 +1405,9 @@ class DNA:
 					* ``merge_method = mean``: Average of local parameters
 					* ``merge_method = sum``: Sum of local parameters
             
-			
+			* ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
+		
+
 		**Returns:**
 				* ``basepairs/steps (1D array)``: Number of base pair-steps. If ``merge_bp>1``, middle number will be returned.
 				* ``avg. parameter values (1D array)``: average values of the parameter
@@ -1371,7 +1428,7 @@ class DNA:
 			raise AssertionError("merge method %s is not available." % merge_method)
 			exit(1)
 		
-		data, bp_idx = self.get_parameters(parameter,bp,bp_range)
+		data, bp_idx = self.get_parameters(parameter,bp,bp_range, masked=masked)
 
 		bp_number = np.add(bp_idx,1)
 		data = np.array(data)
@@ -1469,11 +1526,10 @@ class DNA:
 			data, time = read_param_file(filename, [1,2,3], [1,self.num_step], True)
 		
 		if(len(self.time)==0):
-			self.time = time
+			self.time = np.array(time)
 		else:
 			if(len(time)!=len(self.time)):
-				print '\nTime or number of frame mismatch in input files.\n Exiting...\n'
-				exit(1)
+				raise AssertionError("\nTime or number of frame mismatch in input files.\n Exiting...\n")
 
 		if (step_range):
 			bp_idx, param_idx = get_idx_of_bp_parameters(step,[],True)
@@ -1489,8 +1545,11 @@ class DNA:
 				if(2==j):
 					self.base_steps[bp_idx[i]].hel_Zaxis = data[i][j]
 	
-	def generate_smooth_axis(self, step_range=False, step=None, smooth=1000, spline=3, fill_point=6):
+	def generate_smooth_axis(self, step_range=False, step=None, smooth=500.0, spline=3, fill_point=6, cut_off_angle=20):
 		"""	To smoothen the helical axis using spline interpolation.
+
+		.. note::
+			A 3D curve is fitted on local helical axis that are calculated using ``do_x3dna`` tool. Sometimes in few frames, fitting **may not** be accurate and produces artifact. To record these frames, dnaMD.DNA.mask array containing boolean values are generated. If value is ``True``, fitting might not be correct and vice versa. This array could be used in later analysis to skip/mask the frames containing inaccurate axis.
 
 		.. warning::
 			This function requires `SciPy package <http://www.scipy.org/>`_.
@@ -1524,62 +1583,16 @@ class DNA:
 			* ``fill_point (int)``: Number of intrapolated points between two adjacent helical-axis coordinates.
 			
 			
+			* ``cut_off_angle (float)``: Cut-off bending angle to define sharp kink in fitted curve. If angle in fitted curve is larger than this cut-off, refitting will be performed after deleting few of the original helical axis positions. If after this deletions, bending angle will not reduce below cut-off angle, value of ``smooth`` will be increased by 100 and entire cycle of fitting-refitting will be performed. When, value of ``smooth`` increases to more than 10000 during this fitting-refitting cycles, fitting process will be stopped with a warning message.
+			
+			
 		**Returns:**
 					``None``
 
 		"""
 		
-		try:
-			from scipy.interpolate import splprep, splev
-		except:
+		if not scipy_imported:
 			raise ImportError("SciPy package is not available. Please visit http://www.scipy.org/install.html for download and installation instructions.\n") 
-
-		####################################
-		def fit_axis(RawX, RawY, RawZ):
-			
-			orig_x = RawX.copy()
-			orig_y = RawY.copy()
-			orig_z = RawZ.copy()
-			
-			xsmooth, ysmooth, zsmooth = [], [], []
-
-			bsmooth = False
-			while not bsmooth:
-				
-				tckp,u = splprep([orig_x, orig_y, orig_z], s=smooth, k=spline, nest=-1)
-				xnew, ynew,znew = splev(np.linspace(0,1, points), tckp)
-				
-				new_axis = np.array([ xnew, ynew, znew ]).T
-
-				angle = []
-				
-				for count in range(len(bp_idx)):
-					start = count * fill_point
-					end = start + fill_point
-					xsmooth.append(xnew[start:end].mean())
-					ysmooth.append(ynew[start:end].mean())
-					zsmooth.append(znew[start:end].mean())
-				
-				for j in range(1, len(xsmooth)-1):
-					prev = np.array([xsmooth[j-1], ysmooth[j-1], zsmooth[j-1]])
-					curr = np.array([xsmooth[j], ysmooth[j], zsmooth[j]])
-					nex = np.array([xsmooth[j+1], ysmooth[j+1], zsmooth[j+1]])
-					angle.append( math.degrees(vector_angle((prev-curr),(curr-nex))) )
-
-				for j in range(len(angle)):
-					if angle[j] > 20.0 and not angle[j] > 160.0:
-						bsmooth = False
-						orig_x = np.delete(orig_x, j)
-						orig_y = np.delete(orig_y, j)
-						orig_z = np.delete(orig_z, j)
-						xsmooth, ysmooth, zsmooth = [], [], []
-						break
-					else:
-						bsmooth = True
-
-			return xsmooth, ysmooth, zsmooth
-		#################################################
-
 
 		if (step_range) and (step == None):
 			raise ValueError("See, documentation for step  and step_range usage!!!")
@@ -1598,9 +1611,6 @@ class DNA:
 			RawY, dummy = self.get_parameters('Helical Y-axis', [1, self.num_step], bp_range=True)
 			RawZ, dummy = self.get_parameters('Helical Z-axis', [1, self.num_step], bp_range=True)
 
-		nest=-1
-		points = fill_point * len(bp_idx)
-
 		RawX = np.array(RawX).T
 		RawY = np.array(RawY).T
 		RawZ = np.array(RawZ).T
@@ -1608,15 +1618,20 @@ class DNA:
 		smoothX, smoothY, smoothZ = [], [], []
 
 		nframes = len(self.time)
+		
+		if len(self.mask)==0:
+			self.mask = np.zeros(nframes, dtype=bool)
+
 		for i in range(nframes):
 			
 			frame_number = i+1	
 			if((frame_number<100) and (frame_number%10==0)) or ((frame_number<1000) and (frame_number%100==0)) or (frame_number%1000==0):
-				sys.stdout.write("\rFitting spline curve on helcial axis of frame %d out of %d frames" % (frame_number, nframes+1))
+				sys.stdout.write("\rFitting spline curve on helcial axis of frame %d out of %d frames" % (frame_number, nframes))
 				sys.stdout.flush()
 
-			xsmooth, ysmooth, zsmooth = fit_axis(RawX[i], RawY[i], RawZ[i])
-			
+			xsmooth, ysmooth, zsmooth, mask = fit_axis(bp_idx, frame_number, RawX[i], RawY[i], RawZ[i], smooth, spline, fill_point, cut_off_angle)
+			self.mask[i] = mask
+
 			smoothX.append(xsmooth)
 			smoothY.append(ysmooth)
 			smoothZ.append(zsmooth)
@@ -1851,13 +1866,13 @@ class DNA:
 				temp = []
 				for j in range(len(tangent)):
 					temp.append(tangent[j][i])
-				final_tan.append(temp)
+				final_tan.append(np.asarray(temp))
 			
 			for i in range(len(bp_idx)):
-				self.base_steps[bp_idx[i]].tangent = final_tan[i]
+				self.base_steps[bp_idx[i]].tangent = np.asarray(final_tan[i])
 
 
-	def calculate_angle_bw_tangents(self, base_step):
+	def calculate_angle_bw_tangents(self, base_step, masked=False):
 		"""
 		To calculate angle (Radian) between two tangent vectors of smoothed helical axis.
 
@@ -1867,17 +1882,19 @@ class DNA:
 					*Example:*
 						
 						``[5, 50]          # Calculate angle between tangent vectors of 5th and 50th base-steps``
+			
+				* ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
 
 		**Returns:**
-			* ``angle (1D array)``: Array of calculated angle of length is equal to number of frames.
+			* ``angle (1D array)``: Array of calculated angle of length is equal to number of frames. When ``masked`` is applied, length of this array can be smaller than total number of frames.
 
 		"""
 
 		if (len(base_step) != 2):
 			raise ValueError("See, documentation for step usage!!!")
 		
-		tangent1, idx1 = self.get_parameters('Helical axis tangent', bp=[base_step[0]], bp_range=False)	
-		tangent2, idx2 = self.get_parameters('Helical axis tangent', bp=[base_step[1]], bp_range=False)
+		tangent1, idx1 = self.get_parameters('Helical axis tangent', bp=[base_step[0]], bp_range=False, masked=masked)	
+		tangent2, idx2 = self.get_parameters('Helical axis tangent', bp=[base_step[1]], bp_range=False, masked=masked)
 
 		angle = []
 		for i in range(len(tangent1[0])):
@@ -2357,9 +2374,134 @@ def read_param_file(FileName,parameters, bp, bp_range, word=False):
 
 	return data_transpose, time
 
+def distance(x, y):
+	x = np.asarray(x)
+	y = np.asarray(y)
+	return np.linalg.norm(x-y)
+
 def vector_angle(x,y):
 	dot = np.dot(x,y)
 	cross = np.cross(x,y)
 	cross_modulus = np.sqrt((cross*cross).sum())
 	angle = np.arctan2(cross_modulus, dot)
 	return angle
+
+####################################
+def fit_axis(bp_idx, nframe, RawX, RawY, RawZ, smooth, spline, fill_point, cut_off_angle):
+	
+	orig_x = RawX.copy()
+	orig_y = RawY.copy()
+	orig_z = RawZ.copy()
+	
+	orig_s = smooth
+	
+	xsmooth, ysmooth, zsmooth = [], [], []
+
+	bsmooth = False
+	del_idx = []
+	count = 0
+	scount = 0
+	mask = False
+	while not bsmooth:
+				
+		count += 1
+
+		if count>4:
+			mask = False
+			sys.stdout.write('\n|frame:{0:>10}| WARNING: Fitting failed with \"smooth = {1}\"; Trying with \"smooth = {2}\".....\n' .format(nframe, smooth, smooth+100))
+			sys.stdout.flush()
+			
+			smooth = smooth+100
+			count = 1
+			
+			del orig_x
+			del orig_y
+			del orig_z
+			
+			orig_x = RawX.copy()
+			orig_y = RawY.copy()
+			orig_z = RawZ.copy()
+		
+		points = fill_point * len(orig_x)
+		
+		nest = -1
+		tckp,u = splprep([orig_x, orig_y, orig_z], s=smooth, k=spline, nest=nest)
+		
+		xnew, ynew,znew = splev(np.linspace(0,1, points), tckp)
+		
+		new_axis = np.array([ xnew, ynew, znew ]).T
+
+		angle = []
+		dist = []
+		del_idx = []
+		last_idx = len(orig_x)-1
+		
+		for nbp in range(len(bp_idx)):
+			start = nbp * fill_point
+			end = start + fill_point
+			xsmooth.append(xnew[start:end].mean())
+			ysmooth.append(ynew[start:end].mean())
+			zsmooth.append(znew[start:end].mean())
+	
+		for j in range(1, len(xsmooth)-1):
+			prev = np.array([xsmooth[j-1], ysmooth[j-1], zsmooth[j-1]])
+			curr = np.array([xsmooth[j], ysmooth[j], zsmooth[j]])
+			nex = np.array([xsmooth[j+1], ysmooth[j+1], zsmooth[j+1]])
+			angle.append( math.degrees(vector_angle((prev-curr),(curr-nex))) )
+
+		for j in range(1, len(orig_x)-1):
+			prev = np.array([orig_x[j-1], orig_y[j-1], orig_z[j-1]])
+			curr = np.array([orig_x[j], orig_y[j], orig_z[j]])
+			nex = np.array([orig_x[j+1], orig_y[j+1], orig_z[j+1]])
+			dist.append(distance(prev, curr)+distance(curr, nex))
+				
+		for j in range(len(angle)):
+					
+			if angle[j] > cut_off_angle and not angle[j] > (180-cut_off_angle):
+				
+				del orig_x
+				del orig_y
+				del orig_z
+				bsmooth = False
+				
+				max_idx = np.argsort(dist)[::-1]
+
+				for k in range(count):
+					del_idx.append(max_idx[k]+1)
+					del_idx.append(max_idx[k]+2)
+					if max_idx[k]==0:
+						del_idx.append(0)
+					if max_idx[k]==last_idx:
+						del_idx.append(last_idx)
+
+				del_idx = list(set(del_idx))
+						
+				sys.stdout.write('\r|frame:{0:>10}| WARNING: Bending angle [{1}-{2}-{3}] = {4:.2f} is more than cut-off angle {5};\n                     Four maximum distances between three adjacent axis positions = ({6[0]:.1f}, {6[1]:.1f}, {6[2]:.1f}, {6[3]:.1f});\n                     Deleting {7} original helical axis positions to remove possible fitting artifact...\n' .format(nframe, j-1, j, j+1, angle[j], cut_off_angle, np.sort(dist)[::-1], del_idx))
+				sys.stdout.flush()
+				mask = True
+
+				if smooth>=10000:
+					sys.stdout.write('\n\n|frame:{0:>10}| WARNING: Maximum Bending Angle = {1:.2f} at index {2}, which might be artifect. Please, check by visualizing PDB trajectory file...\n\n' .format(nframe, angle[j], j))
+					sys.stdout.flush()
+					bsmooth = True
+					mask = True
+					break
+
+				orig_x = np.delete(RawX.copy(), del_idx)
+				orig_y = np.delete(RawY.copy(), del_idx)
+				orig_z = np.delete(RawZ.copy(), del_idx)
+						
+				xsmooth, ysmooth, zsmooth = [], [], []
+						
+				break
+			else:
+				bsmooth = True
+
+		del angle
+		del dist
+				
+	if orig_s != smooth:
+		sys.stdout.write('\n')
+			
+	return xsmooth, ysmooth, zsmooth, mask
+#################################################
