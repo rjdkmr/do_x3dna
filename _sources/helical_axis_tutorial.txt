@@ -136,7 +136,14 @@ the calculation of wrong helical axis.
 .. code:: python
 
     ### Smoothening of helical axis
-    fdna.generate_smooth_axis(smooth=1000, spline=3, fill_point=6)
+    fdna.generate_smooth_axis(smooth=500, spline=3, fill_point=6)
+
+.. parsed-literal::
+
+    Fitting spline curve on helcial axis of frame 1000 out of 1001 frames
+    Finished spline curve fitting...
+
+
 --------------
 
 --------------

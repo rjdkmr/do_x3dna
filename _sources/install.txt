@@ -4,13 +4,21 @@ Download and Installation
 Download
 --------
 
+**do_x3dna package can be downloaded by either of following two steps.**
+
+1. Use ``git``:
+
 ::
     
-    git clone https://github.com/rjdkmr/do_x3dna
+    git clone -b master --single-branch https://github.com/rjdkmr/do_x3dna
 
+
+2. Download either `zipball <https://github.com/rjdkmr/do_x3dna/archive/master.zip>`_ or `tarball <https://github.com/rjdkmr/do_x3dna/archive/master.tar.gz>`_.
 
 Installation
 ------------
+
+Installation of do_x3dna requires GROMACS libraies such as ``libmd.a`` or ``libmd.so``, ``libgmx.a`` or ``libgmx.so`` and ``libgmxana.a`` or ``libgmxana.so``. Currently, installation of do_x3dna is only supported for Gromacs-4.5.x and Gromacs-4.6.x. 
 
 ::
     
@@ -24,7 +32,7 @@ Installation
 
 Directory ``/opt/gromacs`` should contains ``include`` and ``lib`` directories. If these directories are in seprate locations, use followings: ::
     
-    cmake ..  -DGMX_LIB=/path/to/lib -GMX_INCLUDE=/path/to/include -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
+    cmake ..  -DGMX_LIB=/path/to/lib -DGMX_INCLUDE=/path/to/include -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
 
 If fftw library ``libfftw3f.so`` or ``libfftw3f.a`` are not present in standard locations: ::
     

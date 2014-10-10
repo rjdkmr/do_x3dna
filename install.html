@@ -74,12 +74,20 @@
 <h1>Download and Installation<a class="headerlink" href="#download-and-installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="download">
 <h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/rjdkmr/do_x3dna
+<p><strong>do_x3dna package can be downloaded by either of following two steps.</strong></p>
+<ol class="arabic simple">
+<li>Use <tt class="docutils literal"><span class="pre">git</span></tt>:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre>git clone -b master --single-branch https://github.com/rjdkmr/do_x3dna
 </pre></div>
 </div>
+<ol class="arabic simple" start="2">
+<li>Download either <a class="reference external" href="https://github.com/rjdkmr/do_x3dna/archive/master.zip">zipball</a> or <a class="reference external" href="https://github.com/rjdkmr/do_x3dna/archive/master.tar.gz">tarball</a>.</li>
+</ol>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Installation of do_x3dna requires GROMACS libraies such as <tt class="docutils literal"><span class="pre">libmd.a</span></tt> or <tt class="docutils literal"><span class="pre">libmd.so</span></tt>, <tt class="docutils literal"><span class="pre">libgmx.a</span></tt> or <tt class="docutils literal"><span class="pre">libgmx.so</span></tt> and <tt class="docutils literal"><span class="pre">libgmxana.a</span></tt> or <tt class="docutils literal"><span class="pre">libgmxana.so</span></tt>. Currently, installation of do_x3dna is only supported for Gromacs-4.5.x and Gromacs-4.6.x.</p>
 <div class="highlight-python"><div class="highlight"><pre>cd do_x3dna
 mkdir build
 cd build
@@ -89,7 +97,7 @@ make install
 </pre></div>
 </div>
 <p>Directory <tt class="docutils literal"><span class="pre">/opt/gromacs</span></tt> should contains <tt class="docutils literal"><span class="pre">include</span></tt> and <tt class="docutils literal"><span class="pre">lib</span></tt> directories. If these directories are in seprate locations, use followings:</p>
-<div class="highlight-python"><div class="highlight"><pre>cmake ..  -DGMX_LIB=/path/to/lib -GMX_INCLUDE=/path/to/include -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
+<div class="highlight-python"><div class="highlight"><pre>cmake ..  -DGMX_LIB=/path/to/lib -DGMX_INCLUDE=/path/to/include -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
 </pre></div>
 </div>
 <p>If fftw library <tt class="docutils literal"><span class="pre">libfftw3f.so</span></tt> or <tt class="docutils literal"><span class="pre">libfftw3f.a</span></tt> are not present in standard locations:</p>

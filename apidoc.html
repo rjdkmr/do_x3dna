@@ -85,7 +85,7 @@
 <p>This class also contains several methods (functions) that are discussed in following sections.</p>
 <dl class="method">
 <dt id="dnaMD.DNA.calculate_angle_bw_tangents">
-<tt class="descname">calculate_angle_bw_tangents</tt><big>(</big><em>base_step</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.calculate_angle_bw_tangents" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">calculate_angle_bw_tangents</tt><big>(</big><em>base_step</em>, <em>masked=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.calculate_angle_bw_tangents" title="Permalink to this definition">¶</a></dt>
 <dd><p>To calculate angle (Radian) between two tangent vectors of smoothed helical axis.</p>
 <dl class="docutils">
 <dt><strong>Arguments:</strong></dt>
@@ -98,11 +98,13 @@
 </div></blockquote>
 </div></blockquote>
 </li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">masked</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=False</span></tt>: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt>) value for each frame to mask the frames. Presently, mask array is automatically generated during <a class="reference internal" href="#dnaMD.DNA.generate_smooth_axis" title="dnaMD.DNA.generate_smooth_axis"><tt class="xref py py-meth docutils literal"><span class="pre">dnaMD.DNA.generate_smooth_axis()</span></tt></a> method to skip those frames where 3D fitting curve was not successfull within the given critera.</p>
+</li>
 </ul>
 </dd>
 <dt><strong>Returns:</strong></dt>
 <dd><ul class="first last simple">
-<li><tt class="docutils literal"><span class="pre">angle</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: Array of calculated angle of length is equal to number of frames.</li>
+<li><tt class="docutils literal"><span class="pre">angle</span> <span class="pre">(1D</span> <span class="pre">array)</span></tt>: Array of calculated angle of length is equal to number of frames. When <tt class="docutils literal"><span class="pre">masked</span></tt> is applied, length of this array can be smaller than total number of frames.</li>
 </ul>
 </dd>
 </dl>
@@ -163,8 +165,12 @@
 
 <dl class="method">
 <dt id="dnaMD.DNA.generate_smooth_axis">
-<tt class="descname">generate_smooth_axis</tt><big>(</big><em>step_range=False</em>, <em>step=None</em>, <em>smooth=1000</em>, <em>spline=3</em>, <em>fill_point=6</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.generate_smooth_axis" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">generate_smooth_axis</tt><big>(</big><em>step_range=False</em>, <em>step=None</em>, <em>smooth=500.0</em>, <em>spline=3</em>, <em>fill_point=6</em>, <em>cut_off_angle=20</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.generate_smooth_axis" title="Permalink to this definition">¶</a></dt>
 <dd><p>To smoothen the helical axis using spline interpolation.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A 3D curve is fitted on local helical axis that are calculated using <tt class="docutils literal"><span class="pre">do_x3dna</span></tt> tool. Sometimes in few frames, fitting <strong>may not</strong> be accurate and produces artifact. To record these frames, dnaMD.DNA.mask array containing boolean values are generated. If value is <tt class="docutils literal"><span class="pre">True</span></tt>, fitting might not be correct and vice versa. This array could be used in later analysis to skip/mask the frames containing inaccurate axis.</p>
+</div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">This function requires <a class="reference external" href="http://www.scipy.org/">SciPy package</a>.</p>
@@ -217,6 +223,8 @@
 </li>
 <li><p class="first"><tt class="docutils literal"><span class="pre">fill_point</span> <span class="pre">(int)</span></tt>: Number of intrapolated points between two adjacent helical-axis coordinates.</p>
 </li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">cut_off_angle</span> <span class="pre">(float)</span></tt>: Cut-off bending angle to define sharp kink in fitted curve. If angle in fitted curve is larger than this cut-off, refitting will be performed after deleting few of the original helical axis positions. If after this deletions, bending angle will not reduce below cut-off angle, value of <tt class="docutils literal"><span class="pre">smooth</span></tt> will be increased by 100 and entire cycle of fitting-refitting will be performed. When, value of <tt class="docutils literal"><span class="pre">smooth</span></tt> increases to more than 10000 during this fitting-refitting cycles, fitting process will be stopped with a warning message.</p>
+</li>
 </ul>
 </div></blockquote>
 <dl class="docutils">
@@ -227,7 +235,7 @@
 
 <dl class="method">
 <dt id="dnaMD.DNA.get_mean_error">
-<tt class="descname">get_mean_error</tt><big>(</big><em>bp</em>, <em>parameter</em>, <em>err_type='std'</em>, <em>bp_range=True</em>, <em>merge_bp=1</em>, <em>merge_method='mean'</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.get_mean_error" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_mean_error</tt><big>(</big><em>bp</em>, <em>parameter</em>, <em>err_type='std'</em>, <em>bp_range=True</em>, <em>merge_bp=1</em>, <em>merge_method='mean'</em>, <em>masked=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.get_mean_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>To calculate average and error of the given parameter for the gieven set of base-pairs/steps</p>
 <dl class="docutils">
 <dt><strong>Arguments:</strong></dt>
@@ -284,6 +292,8 @@
 </dd>
 </dl>
 </li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">masked</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=False</span></tt>: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt>) value for each frame to mask the frames. Presently, mask array is automatically generated during <a class="reference internal" href="#dnaMD.DNA.generate_smooth_axis" title="dnaMD.DNA.generate_smooth_axis"><tt class="xref py py-meth docutils literal"><span class="pre">dnaMD.DNA.generate_smooth_axis()</span></tt></a> method to skip those frames where 3D fitting curve was not successfull within the given critera.</p>
+</li>
 </ul>
 </dd>
 <dt><strong>Returns:</strong></dt>
@@ -298,7 +308,7 @@
 
 <dl class="method">
 <dt id="dnaMD.DNA.get_parameters">
-<tt class="descname">get_parameters</tt><big>(</big><em>parameter</em>, <em>bp</em>, <em>bp_range=True</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.get_parameters" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_parameters</tt><big>(</big><em>parameter</em>, <em>bp</em>, <em>bp_range=True</em>, <em>masked=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.get_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>To get the parameters over all frame for the given range of base pair/steps</p>
 <blockquote>
 <div><dl class="docutils">
@@ -377,6 +387,7 @@
 </ul>
 <ul class="last simple">
 <li><tt class="docutils literal"><span class="pre">bp_range</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=True</span></tt>: As shown above, if <tt class="docutils literal"><span class="pre">True</span></tt>, bp is taken as a range otherwise list or numpy array</li>
+<li><tt class="docutils literal"><span class="pre">masked</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=False</span></tt>: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt>) value for each frame to mask the frames. Presently, mask array is automatically generated during <a class="reference internal" href="#dnaMD.DNA.generate_smooth_axis" title="dnaMD.DNA.generate_smooth_axis"><tt class="xref py py-meth docutils literal"><span class="pre">dnaMD.DNA.generate_smooth_axis()</span></tt></a> method to skip those frames where 3D fitting curve was not successfull within the given critera.</li>
 </ul>
 </dd>
 </dl>
@@ -392,7 +403,7 @@
 
 <dl class="method">
 <dt id="dnaMD.DNA.parameter_distribution">
-<tt class="descname">parameter_distribution</tt><big>(</big><em>parameter</em>, <em>bp</em>, <em>bins=30</em>, <em>merge=False</em>, <em>merge_method='mean'</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.parameter_distribution" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">parameter_distribution</tt><big>(</big><em>parameter</em>, <em>bp</em>, <em>bins=30</em>, <em>merge=False</em>, <em>merge_method='mean'</em>, <em>masked=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.parameter_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>To get the parameter distribution of either a specfic base-pair/step or a DNA segment over the MD simulation.</p>
 <blockquote>
 <div><p><strong>Arguments:</strong></p>
@@ -429,6 +440,8 @@
 </div></blockquote>
 </dd>
 </dl>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">masked</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=False</span></tt>: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt>) value for each frame to mask the frames. Presently, mask array is automatically generated during <a class="reference internal" href="#dnaMD.DNA.generate_smooth_axis" title="dnaMD.DNA.generate_smooth_axis"><tt class="xref py py-meth docutils literal"><span class="pre">dnaMD.DNA.generate_smooth_axis()</span></tt></a> method to skip those frames where 3D fitting curve was not successfull within the given critera.</p>
 </li>
 </ul>
 </div></blockquote>
@@ -800,7 +813,7 @@
 
 <dl class="method">
 <dt id="dnaMD.DNA.time_vs_parameter">
-<tt class="descname">time_vs_parameter</tt><big>(</big><em>parameter</em>, <em>bp</em>, <em>merge=False</em>, <em>merge_method='mean'</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.time_vs_parameter" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">time_vs_parameter</tt><big>(</big><em>parameter</em>, <em>bp</em>, <em>merge=False</em>, <em>merge_method='mean'</em>, <em>masked=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.time_vs_parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>To get the parameter of either a specfic base-pair/step or a DNA segment as a function of time.</p>
 <blockquote>
 <div><p><strong>Arguments:</strong></p>
@@ -835,6 +848,8 @@
 </div></blockquote>
 </dd>
 </dl>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">masked</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=False</span></tt>: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt>) value for each frame to mask the frames. Presently, mask array is automatically generated during <a class="reference internal" href="#dnaMD.DNA.generate_smooth_axis" title="dnaMD.DNA.generate_smooth_axis"><tt class="xref py py-meth docutils literal"><span class="pre">dnaMD.DNA.generate_smooth_axis()</span></tt></a> method to skip those frames where 3D fitting curve was not successfull within the given critera.</p>
 </li>
 </ul>
 </div></blockquote>

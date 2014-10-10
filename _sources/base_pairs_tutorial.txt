@@ -512,4 +512,3 @@ as shown in the following example.
 
 .. image:: base_pairs_tutorial_files/base_pairs_tutorial_14_5.png
 
-
