@@ -217,19 +217,17 @@ given nucleotides or strand of the DNA segment
 .. image:: backbone_torsion_wheel_tutorial_files/backbone_torsion_wheel_tutorial_8_0.png
 
 
-
 .. image:: backbone_torsion_wheel_tutorial_files/backbone_torsion_wheel_tutorial_8_1.png
 
-
 --------------
 
 --------------
 
-Backbone torsional angles wheel for given nucleotides/DNA-segment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Backbone torsional angles wheel of nucleotides/DNA-segment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Backbone angel wheel is a compat to way to show the conformational
-   flcutuation of backbone dynamics.
+-  Angle wheel (Polar plot) of backbone torsion angles is a compat way
+   to show the conformational flcutuations of backbone dynamics.
 
 -  Below is a defnition of method, which can be use to plot angles wheel
    for set of angle types.
@@ -352,8 +350,8 @@ Backbone torsional angles wheel for given nucleotides/DNA-segment
 
 --------------
 
-Torsional angle wheel for all angles in given DNA segment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Torsional angle wheel for all angles of the DNA segment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  To plot the angle wheel using "plot\_angle\_wheel" method.
 
@@ -483,14 +481,15 @@ Torsional angle wheel for all angles in given DNA segment
 
 
 .. image:: backbone_torsion_wheel_tutorial_files/backbone_torsion_wheel_tutorial_12_0.png
+        :scale: 70 %
 
 
 --------------
 
 --------------
 
-Torsional angle wheel for angles (Avg.) in given DNA segment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Torsional angle wheel for average angles of DNA segment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  To plot the angle wheel using "plot\_angle\_wheel" method.
 
@@ -612,14 +611,15 @@ Torsional angle wheel for angles (Avg.) in given DNA segment
 
 
 .. image:: backbone_torsion_wheel_tutorial_files/backbone_torsion_wheel_tutorial_14_0.png
+        :scale: 70 %
 
 
 --------------
 
 --------------
 
-Torsional angle wheel for angles (Avg.) in given segment of bound and unbound DNA
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Torsional angle wheel for average angles of segment of a bound and a unbound DNA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  To plot the angle wheel using "plot\_angle\_wheel" method.
 
@@ -759,5 +759,5 @@ Torsional angle wheel for angles (Avg.) in given segment of bound and unbound DN
 
 
 .. image:: backbone_torsion_wheel_tutorial_files/backbone_torsion_wheel_tutorial_16_0.png
-
+    :scale: 70 %
 
