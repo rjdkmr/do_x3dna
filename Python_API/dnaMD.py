@@ -603,155 +603,155 @@ class DNA:
 		if(parameter=='alpha S-1'):
 			key = 'alpha S-1'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].alpha_s1)==0):
+				if(len(self.base_pairs[bp_idx[i]].alpha_s1)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].alpha_s1[midx])
+					data.append(self.base_pairs[bp_idx[i]].alpha_s1[midx])
 					append = True
 		
 		if(parameter=='beta S-1'):
 			key = 'beta S-1'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].beta_s1)==0):
+				if(len(self.base_pairs[bp_idx[i]].beta_s1)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].beta_s1[midx])
+					data.append(self.base_pairs[bp_idx[i]].beta_s1[midx])
 					append = True
 		
 		if(parameter=='gamma S-1'):
 			key = 'gamma S-1'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].gamma_s1)==0):
+				if(len(self.base_pairs[bp_idx[i]].gamma_s1)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].gamma_s1[midx])
+					data.append(self.base_pairs[bp_idx[i]].gamma_s1[midx])
 					append = True
 		
 		if(parameter=='delta S-1'):
 			key = 'delta S-1'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].delta_s1)==0):
+				if(len(self.base_pairs[bp_idx[i]].delta_s1)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].delta_s1[midx])
+					data.append(self.base_pairs[bp_idx[i]].delta_s1[midx])
 					append = True
 		
 		if(parameter=='epsilon S-1'):
 			key = 'epsilon S-1'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].epsilon_s1)==0):
+				if(len(self.base_pairs[bp_idx[i]].epsilon_s1)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].epsilon_s1[midx])
+					data.append(self.base_pairs[bp_idx[i]].epsilon_s1[midx])
 					append = True
 		
 		if(parameter=='zeta S-1'):
 			key = 'zeta S-1'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].zeta_s1)==0):
+				if(len(self.base_pairs[bp_idx[i]].zeta_s1)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].zeta_s1[midx])
+					data.append(self.base_pairs[bp_idx[i]].zeta_s1[midx])
 					append = True
 		
 		if(parameter=='chi S-1'):
 			key = 'chi S-1'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].chi_s1)==0):
+				if(len(self.base_pairs[bp_idx[i]].chi_s1)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].chi_s1[midx])
+					data.append(self.base_pairs[bp_idx[i]].chi_s1[midx])
 					append = True
 		
 		if(parameter=='alpha S-2'):
 			key = 'alpha S-2'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].alpha_s2)==0):
+				if(len(self.base_pairs[bp_idx[i]].alpha_s2)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].alpha_s2[midx])
+					data.append(self.base_pairs[bp_idx[i]].alpha_s2[midx])
 					append = True
 		
 		if(parameter=='beta S-2'):
 			key = 'beta S-2'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].beta_s2)==0):
+				if(len(self.base_pairs[bp_idx[i]].beta_s2)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].beta_s2[midx])
+					data.append(self.base_pairs[bp_idx[i]].beta_s2[midx])
 					append = True
 		
 		if(parameter=='gamma S-2'):
 			key = 'gamma S-2'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].gamma_s2)==0):
+				if(len(self.base_pairs[bp_idx[i]].gamma_s2)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].gamma_s2[midx])
+					data.append(self.base_pairs[bp_idx[i]].gamma_s2[midx])
 					append = True
 		
 		if(parameter=='delta S-2'):
 			key = 'delta S-2'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].delta_s2)==0):
+				if(len(self.base_pairs[bp_idx[i]].delta_s2)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].delta_s2[midx])
+					data.append(self.base_pairs[bp_idx[i]].delta_s2[midx])
 					append = True
 		
 		if(parameter=='epsilon S-2'):
 			key = 'epsilon S-2'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].epsilon_s2)==0):
+				if(len(self.base_pairs[bp_idx[i]].epsilon_s2)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].epsilon_s2[midx])
+					data.append(self.base_pairs[bp_idx[i]].epsilon_s2[midx])
 					append = True
 		
 		if(parameter=='zeta S-2'):
 			key = 'zeta S-2'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].zeta_s2)==0):
+				if(len(self.base_pairs[bp_idx[i]].zeta_s2)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].zeta_s2[midx])
+					data.append(self.base_pairs[bp_idx[i]].zeta_s2[midx])
 					append = True
 		
 		if(parameter=='chi S-2'):
 			key = 'chi S-2'
 			for i in range(len(bp_idx)):
-				if(len(self.base_steps[bp_idx[i]].chi_s2)==0):
+				if(len(self.base_pairs[bp_idx[i]].chi_s2)==0):
 					empty = True
 					idx = bp_idx[i]
 					break
 				else:
-					data.append(self.base_steps[bp_idx[i]].chi_s2[midx])
+					data.append(self.base_pairs[bp_idx[i]].chi_s2[midx])
 					append = True
 		
 		if(empty):
@@ -1156,7 +1156,7 @@ class DNA:
 				parameters = range(1,15)
 				break
 
-		data, time = read_param_file(filename,parameters,bp,bp_range)
+		data, time = read_param_file(filename,parameters,bp,bp_range,word=True)
 		
 		if(len(self.time)==0):
 			self.time = np.array(time)
@@ -1596,6 +1596,8 @@ class DNA:
 
 		if (step_range) and (step == None):
 			raise ValueError("See, documentation for step  and step_range usage!!!")
+		
+		bp_idx = []	
 		
 		if step_range:
 			if (len(step) != 2):
