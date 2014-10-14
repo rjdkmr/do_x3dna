@@ -29,7 +29,7 @@ From the MD trajectory, several `output files <http://rjdkmr.github.io/do_x3dna/
 **Note:** do_x3dna can be used with trajectory files that are obtained from other MD packages such as NAMD and AMBER. Input trajectory files should be converted in to Gromacs format trajectory files. A PDB file could be used in place of a GROMACS *tpr* file.
 
 
-Example:
+Examples:
 --------
 
 * Bending in the helical axis of a |mitochondiral DNA|:
@@ -39,6 +39,14 @@ Example:
    :align: center
 
 -------
+
+* Conformational wheel using backbone torsion angles:
+
+.. image:: ./images/backbone_torsion_wheel.png
+   :scale: 70 %
+   :align: center
+
+--------
 
 * Bending in the helical axis of a DNA in the |nucleosome|:
 

@@ -101,10 +101,11 @@ Initializing DNA object and storing data to it
     # Number of major and minor grooves = Number of base-steps - two : 3 to 57
     # Number of refined major and minor grooves = Number of base-steps - three : 4 to 56
     
-    # "bp_step=[1, 59]" will try to load parameters of 1 to 59 base-steps. If parameter is not available for any specific base-step,
-    # loading will be skipped.
+    # "bp_step=[1, 59]" will try to load parameters of 1 to 59 base-steps. 
+    # If parameter is not available for any specific base-step, loading will be skipped.
     
-    # "parameters = [1,2,3,4]" will load four parameters ('Minor Groove, Minor Groove Refined, Major Groove, Major Groove Refined ), respectively
+    # "parameters = [1,2,3,4]" will load four parameters:
+    # ('Minor Groove, Minor Groove Refined, Major Groove, Major Groove Refined ), respectively
     pdna.set_major_minor_groove('MGroove_cdna.dat', bp_step=[1, 59], parameters=[1,2,3,4], step_range=True)
     fdna.set_major_minor_groove('MGroove_odna.dat', bp_step=[1, 59], parameters=[1,2,3,4], step_range=True)
 
@@ -263,7 +264,8 @@ Distribution of major and minor grooves during MD simulations
     ### Bound DNA ###
     
     ## calculation of parameter distribution for the segment
-    values, density = pdna.parameter_distribution('Major Groove Refined', [25, 40], bins=30, merge=True, merge_method='mean')
+    values, density = pdna.parameter_distribution('Major Groove Refined', [25, 40], bins=30, 
+                                                  merge=True, merge_method='mean')
     
     ## plot distribution
     plt.plot(values, density, label='bound DNA', c='k')     # balck color => bound DNA
@@ -271,7 +273,8 @@ Distribution of major and minor grooves during MD simulations
     ### Free DNA ###
     
     ## calculation of parameter distribution for the segment
-    values, density = fdna.parameter_distribution('Major Groove Refined', [25, 45], bins=30, merge=True, merge_method='mean')
+    values, density = fdna.parameter_distribution('Major Groove Refined', [25, 45], bins=30, 
+                                                  merge=True, merge_method='mean')
     
     ## plot distribution
     plt.plot(values, density, label='free DNA', c='r')    # red color => free DNA
@@ -288,7 +291,8 @@ Distribution of major and minor grooves during MD simulations
     ### Bound DNA ###
     
     ## calculation of parameter distribution for the segment
-    values, density = pdna.parameter_distribution('Minor Groove Refined', [25, 40], bins=30, merge=True, merge_method='mean')
+    values, density = pdna.parameter_distribution('Minor Groove Refined', [25, 40], bins=30, 
+                                                  merge=True, merge_method='mean')
     
     ## plot distribution
     plt.plot(values, density, label='bound DNA', c='k')     # balck color => bound DNA
@@ -296,7 +300,8 @@ Distribution of major and minor grooves during MD simulations
     ### Free DNA ###
     
     ## calculation of parameter distribution for the segment
-    values, density = fdna.parameter_distribution('Minor Groove Refined', [25, 40], bins=30, merge=True, merge_method='mean')
+    values, density = fdna.parameter_distribution('Minor Groove Refined', [25, 40], bins=30, 
+                                                  merge=True, merge_method='mean')
     
     ## plot distribution
     plt.plot(values, density, label='free DNA', c='r')    # red color => free DNA
@@ -351,13 +356,15 @@ Major and Minor grooves as a function of base-steps
     bp, values, error = pdna.get_mean_error([5, 56], 'Major Groove Refined', err_type='block', bp_range=True)
     
     # plot these values
-    plt.errorbar(bp, values, yerr=error, ecolor='k', elinewidth=1, color='k', lw=0, marker='o', mfc='k', mew=1, ms=4, label='bound DNA' )
+    plt.errorbar(bp, values, yerr=error, ecolor='k', elinewidth=1, color='k', lw=0, marker='o', 
+                 mfc='k', mew=1, ms=4, label='bound DNA' )
     
     ### Calculating Average Major Groove for 5 to 56 base-steps DNA (without protein)
     bp, values, error = fdna.get_mean_error([5, 56], 'Major Groove Refined', err_type='block', bp_range=True)
     
     # plot these values
-    plt.errorbar(bp, values, yerr=error, ecolor='r', elinewidth=1, color='r', lw=0, marker='x', mfc='r', mew=1, ms=4, label='free DNA' )
+    plt.errorbar(bp, values, yerr=error, ecolor='r', elinewidth=1, color='r', lw=0, marker='x', 
+                 mfc='r', mew=1, ms=4, label='free DNA' )
     
     plt.ylabel('Average Major Groove ($\AA$)')
     plt.xlabel('base-step number')
@@ -372,17 +379,21 @@ Major and Minor grooves as a function of base-steps
     
     ### Calculating Average Major Groove for 5 to 56 base-steps DNA bound with protein
     ### DNA segments are assumed to made up of 4 base-steps (merge_bp=4)
-    bp, values, error = pdna.get_mean_error([5,56], 'Major Groove Refined', err_type='block', bp_range=True, merge_bp=4, merge_method='mean')
+    bp, values, error = pdna.get_mean_error([5,56], 'Major Groove Refined', err_type='block', 
+                                            bp_range=True, merge_bp=4, merge_method='mean')
     
     # plot these values
-    plt.errorbar(bp, values, yerr=error, ecolor='k', elinewidth=1, color='k', lw=1, marker='o', mfc='k', mew=1, ms=4, label='bound DNA' )
+    plt.errorbar(bp, values, yerr=error, ecolor='k', elinewidth=1, color='k', lw=1, marker='o', 
+                 mfc='k', mew=1, ms=4, label='bound DNA' )
     
     ### Calculating Average Major Groove for 5 to 56 base-steps DNA (without protein)
     ### DNA segments are assumed to made up of 5 base-steps (merge_bp=4)
-    bp, values, error = fdna.get_mean_error([5,56], 'Major Groove Refined', err_type='block', bp_range=True, merge_bp=4, merge_method='mean')
+    bp, values, error = fdna.get_mean_error([5,56], 'Major Groove Refined', err_type='block', 
+                                            bp_range=True, merge_bp=4, merge_method='mean')
     
     # plot these values
-    plt.errorbar(bp, values, yerr=error, ecolor='r', elinewidth=1, color='r', lw=1, marker='x', mfc='r', mew=1, ms=4, label='free DNA' )
+    plt.errorbar(bp, values, yerr=error, ecolor='r', elinewidth=1, color='r', lw=1, marker='x', 
+                 mfc='r', mew=1, ms=4, label='free DNA' )
     
     plt.ylabel('Major Groove ( $\AA$)')
     plt.xlabel('base-step number')
@@ -421,12 +432,13 @@ as shown in the following example.
     #### Deviation = Bound DNA(parameter) - Free DNA(parameter) 
     
     ### Deviation in Refined Major Groove
-    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(pdna, [5,56], fdna, [5,56], 
-                                                                    'Major Groove Refined', err_type='block', bp_range=True, 
-                                                                    merge_bp=4, merge_method='mean')
+    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(pdna, [5,56], fdna, [5,56], 'Major Groove Refined', 
+                                                                    err_type='block', bp_range=True, merge_bp=4, 
+                                                                    merge_method='mean')
     
     # plot these values
-    plt.errorbar(pdna_bp, deviation, yerr=error, ecolor='k', elinewidth=1, color='k', lw=1, marker='o', mfc='k', mew=1, ms=4)
+    plt.errorbar(pdna_bp, deviation, yerr=error, ecolor='k', elinewidth=1, color='k', 
+                 lw=1, marker='o', mfc='k', mew=1, ms=4)
     
     # plot line at zero
     plt.plot([0,61], [0.0, 0.0], '--k')
@@ -437,12 +449,13 @@ as shown in the following example.
     plt.show()
     
     ### Deviation in Refined Minor Groove
-    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(pdna, [5,56], fdna, [5,56], 
-                                                                  'Minor Groove Refined', err_type='block', bp_range=True, 
-                                                                  merge_bp=4, merge_method='mean')
+    fdna_bp, pdna_bp, deviation, error = dnaMD.dev_bps_vs_parameter(pdna, [5,56], fdna, [5,56], 'Minor Groove Refined', 
+                                                                    err_type='block', bp_range=True, merge_bp=4, 
+                                                                    merge_method='mean')
     
     # plot these values
-    plt.errorbar(pdna_bp, deviation, yerr=error, ecolor='k', elinewidth=1, color='k', lw=1, marker='o', mfc='k', mew=1, ms=4)
+    plt.errorbar(pdna_bp, deviation, yerr=error, ecolor='k', elinewidth=1, color='k', 
+                 lw=1, marker='o', mfc='k', mew=1, ms=4)
     
     # plot line at zero
     plt.plot([0,61], [0.0, 0.0], '--k')
