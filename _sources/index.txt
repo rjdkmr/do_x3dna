@@ -29,8 +29,64 @@ From the MD trajectory, several `output files <http://rjdkmr.github.io/do_x3dna/
 **Note:** do_x3dna can be used with trajectory files that are obtained from other MD packages such as NAMD and AMBER. Input trajectory files should be converted in to Gromacs format trajectory files. A PDB file could be used in place of a GROMACS *tpr* file.
 
 
-Examples:
---------
+Features
+=========
+
+Base-pair parameters
+---------------------
+
+.. image:: ./images/bp_parameters.png
+   :scale: 28 %
+   :align: center
+
+
+
+Base-step parameters
+----------------------
+
+
+.. image:: ./images/bps_parameters.png
+   :scale: 28 %
+   :align: center
+
+
+
+Helical Base-stesp parameters
+-----------------------------
+
+
+
+.. image:: ./images/bph_parameters.png
+   :scale: 28 %
+   :align: center
+
+
+Major and minor grooves
+------------------------
+
+
+Radius of DNA Helix
+---------------------
+
+
+Backbone torsional angles
+---------------------------
+
+.. image:: ./images/backbone_torsions.png
+   :scale: 30 %
+   :align: center
+
+**Example**: Conformational wheel using backbone torsion angles:
+
+.. image:: ./images/backbone_torsion_wheel.png
+   :scale: 70 %
+   :align: center
+
+
+Helical axis and its curvature
+--------------------------------
+
+**Examples:**
 
 * Bending in the helical axis of a |mitochondiral DNA|:
 
@@ -40,22 +96,17 @@ Examples:
 
 -------
 
-* Conformational wheel using backbone torsion angles:
+* Bending in the helical axis of a DNA in the |nucleosome|:
 
-.. image:: ./images/backbone_torsion_wheel.png
+.. image:: ./images/p3ut9.png
    :scale: 70 %
    :align: center
 
 --------
 
-* Bending in the helical axis of a DNA in the |nucleosome|:
 
-.. image:: ./images/p3ut9.png
-   :scale: 80 %
-   :align: center
-
---------
-
+Citations
+---------
 
 | **Please cite the follwoing publication and the current github page:**               
 | Xiang-Jun Lu & Wilma K. Olson (2003)                                    

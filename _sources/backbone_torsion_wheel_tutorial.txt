@@ -71,10 +71,11 @@ Initializing DNA object and storing data to it
 -  `DNA object <http://rjdkmr.github.io/do_x3dna/code.html#dnaMD.DNA>`__
    is initialized by using the total number of base-pairs
 
--  For each nucleotide, **six** backbone torision angles
+-  For each nucleotide, `six backbone torision
+   angles <http://rjdkmr.github.io/do_x3dna/_images/backbone_torsions.png>`__
    (:math:`\alpha`, :math:`\beta`, :math:`\gamma`, :math:`\delta`,
    :math:`\epsilon` and :math:`\zeta`) including :math:`\chi` can be
-   calulated as shown in the following figure.
+   calulated.
 
 -  These torsion angles of both strands can be read and stored in DNA
    object from the input file using function
@@ -217,7 +218,9 @@ given nucleotides or strand of the DNA segment
 .. image:: backbone_torsion_wheel_tutorial_files/backbone_torsion_wheel_tutorial_8_0.png
 
 
+
 .. image:: backbone_torsion_wheel_tutorial_files/backbone_torsion_wheel_tutorial_8_1.png
+
 
 --------------
 
@@ -363,7 +366,10 @@ Torsional angle wheel for all angles of the DNA segment
 .. code:: python
 
     # Initialization of plot with resolution and figure size
-    fig = plt.figure(figsize=(18, 12), dpi=300)
+    fig = plt.figure(figsize=(12, 6), dpi=300)
+    
+    # For large figure, use this
+    #fig = plt.figure(figsize=(18, 12), dpi=300)
     
     # To adjust gaps and margins of subplots
     fig.subplots_adjust(wspace=0.3)
@@ -481,7 +487,6 @@ Torsional angle wheel for all angles of the DNA segment
 
 
 .. image:: backbone_torsion_wheel_tutorial_files/backbone_torsion_wheel_tutorial_12_0.png
-        :scale: 70 %
 
 
 --------------
@@ -501,7 +506,11 @@ Torsional angle wheel for average angles of DNA segment
 .. code:: python
 
     # Initialization of plot
-    fig = plt.figure(figsize=(18, 12), dpi=300)
+    fig = plt.figure(figsize=(12, 6), dpi=300)
+    
+    # For large figure, use this
+    #fig = plt.figure(figsize=(18, 12), dpi=300)
+    
     fig.subplots_adjust(wspace=0.2)
     
     
@@ -611,7 +620,6 @@ Torsional angle wheel for average angles of DNA segment
 
 
 .. image:: backbone_torsion_wheel_tutorial_files/backbone_torsion_wheel_tutorial_14_0.png
-        :scale: 70 %
 
 
 --------------
@@ -759,5 +767,5 @@ Torsional angle wheel for average angles of segment of a bound and a unbound DNA
 
 
 .. image:: backbone_torsion_wheel_tutorial_files/backbone_torsion_wheel_tutorial_16_0.png
-    :scale: 70 %
+
 

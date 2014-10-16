@@ -134,10 +134,11 @@ import dnaMD
 <ul class="simple">
 <li><a class="reference external" href="http://rjdkmr.github.io/do_x3dna/code.html#dnaMD.DNA">DNA object</a>
 is initialized by using the total number of base-pairs</li>
-<li>For each nucleotide, <strong>six</strong> backbone torision angles
+<li>For each nucleotide, <a class="reference external" href="http://rjdkmr.github.io/do_x3dna/_images/backbone_torsions.png">six backbone torision
+angles</a>
 (<span class="math">\(\alpha\)</span>, <span class="math">\(\beta\)</span>, <span class="math">\(\gamma\)</span>, <span class="math">\(\delta\)</span>,
 <span class="math">\(\epsilon\)</span> and <span class="math">\(\zeta\)</span>) including <span class="math">\(\chi\)</span> can be
-calulated as shown in the following figure.</li>
+calulated.</li>
 <li>These torsion angles of both strands can be read and stored in DNA
 object from the input file using function
 <a class="reference external" href="http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.set_backbone_dihedrals">set_backbone_dihedrals(...)</a>.</li>
@@ -388,7 +389,10 @@ matplotlib.</li>
 </ul>
 <hr class="docutils" />
 <div class="code python highlight-python"><div class="highlight"><pre><span class="c"># Initialization of plot with resolution and figure size</span>
-<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+
+<span class="c"># For large figure, use this</span>
+<span class="c">#fig = plt.figure(figsize=(18, 12), dpi=300)</span>
 
 <span class="c"># To adjust gaps and margins of subplots</span>
 <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">wspace</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
@@ -505,7 +509,7 @@ matplotlib.</li>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/backbone_torsion_wheel_tutorial_12_0.png"><img alt="_images/backbone_torsion_wheel_tutorial_12_0.png" src="_images/backbone_torsion_wheel_tutorial_12_0.png" style="width: 758.8px; height: 333.9px;" /></a>
+<img alt="_images/backbone_torsion_wheel_tutorial_12_0.png" src="_images/backbone_torsion_wheel_tutorial_12_0.png" />
 <hr class="docutils" />
 </div>
 <hr class="docutils" />
@@ -518,7 +522,11 @@ matplotlib.</li>
 </ul>
 <hr class="docutils" />
 <div class="code python highlight-python"><div class="highlight"><pre><span class="c"># Initialization of plot</span>
-<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+
+<span class="c"># For large figure, use this</span>
+<span class="c">#fig = plt.figure(figsize=(18, 12), dpi=300)</span>
+
 <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">wspace</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 
 
@@ -627,7 +635,7 @@ matplotlib.</li>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/backbone_torsion_wheel_tutorial_14_0.png"><img alt="_images/backbone_torsion_wheel_tutorial_14_0.png" src="_images/backbone_torsion_wheel_tutorial_14_0.png" style="width: 744.8px; height: 324.8px;" /></a>
+<img alt="_images/backbone_torsion_wheel_tutorial_14_0.png" src="_images/backbone_torsion_wheel_tutorial_14_0.png" />
 <hr class="docutils" />
 </div>
 <hr class="docutils" />
@@ -767,7 +775,7 @@ data are sparse (only 1000 frames from 100 ns).</li>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/backbone_torsion_wheel_tutorial_16_0.png"><img alt="_images/backbone_torsion_wheel_tutorial_16_0.png" src="_images/backbone_torsion_wheel_tutorial_16_0.png" style="width: 474.6px; height: 891.1px;" /></a>
+<img alt="_images/backbone_torsion_wheel_tutorial_16_0.png" src="_images/backbone_torsion_wheel_tutorial_16_0.png" />
 </div>
 </div>
 

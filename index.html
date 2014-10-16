@@ -72,23 +72,49 @@
 <p>do_x3dna has been developed for analysis of the DNA/RNA dynamics during the molecular dynamics simulations. It uses <a href="http://x3dna.org" target="_blank">3DNA package</a> to calculate several structural descriptors of DNA/RNA from the GROMACS MD trajectory. It executes 3DNA tools to calculate these descriptors and subsequently, extracts these output and saves in to external output files as a function of time.</p>
 <p>From the MD trajectory, several <a class="reference external" href="http://rjdkmr.github.io/do_x3dna/usage.html#output-files">output files</a> are generated. For easy analysis of the obtained data, do_x3dna package includes a Python code <a href="https://github.com/rjdkmr/do_x3dna/blob/master/Python_API/dnaMD.py" target="_blank">dnaMD.py</a>, which contains several <a class="reference external" href="http://rjdkmr.github.io/do_x3dna/apidoc.html">methods</a> for the analysis of structural descriptors.</p>
 <p><strong>Note:</strong> do_x3dna can be used with trajectory files that are obtained from other MD packages such as NAMD and AMBER. Input trajectory files should be converted in to Gromacs format trajectory files. A PDB file could be used in place of a GROMACS <em>tpr</em> file.</p>
-<div class="section" id="examples">
-<h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="features">
+<h1>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="base-pair-parameters">
+<h2>Base-pair parameters<a class="headerlink" href="#base-pair-parameters" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/bp_parameters.png"><img alt="_images/bp_parameters.png" class="align-center" src="_images/bp_parameters.png" style="width: 694.4px; height: 109.76px;" /></a>
+</div>
+<div class="section" id="base-step-parameters">
+<h2>Base-step parameters<a class="headerlink" href="#base-step-parameters" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/bps_parameters.png"><img alt="_images/bps_parameters.png" class="align-center" src="_images/bps_parameters.png" style="width: 694.4px; height: 113.12px;" /></a>
+</div>
+<div class="section" id="helical-base-stesp-parameters">
+<h2>Helical Base-stesp parameters<a class="headerlink" href="#helical-base-stesp-parameters" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/bph_parameters.png"><img alt="_images/bph_parameters.png" class="align-center" src="_images/bph_parameters.png" style="width: 694.4px; height: 109.76px;" /></a>
+</div>
+<div class="section" id="major-and-minor-grooves">
+<h2>Major and minor grooves<a class="headerlink" href="#major-and-minor-grooves" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="radius-of-dna-helix">
+<h2>Radius of DNA Helix<a class="headerlink" href="#radius-of-dna-helix" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="backbone-torsional-angles">
+<h2>Backbone torsional angles<a class="headerlink" href="#backbone-torsional-angles" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/backbone_torsions.png"><img alt="_images/backbone_torsions.png" class="align-center" src="_images/backbone_torsions.png" style="width: 343.2px; height: 424.8px;" /></a>
+<p><strong>Example</strong>: Conformational wheel using backbone torsion angles:</p>
+<a class="reference internal image-reference" href="_images/backbone_torsion_wheel.png"><img alt="_images/backbone_torsion_wheel.png" class="align-center" src="_images/backbone_torsion_wheel.png" style="width: 744.8px; height: 324.8px;" /></a>
+</div>
+<div class="section" id="helical-axis-and-its-curvature">
+<h2>Helical axis and its curvature<a class="headerlink" href="#helical-axis-and-its-curvature" title="Permalink to this headline">¶</a></h2>
+<p><strong>Examples:</strong></p>
 <ul class="simple">
 <li>Bending in the helical axis of a <a href="http://pdb.org/pdb/explore/explore.do?structureId=3tmm" target="_blank">mitochondiral DNA</a>:</li>
 </ul>
 <a class="reference internal image-reference" href="_images/p3tmm.png"><img alt="_images/p3tmm.png" class="align-center" src="_images/p3tmm.png" style="width: 585.6px; height: 378.0px;" /></a>
 <hr class="docutils" />
 <ul class="simple">
-<li>Conformational wheel using backbone torsion angles:</li>
-</ul>
-<a class="reference internal image-reference" href="_images/backbone_torsion_wheel.png"><img alt="_images/backbone_torsion_wheel.png" class="align-center" src="_images/backbone_torsion_wheel.png" style="width: 744.8px; height: 324.8px;" /></a>
-<hr class="docutils" />
-<ul class="simple">
 <li>Bending in the helical axis of a DNA in the <a href="http://pdb.org/pdb/explore/explore.do?structureId=3Ut9" target="_blank">nucleosome</a>:</li>
 </ul>
-<a class="reference internal image-reference" href="_images/p3ut9.png"><img alt="_images/p3ut9.png" class="align-center" src="_images/p3ut9.png" style="width: 836.8px; height: 640.0px;" /></a>
+<a class="reference internal image-reference" href="_images/p3ut9.png"><img alt="_images/p3ut9.png" class="align-center" src="_images/p3ut9.png" style="width: 732.2px; height: 560.0px;" /></a>
+</div>
 <hr class="docutils" />
+<div class="section" id="citations">
+<h2>Citations<a class="headerlink" href="#citations" title="Permalink to this headline">¶</a></h2>
 <div class="line-block">
 <div class="line"><strong>Please cite the follwoing publication and the current github page:</strong></div>
 <div class="line">Xiang-Jun Lu &amp; Wilma K. Olson (2003)</div>
