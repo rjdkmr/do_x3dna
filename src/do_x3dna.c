@@ -202,8 +202,6 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 			  if(strstr(lines2[i],"----")!=NULL)
 				  continue;
 
-			  printf("%s", lines2[i]);
-
 			  tmp_bp1 = extract_coulmn_integer(lines1[i],1,2);
 			  tmp_bp2 = extract_coulmn_integer(lines1[i+1],1,2);
 			  lbps = extract_coulmn_double(lines2[i],1,6);
@@ -236,9 +234,6 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 			  }
 
 		}
-
-		printf("##### Hellooooooooooo ######\n");
-
 
 		timer1++;
 		timer2++;
