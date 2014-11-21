@@ -188,14 +188,13 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 	time_temp = split_by_char(buff2, "=", NULL);
 	time[0] = strtof(time_temp[1],NULL);
 
-
 	//Extracting data from all frames
 	while(1)	{
 
 		lines1 = get_block_lines(f_inp_base_pair,"# Time",&num1);
 		lines2 = get_block_lines(f_inp_lbps,"# Time",&num2);
 
-		for(i=0;i<num1-1;i++)	{
+		for(i=0;i<num1-2;i++)	{
 
 			  if(!is_first_numerics(lines1[i]))
 				  continue;
@@ -203,11 +202,13 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 			  if(strstr(lines2[i],"----")!=NULL)
 				  continue;
 
+			  printf("%s", lines2[i]);
+
 			  tmp_bp1 = extract_coulmn_integer(lines1[i],1,2);
 			  tmp_bp2 = extract_coulmn_integer(lines1[i+1],1,2);
 			  lbps = extract_coulmn_double(lines2[i],1,6);
 
-			  //printf("%d %d %f %f %f %f %f %f\n",tmp_bp[0],tmp_bp[1], lbp[0], lbp[1], lbp[2], lbp[3], lbp[4], lbp[5]);
+			  //printf("%d % d%d %d %f %f %f %f %f %f\n",tmp_bp1[0],tmp_bp1[1], tmp_bp2[0],tmp_bp2[1], lbps[0], lbps[1], lbps[2], lbps[3], lbps[4], lbps[5]);
 
 			  for(j=0;j<max_num_bps;j++)	{
 
@@ -233,7 +234,10 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 					  //printf("\n");
 				  }
 			  }
+
 		}
+
+		printf("##### Hellooooooooooo ######\n");
 
 
 		timer1++;
