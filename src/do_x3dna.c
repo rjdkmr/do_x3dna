@@ -1287,7 +1287,7 @@ int gmx_3dna(int argc,char *argv[])
 		  "    HelixRad_g.dat               => Local helical radius\n",
 		  "    BackBoneCHiDihedrals_g.dat   => Backbone dihederal angles including Chi-dihedral\n",
 		  "    SugarDihedrals_g.dat         => Sugar dihederal angles including puckring type\n"
-		  "Name of these files could be change by setting different prefix instead of \"g\" using \"-name\" option.",
+		  "Name of these files could be change by setting different suffix instead of \"g\" using \"-name\" option.",
 		  "These files could be used with the Python APIs or scripts for further analysis.\n"
   };
 
@@ -1300,7 +1300,7 @@ int gmx_3dna(int argc,char *argv[])
 		  { "-noisy", FALSE, etBOOL, {&bVerbose}, "Generate information from the X3DNA package" },
 		  { "-hbond", FALSE, etBOOL, {&bHbond}, "Hydrogen bond map for base pairs"},
 		  { "-ref", FALSE, etBOOL, {&bRef}, "Base pair parameters will be calculated from base pair of the reference frame"},
-		  { "-name", FALSE, etSTR, {&ComName}, "Output files will be prefixed by this string " },
+		  { "-name", FALSE, etSTR, {&ComName}, "Output file names will be suffixed by this word after \"_\"" },
 		  { "-fit", TRUE, etBOOL, {&bFit}, "Fitting frames on reference structure" },
 		  { "-mwa", TRUE, etBOOL, {&bM},  "Mass weighted fitting" },
 		  { "-lbpm", FALSE, etBOOL, {&bLBPM}, "To calculate local base pair parameters" },
@@ -1344,7 +1344,7 @@ int gmx_3dna(int argc,char *argv[])
   FILE       *tapein;
   FILE       *fnum_bp,*tmpf;
   const char *fnBP_Count;
-  char       prefix_name[32], pdbfile[32],inpfile[32],x3dna_out_file[32], title[256];
+  char       suffix_name[32], pdbfile[32],inpfile[32],x3dna_out_file[32], title[256];
   char       find_pair_cmd[256], analyze_cmd[256];
   const char *dptr, *leg[1] = {"No. of BP"};
   char		  fn_cum_data[10][32];
@@ -1401,11 +1401,11 @@ int gmx_3dna(int argc,char *argv[])
 
 
   //Creating name for temporary PDB file
-  strcpy(prefix_name,"ddXXXXXX");
-  sprintf(prefix_name,"ddXXXXXX");
-  gmx_tmpnam(prefix_name);
-  remove(prefix_name);
-  sprintf(pdbfile,"%s.pdb",prefix_name);
+  strcpy(suffix_name,"ddXXXXXX");
+  sprintf(suffix_name,"ddXXXXXX");
+  gmx_tmpnam(suffix_name);
+  remove(suffix_name);
+  sprintf(pdbfile,"%s.pdb",suffix_name);
 
   if ((tmpf = fopen(pdbfile,"w")) == NULL)
 	  gmx_fatal(FARGS,"Can not open pdb file %s",pdbfile);
@@ -1413,14 +1413,14 @@ int gmx_3dna(int argc,char *argv[])
   remove(pdbfile);
 
   //Creating name for temporary input file for find_pair program
-  sprintf(inpfile,"%s.inp",prefix_name);
+  sprintf(inpfile,"%s.inp",suffix_name);
   if ((tmpf = fopen(inpfile,"w")) == NULL)
 	  gmx_fatal(FARGS,"Can not open inp file %s",inpfile);
   fclose(tmpf);
   remove(inpfile);
 
   //Creating name for output file of analyze program
-  sprintf(x3dna_out_file,"%s.out",prefix_name);
+  sprintf(x3dna_out_file,"%s.out",suffix_name);
 
   //Creating variable for executing command of find_pair from X3DNA
   dptr=getenv("X3DNA");

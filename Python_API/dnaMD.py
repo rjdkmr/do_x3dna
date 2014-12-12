@@ -1874,7 +1874,7 @@ class DNA:
 				self.base_steps[bp_idx[i]].tangent = np.asarray(final_tan[i])
 
 
-	def calculate_angle_bw_tangents(self, base_step, masked=False):
+	def calculate_angle_bw_tangents(self, base_step, cumulative=False, masked=False):
 		"""
 		To calculate angle (Radian) between two tangent vectors of smoothed helical axis.
 
@@ -1883,8 +1883,11 @@ class DNA:
 
 					*Example:*
 						
-						``[5, 50]          # Calculate angle between tangent vectors of 5th and 50th base-steps``
-			
+						``[5, 50]`` # Calculate (1) angle between tangent vectors of 5th and 50th base-steps; or (2) summation over 44 angles that are formed between adjacent tangent vectors of 5-50 bp DNA segment. See below two choose between these two types.
+		
+				* ``cumulative (bool)``: ``Default: False``: If it is false, first type of angle is calculated otherwise second type of angle is calculated as explained in the above example of option ``base_step``.
+
+
 				* ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
 
 		**Returns:**
@@ -1895,13 +1898,21 @@ class DNA:
 		if (len(base_step) != 2):
 			raise ValueError("See, documentation for step usage!!!")
 		
-		tangent1, idx1 = self.get_parameters('Helical axis tangent', bp=[base_step[0]], bp_range=False, masked=masked)	
-		tangent2, idx2 = self.get_parameters('Helical axis tangent', bp=[base_step[1]], bp_range=False, masked=masked)
-
+		if base_step[0] > base_step[1]:
+			raise ValueError("See, documentation for step usage!!!")
+	
 		angle = []
-		for i in range(len(tangent1[0])):
-			tmp_angle = vector_angle(tangent1[0][i], tangent2[0][i])
-			angle.append(tmp_angle)
+		if cumulative:
+			angle_tmp = []
+			tangent, idx = self.get_parameters('Helical axis tangent', bp=base_step, bp_range=True, masked=masked)
+			for i in range(len(idx)-1):
+				angle_tmp.append(vector_angle(tangent[i], tangent[i+1]))
+			angle = np.asarray(angle_tmp).sum(axis=0)
+				
+		else:
+			tangent1, idx1 = self.get_parameters('Helical axis tangent', bp=[base_step[0]], bp_range=False, masked=masked)	
+			tangent2, idx2 = self.get_parameters('Helical axis tangent', bp=[base_step[1]], bp_range=False, masked=masked)
+			angle = vector_angle(tangent1[0], tangent2[0])
 
 		return np.asarray(angle)
 
@@ -2381,11 +2392,25 @@ def distance(x, y):
 	y = np.asarray(y)
 	return np.linalg.norm(x-y)
 
-def vector_angle(x,y):
-	dot = np.dot(x,y)
-	cross = np.cross(x,y)
-	cross_modulus = np.sqrt((cross*cross).sum())
-	angle = np.arctan2(cross_modulus, dot)
+def vector_angle(x, y, multiple=True):
+	x = np.asarray(x)
+	y = np.asarray(y)
+	
+	angle = []
+	if multiple:
+		# Element-wise angle between arrays of vectors. Taken from following links
+		# http://codereview.stackexchange.com/questions/54347/calculating-element-wise-the-angles-between-two-lists-of-vectors
+		dot_x_y = np.einsum('ij, ij->i', x, y)
+		dot_x_x = np.einsum('ij, ij->i', x, x)
+		dot_y_y = np.einsum('ij, ij->i', y, y)
+		angle = np.arccos(dot_x_y/(np.sqrt(dot_x_x)*np.sqrt(dot_y_y)))
+	else:
+		# Angle between two vectors	
+		dot = np.dot(x,y)
+		cross = np.cross(x,y)
+		cross_modulus = np.sqrt((cross*cross).sum())
+		angle = np.arctan2(cross_modulus, dot)
+	
 	return angle
 
 ####################################
@@ -2444,12 +2469,17 @@ def fit_axis(bp_idx, nframe, RawX, RawY, RawZ, smooth, spline, fill_point, cut_o
 			xsmooth.append(xnew[start:end].mean())
 			ysmooth.append(ynew[start:end].mean())
 			zsmooth.append(znew[start:end].mean())
-	
+		
+		tmp_vec1, tmp_vec2 = [], []
 		for j in range(1, len(xsmooth)-1):
 			prev = np.array([xsmooth[j-1], ysmooth[j-1], zsmooth[j-1]])
 			curr = np.array([xsmooth[j], ysmooth[j], zsmooth[j]])
 			nex = np.array([xsmooth[j+1], ysmooth[j+1], zsmooth[j+1]])
-			angle.append( math.degrees(vector_angle((prev-curr),(curr-nex))) )
+			tmp_vec1.append(prev-curr)
+			tmp_vec2.append(curr-nex)
+		angle = np.degrees(vector_angle(tmp_vec1, tmp_vec2))
+		del tmp_vec1
+		del tmp_vec2
 
 		for j in range(1, len(orig_x)-1):
 			prev = np.array([orig_x[j-1], orig_y[j-1], orig_z[j-1]])
