@@ -46,7 +46,7 @@ Options
     -[no]hbond   bool   no      Hydrogen bond map for base pairs
     -[no]ref     bool   no      Base pair parameters will be calculated from base
                                       pair of the reference frame
-    -name        string g       Output files will be prefixed by this string 
+    -name        string g       Output file names will be suffixed by this word after "_"
     -[no]fit     bool   yes     Fitting frames on reference structure
     -[no]mwa     bool   yes     Mass weighted fitting
     -[no]lbpm    bool   no      To calculate local base pair parameters
@@ -158,5 +158,5 @@ Following files are generated from ``do_x3dna`` with and without options:
 |                            | with respect to base-steps                                                      |
 +----------------------------+---------------------------------------------------------------------------------+
 
-Name of these files could be change by setting different prefix instead of "g" using ``-name`` option. These files could be used with the Python APIs or scripts for further analysis.
+Name of these files could be change by setting different suffix instead of "g" using ``-name`` option. These files could be used with the Python APIs or scripts for further analysis.
 

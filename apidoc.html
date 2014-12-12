@@ -85,7 +85,7 @@
 <p>This class also contains several methods (functions) that are discussed in following sections.</p>
 <dl class="method">
 <dt id="dnaMD.DNA.calculate_angle_bw_tangents">
-<tt class="descname">calculate_angle_bw_tangents</tt><big>(</big><em>base_step</em>, <em>masked=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.calculate_angle_bw_tangents" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">calculate_angle_bw_tangents</tt><big>(</big><em>base_step</em>, <em>cumulative=False</em>, <em>masked=False</em><big>)</big><a class="headerlink" href="#dnaMD.DNA.calculate_angle_bw_tangents" title="Permalink to this definition">¶</a></dt>
 <dd><p>To calculate angle (Radian) between two tangent vectors of smoothed helical axis.</p>
 <dl class="docutils">
 <dt><strong>Arguments:</strong></dt>
@@ -94,9 +94,11 @@
 <blockquote>
 <div><p><em>Example:</em></p>
 <blockquote>
-<div><p><tt class="docutils literal"><span class="pre">[5,</span> <span class="pre">50]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">#</span> <span class="pre">Calculate</span> <span class="pre">angle</span> <span class="pre">between</span> <span class="pre">tangent</span> <span class="pre">vectors</span> <span class="pre">of</span> <span class="pre">5th</span> <span class="pre">and</span> <span class="pre">50th</span> <span class="pre">base-steps</span></tt></p>
+<div><p><tt class="docutils literal"><span class="pre">[5,</span> <span class="pre">50]</span></tt> # Calculate (1) angle between tangent vectors of 5th and 50th base-steps; or (2) summation over 44 angles that are formed between adjacent tangent vectors of 5-50 bp DNA segment. See below two choose between these two types.</p>
 </div></blockquote>
 </div></blockquote>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">cumulative</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Default:</span> <span class="pre">False</span></tt>: If it is false, first type of angle is calculated otherwise second type of angle is calculated as explained in the above example of option <tt class="docutils literal"><span class="pre">base_step</span></tt>.</p>
 </li>
 <li><p class="first"><tt class="docutils literal"><span class="pre">masked</span> <span class="pre">(bool)</span></tt>: <tt class="docutils literal"><span class="pre">Dfault=False</span></tt>: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt>) value for each frame to mask the frames. Presently, mask array is automatically generated during <a class="reference internal" href="#dnaMD.DNA.generate_smooth_axis" title="dnaMD.DNA.generate_smooth_axis"><tt class="xref py py-meth docutils literal"><span class="pre">dnaMD.DNA.generate_smooth_axis()</span></tt></a> method to skip those frames where 3D fitting curve was not successfull within the given critera.</p>
 </li>
