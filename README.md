@@ -15,8 +15,12 @@ To execute do_x3dna, 3DNA package should be installed and `$X3DNA` environment v
 <strong> For detailed documentation about the do\_x3dna, please visit  [do\_x3dna home-page](http://rjdkmr.github.io/do_x3dna). </strong>
 
 
-<strong> Please cite the follwoing publication and the current github page:</strong>               
+<strong> Please cite the follwoing publications:</strong>               
 Xiang-Jun Lu & Wilma K. Olson (2003)                                    
 3DNA: a software package for the analysis, rebuilding and visualization 
 of three-dimensional nucleic acid structures.                           
-_Nucleic Acids Res._ 31(17), 5108-21.                                     
+_Nucleic Acids Res._ 31(17), 5108-21.
+
+Rajendra Kumar and Helmut Grubmüller (2015)                                    
+[do_x3dna: a tool to analyze structural fluctuations of dsDNA or dsRNA from molecular dynamics simulations](http://bioinformatics.oxfordjournals.org/content/early/2015/04/15/bioinformatics.btv190.short)                  
+_Bioinformatics_.  
