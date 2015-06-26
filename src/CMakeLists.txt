@@ -36,6 +36,6 @@ find_library(LIBPTHREAD pthread)
 find_library(LIBDL dl)
 
 add_executable(do_x3dna do_x3dna.c ExtractData.h ExtractData.c)
-target_link_libraries(do_x3dna ${LIBM} ${LIBDL} ${LIBPTHREAD} ${LIBFFTW} ${LIBGMX} ${LIBGMXANA} ${LIBMD})
+target_link_libraries(do_x3dna ${LIBGMX} ${LIBGMXANA} ${LIBMD} ${LIBFFTW} ${LIBM} ${LIBDL} ${LIBPTHREAD} )
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
 install(TARGETS do_x3dna DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
