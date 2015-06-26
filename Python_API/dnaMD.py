@@ -4,7 +4,7 @@
 # This file is part of do_x3dna
 #
 # Author: Rajendra Kumar
-# Copyright (C) 2014  Rajendra Kumar
+# Copyright (C) 2014, 2015  Rajendra Kumar
 #
 # do_x3dna uses 3DNA package (http://x3dna.org).
 # Please cite the original publication of the 3DNA package:
