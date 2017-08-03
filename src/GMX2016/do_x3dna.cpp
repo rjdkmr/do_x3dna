@@ -2,7 +2,7 @@
  * This file is part of do_x3dna
  *
  * Author: Rajendra Kumar
- * Copyright (C) 2014, 2015  Rajendra Kumar
+ * Copyright (C) 2014-2017  Rajendra Kumar
  *
  * do_x3dna uses 3DNA package (http://x3dna.org).
  * Please cite the original publication of the 3DNA package:
@@ -38,34 +38,45 @@
  *
  */
 
-#include "typedefs.h"
-#include "macros.h"
-#include "smalloc.h"
-#include "copyrite.h"
-#include "pdbio.h"
-#include "gmx_fatal.h"
-#include "xvgr.h"
-#include "matio.h"
-#include "index.h"
-#include "gstat.h"
-#include "tpxio.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include "rmpbc.h"
-#include "do_fit.h"
-#include "ExtractData.h"
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+#include "gromacs/commandline/viewit.h"
+#include "gromacs/utility/futil.h"
+#include "gromacs/commandline/filenm.h"
+#include "gromacs/commandline/pargs.h"
+#include "gromacs/commandline/cmdlineinit.h"
+#include "gromacs/fileio/oenv.h"
+#include "gromacs/utility/arraysize.h"
+#include "gromacs/utility/fatalerror.h"
+#include "gromacs/fileio/xvgr.h"
+#include "gromacs/topology/atoms.h"
+#include "gromacs/fileio/confio.h"
+#include "gromacs/topology/topology.h"
+#include "gromacs/topology/index.h"
+#include "gromacs/pbcutil/rmpbc.h"
+#include "gromacs/fileio/pdbio.h"
+#include "gromacs/fileio/matio.h"
+#include "gromacs/fileio/tpxio.h"
+#include "gromacs/fileio/trxio.h"
+#include "gromacs/utility/smalloc.h"
+#include "gromacs/math/do_fit.h"
+#include "gromacs/math/vec.h"
+
+
+#include "../ExtractData.h"
 #include "do_x3dna.h"
 
 void CopyRightMsg() {
 
-    char *copyright[] = {
+    const char *copyright[] = {
             "                                                                        ",
             "                  :-)  do_x3dna (-:                                     ",
             "                                                                        ",
             "               Author: Rajendra Kumar                                   ",
             "                                                                        ",
-            "         Copyright (C) 2014  Rajendra Kumar                             ",
+            "         Copyright (C) 2014-2017  Rajendra Kumar                        ",
             "                                                                        ",
             "do_x3dna uses 3DNA package (http://x3dna.org).                          ",
             "Please cite the original publication of the 3DNA package:               ",
@@ -106,7 +117,7 @@ void CopyRightMsg() {
     int i = 0;
     char *str;
     for(i=0; i<42; i++) {
-        str = copyright[i];
+        str = strdup(copyright[i]);
         fprintf(stderr,"%s\n", str);
     }
 }
@@ -131,7 +142,7 @@ int calculate_avg_std(double *data, int n, double filter, double *avg, double *s
 	return 0;
 }
 
-int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], char *ComName[], int nframe, int **max_bps, int max_num_bps, char *fn_inp_base_pair,char *fn_inp_lbps, const output_env_t oenv)	{
+int local_base_pair_step_out(gmx_bool bAvg, const char *fn_avg_out, const char *property[], const char *ComName[], int nframe, int **max_bps, int max_num_bps, char *fn_inp_base_pair,char *fn_inp_lbps, const gmx_output_env_t *oenv)	{
 	int i,j,m, n;
 	double dum = 999;
 	FILE *f_inp_base_pair, *f_inp_lbps;
@@ -352,12 +363,12 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 		for(i=0;i<6;i++)
 			snew(setname[i],256);
 		snew(setname[1],256);
-		sprintf(setname[0],property[0]);
-		sprintf(setname[1],property[1]);
-		sprintf(setname[2],property[2]);
-		sprintf(setname[3],property[3]);
-		sprintf(setname[4],property[4]);
-		sprintf(setname[5],property[5]);
+		sprintf(setname[0], "%s", property[0]);
+		sprintf(setname[1], "%s", property[1]);
+		sprintf(setname[2], "%s", property[2]);
+		sprintf(setname[3], "%s", property[3]);
+		sprintf(setname[4], "%s", property[4]);
+		sprintf(setname[5], "%s", property[5]);
 		xvgr_new_dataset(fLBPM,0,6,(const char **) setname,oenv);
 
 		for(i=0;i<6;i++)	{
@@ -380,7 +391,7 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 	return 0;
 }
 
-int local_base_pair_out(gmx_bool bAvg, char *ComName[], int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_pair,char *fn_inp_lbp, const output_env_t oenv)	{
+int local_base_pair_out(gmx_bool bAvg, const char *ComName[], int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_pair,char *fn_inp_lbp, const gmx_output_env_t *oenv)	{
 	int i,j,m, n;
 	double dum = 999;
 	FILE *f_inp_base_pair, *f_inp_lbp;
@@ -508,7 +519,7 @@ int local_base_pair_out(gmx_bool bAvg, char *ComName[], int nframe, int **max_bp
 	FILE *fOut[6], *fLBPM=NULL;
 	char **leg,**setname;
 	char *fnOut[6], *fnLBPM;
-	char *property[6]=	{ "Shear", "Stretch", "Stagger", "Buckle", "Propeller", "Opening" };
+	const char *property[6]=	{ "Shear", "Stretch", "Stagger", "Buckle", "Propeller", "Opening" };
 	char title[256];
 
 	snew(leg,max_num_bp);
@@ -593,7 +604,7 @@ int local_base_pair_out(gmx_bool bAvg, char *ComName[], int nframe, int **max_bp
 }
 
 
-void hbond_process(int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_pair,char *fn_inp_hbond,int NFILE, char *ComName[],t_filenm fnm[], const output_env_t oenv)	{
+void hbond_process(int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_pair,char *fn_inp_hbond,int NFILE, const char *ComName[],t_filenm fnm[], const gmx_output_env_t *oenv)	{
 	FILE *f_inp_base_pair, *f_inp_hbond, *fout_log, *fout_map;
 	const char *fn_out_map, *fn_out_log;
 	int i,j,n;
@@ -616,12 +627,12 @@ void hbond_process(int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_p
 	snew(time,nframe);
 
 	//Writing base pair log file
-	fout_log = ffopen(fn_out_log,"w");
+	fout_log = gmx_ffopen(fn_out_log,"w");
 	fprintf(fout_log,"Index\t\tBase Pair\n");
 	for(i=0;i<max_num_bp;i++)	{
 		fprintf(fout_log,"%d\t\t%d\t%d\n",i,max_bp[i][0],max_bp[i][1]);
 	}
-	ffclose(fout_log);
+	gmx_ffclose(fout_log);
 
 	//Reading base-pairs and hydrogen bond number from X3DNA output
 	fprintf(stderr,"Reading file.....");
@@ -757,16 +768,16 @@ void hbond_process(int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_p
 	for(i=0;i<max_num_bp;i++){
 		for(j=0;j<nframe;j++){
 			c.c1=Bp_Map[i][j];
-			matrix.matrix[j][i] = max(0,searchcmap(matrix.nmap,matrix.map,c));
+			matrix.matrix[j][i] = std::max( (short)0, searchcmap(matrix.nmap,matrix.map,c));
 			//printf("%d",matrix.matrix[j][i]);
 		}
 	}
 
 	fn_out_map = opt2fn("-map",NFILE,fnm);
 	matrix.flags=0;
-	fout_map =ffopen(fn_out_map ,"w");
+	fout_map =gmx_ffopen(fn_out_map ,"w");
 	write_xpm_m(fout_map ,matrix);
-	ffclose(fout_map );
+	gmx_ffclose(fout_map );
 
 	fprintf(stderr,"\rFinished reading file and Hydrogen bond map generated.\n");
 
@@ -1291,10 +1302,11 @@ int gmx_3dna(int argc,char *argv[])
 		  "These files could be used with the Python APIs or scripts for further analysis.\n"
   };
 
+
   gmx_bool bLBPM=FALSE, bRef=FALSE, bVerbose=FALSE, bHbond=FALSE, bLBPSM=FALSE, bLBPHM=FALSE, bAvg=TRUE;
-  gmx_bool bFit=TRUE, bM=TRUE;
-  static char *ComName[] = {"g"};
-  output_env_t oenv;
+  gmx_bool bFit=TRUE, bM=TRUE, bAnalyzeC_Option=FALSE;
+  static const char *ComName[]  = { "g" };
+  gmx_output_env_t *oenv;
 
   t_pargs pa[] = {
 		  { "-noisy", FALSE, etBOOL, {&bVerbose}, "Generate information from the X3DNA package" },
@@ -1306,7 +1318,8 @@ int gmx_3dna(int argc,char *argv[])
 		  { "-lbpm", FALSE, etBOOL, {&bLBPM}, "To calculate local base pair parameters" },
 		  { "-lbpsm", FALSE, etBOOL, {&bLBPSM}, "To calculate local base-pair step parameters" },
 		  { "-lbphm", FALSE, etBOOL, {&bLBPHM}, "To calculate local base-pair helical parameters" },
-		  { "-avg", TRUE, etBOOL, {&bAvg}, "Average and Standard Deviation over all the frames" }
+		  { "-avg", TRUE, etBOOL, {&bAvg}, "Average and Standard Deviation over all the frames" },
+      { "-c", TRUE, etBOOL, {&bAnalyzeC_Option}, "Output structural parameters between helical regions (\"----\" by default). It will invoke \"-c\" option with 3DNA analyze command." }
     };
 
   t_filenm   fnm[] = {
@@ -1322,14 +1335,18 @@ int gmx_3dna(int argc,char *argv[])
   int npargs;
   CopyRightMsg();
   npargs = asize(pa);
-  parse_common_args(&argc,argv, PCA_CAN_TIME | PCA_TIME_UNIT | PCA_BE_NICE , NFILE,fnm,npargs,pa, asize(desc),desc,0,NULL,&oenv);
+
+  if ( ! parse_common_args(&argc,argv, PCA_CAN_TIME | PCA_TIME_UNIT | PCA_CAN_VIEW , NFILE,fnm,npargs,pa, asize(desc),desc,0,NULL,&oenv) )
+  {
+   	return 0;
+  }
 
   //GROMACS stuffs
   t_trxstatus *status;
   t_topology top;
   int        ePBC;
   t_atoms    *atoms;
-  atom_id    *index, *ifit;
+  int    *index, *ifit;
   matrix     box;
   gmx_rmpbc_t  gpbc=NULL;
   int        nres,nr0;
@@ -1337,7 +1354,7 @@ int gmx_3dna(int argc,char *argv[])
   int        gnx, nfit;
   int 		*nres_index;
   char       *grpnm, *fitname;
-  rvec       *xref,*x;
+  rvec       *xref,*x, x_shift;
   int        i,natoms, nframe=0, num_bp=0;
 
 
@@ -1352,7 +1369,7 @@ int gmx_3dna(int argc,char *argv[])
 
   fnBP_Count= opt2fn("-o",NFILE,fnm);
 
-  read_tps_conf(ftp2fn(efTPS,NFILE,fnm),title,&top,&ePBC,&xref,NULL,box,FALSE);
+  read_tps_conf(ftp2fn(efTPS,NFILE,fnm), &top, &ePBC, &xref, NULL, box, FALSE);
   atoms=&(top.atoms);
 
   if (bFit)		{
@@ -1375,13 +1392,14 @@ int gmx_3dna(int argc,char *argv[])
    //Initialization of fitting stuff
   if(bFit)		{
 	  snew(w_rls,atoms->nr);
-
-	  if(bM)
-		  for(i=0; (i<nfit); i++)
-			  w_rls[ifit[i]]=atoms->atom[ifit[i]].m;
-	  else
-		  for(i=0; (i<nfit); i++)
-			  w_rls[ifit[i]]=1.0;
+    for(i=0; (i<nfit); i++) {
+      if(bM)  {
+        w_rls[ifit[i]]=atoms->atom[ifit[i]].m;
+      }
+	    else {
+        w_rls[ifit[i]]=1.0;
+      }
+    }
   }
 
   //To get number and array of residues in selected group......
@@ -1431,17 +1449,29 @@ int gmx_3dna(int argc,char *argv[])
 	  fprintf(stderr,"find_pair command='%s'\n",find_pair_cmd);
 
   //Creating variable for executing command of analyze from X3DNA
-  sprintf(analyze_cmd,"$X3DNA/bin/analyze %s %s", inpfile,bVerbose?"":"2> /dev/null");
+  if (bAnalyzeC_Option)
+    sprintf(analyze_cmd,"$X3DNA/bin/analyze -c %s %s", inpfile,bVerbose?"":"2> /dev/null");
+  else
+    sprintf(analyze_cmd,"$X3DNA/bin/analyze %s %s", inpfile,bVerbose?"":"2> /dev/null");
   if (bVerbose)
 	  fprintf(stderr,"find_pair command='%s'\n",analyze_cmd);
 
   //Reading first frame
   natoms=read_first_x(oenv,&status,ftp2fn(efTRX,NFILE,fnm),&t,&x,box);
 
+  // Fitting first frame to initial structure
   if (bFit)	{
-	  reset_x(nfit,ifit,top.atoms.nr,NULL,xref,w_rls);
-	  reset_x(nfit,ifit,top.atoms.nr,NULL,x,w_rls);
-	  do_fit(natoms,w_rls,xref,x);
+    // Translate the reference structure to origin and store the original position
+    copy_rvec(xref[index[0]], x_shift);
+    reset_x(nfit,ifit,top.atoms.nr,NULL,xref,w_rls);
+    rvec_dec(x_shift, xref[index[0]]);
+
+    // Translate the frame to origin, fit (by rotating) it to reference structure
+    // and translate again the frame to original position of reference structure
+    reset_x(nfit,ifit,top.atoms.nr,NULL,x,w_rls);
+    do_fit(natoms,w_rls,xref,x);
+    for (i = 0; (i < natoms); i++)
+         rvec_inc(x[i], x_shift);
   }
 
   if (natoms > atoms->nr)
@@ -1466,35 +1496,35 @@ int gmx_3dna(int argc,char *argv[])
   	sprintf(fn_cum_data[eBBnDihedral],"BackBoneCHiDihedrals_%s.dat",ComName[0]);
   	sprintf(fn_cum_data[eSugarConf],"SugarDihedrals_%s.dat",ComName[0]);
 
-  	f_cum_data[eBasePairs] = ffopen(fn_cum_data[eBasePairs],"w");
+  	f_cum_data[eBasePairs] = gmx_ffopen(fn_cum_data[eBasePairs],"w");
 
-    f_cum_data[eHbond] = ffopen(fn_cum_data[eHbond],"w");
+    f_cum_data[eHbond] = gmx_ffopen(fn_cum_data[eHbond],"w");
 
-    f_cum_data[eLBP] = ffopen(fn_cum_data[eLBP],"w");
+    f_cum_data[eLBP] = gmx_ffopen(fn_cum_data[eLBP],"w");
     fprintf(f_cum_data[eLBP],"#Shear    Stretch   Stagger    Buckle  Propeller  Opening\n");
 
-    f_cum_data[eLBPS] = ffopen(fn_cum_data[eLBPS],"w");
+    f_cum_data[eLBPS] = gmx_ffopen(fn_cum_data[eLBPS],"w");
     fprintf(f_cum_data[eLBPS],"#Shift     Slide      Rise      Tilt      Roll     Twist\n");
 
-    f_cum_data[eLBPH] = ffopen(fn_cum_data[eLBPH],"w");
+    f_cum_data[eLBPH] = gmx_ffopen(fn_cum_data[eLBPH],"w");
     fprintf(f_cum_data[eLBPH],"#X-disp    Y-disp   h-Rise     Incl.       Tip   h-Twist\n");
 
-    f_cum_data[eHelAxis] = ffopen(fn_cum_data[eHelAxis],"w");
+    f_cum_data[eHelAxis] = gmx_ffopen(fn_cum_data[eHelAxis],"w");
     fprintf(f_cum_data[eHelAxis],"#Position (Px, Py, Pz) and local helical axis vector (Hx, Hy, Hz)for each dinucleotide step\n");
 
-    f_cum_data[eMgroove] = ffopen(fn_cum_data[eMgroove],"w");
+    f_cum_data[eMgroove] = gmx_ffopen(fn_cum_data[eMgroove],"w");
     fprintf(f_cum_data[eMgroove],"#Minor Groove        Major Groove\n");
     fprintf(f_cum_data[eMgroove],"#P-P     Refined     P-P     Refined\n");
 
-    f_cum_data[eHelixRad] = ffopen(fn_cum_data[eHelixRad],"w");
+    f_cum_data[eHelixRad] = gmx_ffopen(fn_cum_data[eHelixRad],"w");
     fprintf(f_cum_data[eHelixRad],"#   Strand I Atoms                Strand II Atoms \n");
     fprintf(f_cum_data[eHelixRad],"#P        O4'       C1'        P        O4'        C1'\n");
 
-    f_cum_data[eBBnDihedral] = ffopen(fn_cum_data[eBBnDihedral],"w");
+    f_cum_data[eBBnDihedral] = gmx_ffopen(fn_cum_data[eBBnDihedral],"w");
     fprintf(f_cum_data[eBBnDihedral],"#Strand I                                                    Strand II \n");
     fprintf(f_cum_data[eBBnDihedral],"#alpha    beta   gamma   delta  epsilon   zeta    chi   |||  alpha    beta   gamma   delta  epsilon   zeta    chi\n");
 
-    f_cum_data[eSugarConf] = ffopen(fn_cum_data[eSugarConf],"w");
+    f_cum_data[eSugarConf] = gmx_ffopen(fn_cum_data[eSugarConf],"w");
     fprintf(f_cum_data[eSugarConf],"#Strand I                                                              Strand II \n");
     fprintf(f_cum_data[eSugarConf],"#v0      v1      v2      v3      v4      tm       P    Puckering  |||  v0      v1      v2      v3      v4      tm       P    Puckering\n");
 
@@ -1503,12 +1533,12 @@ int gmx_3dna(int argc,char *argv[])
     	setbuf(f_cum_data[i],NULL);
 
   //=======================================================================================
-  gpbc = gmx_rmpbc_init(&top.idef,ePBC,natoms,box);
+  gpbc = gmx_rmpbc_init(&top.idef,ePBC,natoms);
   if(bRef)		{
 	  gmx_rmpbc(gpbc,natoms,box,x);
-	  tapein=ffopen(pdbfile,"w");
+	  tapein=gmx_ffopen(pdbfile,"w");
 	  write_pdbfile_indexed(tapein,NULL,&top.atoms,xref,-1,box,' ',-1,gnx,index,NULL,TRUE);
-	  ffclose(tapein);
+	  gmx_ffclose(tapein);
 
 	  if(0 != system(find_pair_cmd))
 		  gmx_fatal(FARGS,"Failed to execute command: %s",find_pair_cmd);
@@ -1523,13 +1553,17 @@ int gmx_3dna(int argc,char *argv[])
 
 	  //Fitting the frame to reference structure
 	  if (bFit)	{
-		  reset_x(nfit,ifit,top.atoms.nr,NULL,x,w_rls);
-		  do_fit(natoms,w_rls,xref,x);
+      // Translate the frame to origin, fit (by rotating) it to reference structure
+      // and translate again the frame to original position of reference structure
+      reset_x(nfit,ifit,top.atoms.nr,NULL,x,w_rls);
+      do_fit(natoms,w_rls,xref,x);
+      for (i = 0; (i < natoms); i++)
+           rvec_inc(x[i], x_shift);
 	  }
 
-	  tapein=ffopen(pdbfile,"w");
+	  tapein=gmx_ffopen(pdbfile,"w");
 	  write_pdbfile_indexed(tapein,NULL,atoms,x,ePBC,box,' ',-1,gnx,index,NULL,TRUE);
-	  ffclose(tapein);
+	  gmx_ffclose(tapein);
 
 	  //Executing program $X3DNA/bin/find_pair
 	  if(!bRef)
@@ -1546,7 +1580,7 @@ int gmx_3dna(int argc,char *argv[])
 
 	  remove(pdbfile);
 	  nframe++;
-  }		while(read_next_x(oenv,status,&t,natoms,x,box));
+  }		while(read_next_x(oenv,status,&t,x,box));
 
   remove(inpfile);
   remove("bestpairs.pdb"); remove("hel_regions.pdb"); remove("col_helices.scr"); remove("col_chains.scr"); remove("bp_step.par");
@@ -1596,7 +1630,7 @@ int gmx_3dna(int argc,char *argv[])
 		  fprintf(stderr,"\nMaximum number of base pair steps: %d\n\n", max_num_bps);
 
 		  if(bLBPSM)	{
-			  char *property[6]=	{ "Shift", "Slide", "Rise", "Tilt", "Roll", "Twist" };
+			  const char *property[6]=	{ "Shift", "Slide", "Rise", "Tilt", "Roll", "Twist" };
 			  fprintf(stderr,"\n\n========================================================\n");
 			  fprintf(stderr,"             Local Base-Pair Step Parameters                 \n");
 			  fprintf(stderr,"========================================================\n");
@@ -1606,7 +1640,7 @@ int gmx_3dna(int argc,char *argv[])
 			  fprintf(stderr,"=======================END==============================\n");
 		  }
 		  if(bLBPHM)	{
-			  char *property[6]=	{ "X-displacement", "Y-displacement", "H-Rise", "Inclination", "Tip", "H-twist" };
+			  const char *property[6]=	{ "X-displacement", "Y-displacement", "H-Rise", "Inclination", "Tip", "H-twist" };
 			  fprintf(stderr,"\n\n========================================================\n");
 			  fprintf(stderr,"             Local Base-Steps Helical Parameters                 \n");
 			  fprintf(stderr,"========================================================\n");
@@ -1633,13 +1667,9 @@ int gmx_3dna(int argc,char *argv[])
   return 0;
 }
 
+
 int main(int argc, char *argv[])
 {
-
-#ifdef GMX_NO_SYSTEM
-	  gmx_fatal(FARGS,"No calls to system(3) supported on this platform.");
-#endif
-
-  gmx_3dna(argc,argv);
+  gmx_run_cmain(argc, argv, &gmx_3dna);
   return 0;
 }

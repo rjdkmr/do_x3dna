@@ -102,9 +102,9 @@ double* extract_coulmn_double(char *str, int col_min, int col_max)	{
 	return data;
 }
 
-bool is_first_numerics(char *str)	{
+cbool is_first_numerics(char *str)	{
 	char *buffer;
-	bool inumber=FALSE;
+	cbool inumber=FALSE;
 	buffer = strdup(str);
 	remove_leading_white_space(buffer);
 	if(isdigit(buffer[0]))
@@ -157,7 +157,7 @@ char* extract_digits(char *str)	{
 	return final;
 }
 
-char** split_by_char(char *str, char *delimeter, int *num)	{
+char** split_by_char(char *str, const char *delimeter, int *num)	{
 	/*
 	 Similar to split sub-routine in perl
 	 Split input line with the given character
@@ -385,7 +385,7 @@ char** get_all_lines(FILE *fp, int *num_line)	{
 	return data;
 }
 
-char** get_block_lines(FILE *fp, char *delimeter, int *num_line)	{
+char** get_block_lines(FILE *fp, const char *delimeter, int *num_line)	{
 
 	char *buffer=NULL;
 	int count = 0;

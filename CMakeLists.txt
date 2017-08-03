@@ -11,7 +11,7 @@ project(do_x3dna C)
 # set(CMAKE_VERBOSE_MAKEFILE ON)
 # ===============================
 
-set(do_x3dna_MAJOR_VERSION 1)
+set(do_x3dna_MAJOR_VERSION 2)
 set(do_x3dna_MINOR_VERSION 0)
 set(do_x3dna_PATCH_VERSION 0)
 set(do_x3dna_VERSION
@@ -36,6 +36,9 @@ foreach(p LIB BIN INCLUDE CMAKE)
 	endif()
 endforeach()
 
+# Cmake modules/macros are in a subdirectory to keep this file cleaner
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # set up include-directories
 include_directories(
 	"${do_x3dna_SOURCE_DIR}"   # to find src/*.h
@@ -46,12 +49,12 @@ add_subdirectory(src)
 
 
 # ============== Eclipse CDT Error Handling======
-IF(CMAKE_COMPILER_IS_GNUCC)
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmessage-length=0")
-ENDIF(CMAKE_COMPILER_IS_GNUCC)
-IF(CMAKE_COMPILER_IS_GNUCXX)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmessage-length=0")
-ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-set(CMAKE_VERBOSE_MAKEFILE ON)
+#IF(CMAKE_COMPILER_IS_GNUCC)
+#  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmessage-length=0")
+#ENDIF(CMAKE_COMPILER_IS_GNUCC)
+#IF(CMAKE_COMPILER_IS_GNUCXX)
+#  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmessage-length=0")
+#ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # ===============================
