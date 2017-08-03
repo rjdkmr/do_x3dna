@@ -2,9 +2,11 @@
 
    <a href="http://x3dna.org" target="_blank">3DNA package</a>
 
+
 .. |mitochondiral DNA| raw:: html
 
    <a href="http://pdb.org/pdb/explore/explore.do?structureId=3tmm" target="_blank">mitochondiral DNA</a>
+
 
 .. |do_x3dna homepage| raw:: html
 
@@ -31,7 +33,7 @@ external output files as a function of time.
 From the MD trajectory, several `output files <http://do-x3dna.readthedocs.io/en/latest/do_x3dna_usage.html#output-files>`_ are generated.
 For easy analysis of the obtained data, do_x3dna package includes a `dnaMD`_ tool and Python module, which contains
 several `tools <http://do-x3dna.readthedocs.io/en/latest/dnaMD_usage.html>`_ and
- `methods <http://do-x3dna.readthedocs.io/en/latest/api_summary.html>`_ for the analysis of structural descriptors.
+`methods <http://do-x3dna.readthedocs.io/en/latest/api_summary.html>`_ for the analysis of structural descriptors.
 
 **GROMACS versions supported:** 4.5.x, 4.6.x, 5.0.x, 5.1.x, and 2016.x versions.
 For higher versions, a PDB file can be used in place of a GROMACS **tpr** file.
@@ -56,7 +58,7 @@ data.
 
 **Last Update: August. 2017**
 
-**For detailed documentation about the do_x3dna, please visit |do_x3dna homepage| .**
+**For detailed documentation about the do_x3dna, please visit:** |do_x3dna homepage|.
 
 
 Citations
