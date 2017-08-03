@@ -86,7 +86,7 @@ Options
 If ``-ref`` option is used, all structural descriptors are calculated on the basis
 of the structure of the DNA/RNA present in the input tpr/pdb file, which is provided
 with ``-s`` option. ``-ref`` option **SHOULD BE** used if output files are further
-used as input files in `dnaMD <dnaMD_usage.html>`_ or `dnaMD module <apidoc.html>`_.
+used as input files in `dnaMD <dnaMD_usage.html>`_ or `dnaMD module <api_summary.html>`_.
 To analyze the formation or breaking of base-pairs during MD simulations, either ``-noref``
 could be used or do not include ``-ref`` option because this option is switched-off by default.
 

@@ -99,19 +99,54 @@ def getParameterType(param):
 
 
 class DNA:
-
     """DNA class stores all data obtained from the input files.
 
-            **To initialize this class:** ::
+    **To initialize this class:** ::
 
-                            dna = DNA(60)       # 60 is the number of basepairs
+        dna = DNA(60)       # 60 is the number of basepairs
 
-            This class also contains several methods (functions) that are discussed in following sections.
+    This class also contains several methods (functions) that are discussed in following sections.
 
+    The data inside the class is organized as a dictionary in following architecture:
+
+    .. code-block:: bash
 
                  |------- bp  ---- BP number      ----  Parameter array (1D/2D)
-        data ----|
+        data-----|
                  |------- bps ---- BP Step Number ----  Parameter array (1D/2D)
+
+
+    Parameters
+    ----------
+    num_bp : int
+        Number of base-pairs in the DNA.
+    filename : str
+        Name of HDF5 file
+    startBP : int
+        Number ID of first basepair.
+
+
+    Attributes
+    ----------
+    num_bp : int
+        Number of base-pairs in the DNA.
+    num_step : int
+        Number of base-steps in the DNA.
+    filename : str
+        Name of HDF5 file
+    startBP : int
+        Number ID of first basepair.
+    smooth_axis : bool
+        If axis is smoothened and global axis is already determined.
+    data : dictionary
+        Dictionary of data. All data are stored in this dictionary.
+    time : ndarray
+        Trajectory time.
+    mask : ndarray
+        Boolean array indicating which frame of trajectory should be masked.
+    h5 : object
+        h5py.File object to read the data directly from file.
+
 
     """
 
@@ -149,6 +184,10 @@ class DNA:
                 pass
 
     def _openFile(self):
+        """ Open the HDF5 file for reading/writing.
+
+        This methad is called during the initialization of this class.
+        """
         if self.filename is not None:
             self.h5 = h5py.File(self.filename)
         else:
@@ -204,7 +243,7 @@ class DNA:
                 raise AssertionError("\nTime or number of frame mismatch in input files.\n Exiting...\n")
 
     def _set_mask(self, mask):
-        """ Set time in both class and hdf5 file
+        """ Set mask array in both class and hdf5 file
         """
         self.mask = mask.copy()
         if self.h5 is not None:
@@ -226,73 +265,83 @@ class DNA:
     def get_parameters(self, parameter, bp, bp_range=True, masked=False):
         """To get the parameters over all frame for the given range of base pair/steps
 
-        **Arguments:**
-                - ``parameter (string)``: [Name of the prameter]
-                        Currently accepted keywords are as follows:
-                                * ``Shear``
-                                * ``Stretch``
-                                * ``Stagger``
-                                * ``Buckle``
-                                * ``Propeller``
-                                * ``Opening``
-                                * ``Shift``
-                                * ``Slide``
-                                * ``Rise``
-                                * ``Tilt``
-                                * ``Roll``
-                                * ``Twist``
-                                * ``X-disp``
-                                * ``Y-disp``
-                                * ``h-Rise``
-                                * ``Inclination``
-                                * ``Tip``
-                                * ``h-Twist``
-                                * ``Helical X-axis``
-                                * ``Helical Y-axis``
-                                * ``helical z-axis``
-                                * ``Helical X-axis smooth``
-                                * ``Helical Y-axis smooth``
-                                * ``helical z-axis smooth``
-                                * ``helical axis curvature``
-                                * ``helical axis tangent``
-                                * ``Radius S-1``
-                                * ``Radius S-2``
-                                * ``Major Groove``
-                                * ``Major Groove Refined``
-                                * ``Minor Groove``
-                                * ``Minor Groove Refined``
-                                * ``alpha S-1``
-                                * ``beta S-1``
-                                * ``gamma S-1``
-                                * ``delta S-1``
-                                * ``epsilon S-1``
-                                * ``zeta S-1``
-                                * ``chi S-1``
-                                * ``alpha S-2``
-                                * ``beta S-2``
-                                * ``gamma S-2``
-                                * ``delta S-2``
-                                * ``epsilon S-2``
-                                * ``zeta S-2``
-                                * ``chi S-2``
+        parameters
+        ----------
+        parameter : str
+            Input parameter name.
+            Parameter from following list are accepted:
+                * ``shear``
+                * ``stretch``
+                * ``stagger``
+                * ``buckle``
+                * ``propeller``
+                * ``opening``
+                * ``shift``
+                * ``slide``
+                * ``rise``
+                * ``tilt``
+                * ``roll``
+                * ``twist``
+                * ``x-disp``
+                * ``y-disp``
+                * ``h-Rise``
+                * ``inclination``
+                * ``tip``
+                * ``h-Twist``
+                * ``helical X-axis``
+                * ``helical Y-axis``
+                * ``helical z-axis``
+                * ``helical X-axis smooth``
+                * ``helical Y-axis smooth``
+                * ``helical z-axis smooth``
+                * ``helical axis curvature``
+                * ``helical axis tangent``
+                * ``radius S-1``
+                * ``radius S-2``
+                * ``major Groove``
+                * ``major Groove Refined``
+                * ``minor Groove``
+                * ``minor Groove Refined``
+                * ``alpha S1``
+                * ``beta S1``
+                * ``gamma S1``
+                * ``delta S1``
+                * ``epsilon S1``
+                * ``zeta S1``
+                * ``chi S1``
+                * ``alpha S2``
+                * ``beta S2``
+                * ``gamma S2``
+                * ``delta S2``
+                * ``epsilon S2``
+                * ``zeta S2``
+                * ``chi S2``
 
-                - ``bp (1D list) or (1D array)``: base-pairs to analyze
-                        Example: ::
+        bp : 1D list
+            List of base-pairs to analyze
+            Example: ::
 
-                                                bp = [6]                                # bp_range = False
-                                                bp = [4,15]                             # bp_range = True
-                                                bp = range(4,15)                        # bp_range = False
-                                                bp = np.arange(4,15)                    # bp_range = False
-                                                bp = [2,5,6,7,9,12,18]                  # bp_range = False
+                bp = [6]                                # bp_range = False
+                bp = [4,15]                             # bp_range = True
+                bp = range(4,15)                        # bp_range = False
+                bp = np.arange(4,15)                    # bp_range = False
+                bp = [2,5,6,7,9,12,18]                  # bp_range = False
 
-                * ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
+        bp_range : bool
+            ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+
+        masked : bool
+            ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should
+            be set to use this functionality. This array contains boolean (either ``True`` or ``False``)
+            value for each frame to mask the frames. Presently, mask array is automatically generated
+            during :meth:`DNA.generate_smooth_axis` method to skip those frames where 3D fitting
+            curve was not successfull within the given critera.
 
 
-                * ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
-
-
-        **Returns:**
-            - ``parameters[bp][nframe] (2D list)``: where bp is number of base pairs/steps and nframe is total number of frames in the trajectory.
+        Returns
+        -------
+        parameters : 2D list
+            ``parameters[bp][nframe] (2D list)``: where bp is number of base pairs/steps and nframe is total number of frames in the trajectory.
 
         """
 
@@ -335,31 +384,51 @@ class DNA:
     def time_vs_parameter(self, parameter, bp, merge=False, merge_method='mean', masked=False):
         """To get the parameter of either a specfic base-pair/step or a DNA segment as a function of time.
 
-        **Arguments:**
+        parameters
+        ----------
+        parameter : str
+            Name of a base-pair or base-step or helical parameter.
+            For details about accepted keywords, see ``parameter`` in the
+            method :meth:`DNA.get_parameters`.
 
-                * ``parameter (string)``: Name of a base-pair or base-step or helical parameter
-                                                                For details about accepted keywords, see ``parameter`` in the method :meth:`dnaMD.DNA.get_parameters`.
-                * ``bp (1D list) or (1D array)``: base-pairs to analyze
-                        Example: ::
+        bp : 1D list or array
+            base-pairs to analyze
+            Example: ::
 
-                                                bp = [6]                                  # merge = False
-                                                bp = [4,15]                               # merge = True
+                bp = [6]                                  # merge = False
+                bp = [4,15]                               # merge = True
 
-                * ``merge (bool)``: ``Dfault=False``: As shown above, if ``True``, bp should a list of range otherwise a list of single value. If ``bp = True``, the parameter for the respective DNA segment could be merged or calculated by ``merge_method``.
+        merge : bool
+            ``Dfault=False``. As shown above, if ``True``, bp should a list of
+            range otherwise a list of single value. If ``bp = True``, the
+            parameter for the respective DNA segment could be merged or
+            calculated by ``merge_method``.
 
-                * ``merge_method  (string)``: Method to calculate the parameter of a DNA segment from local parameters of all base-pairs/steps that are between the range given through ``bp``.
-                        Currently accepted keywords are as follows:
+        merge_method : str
+            Method to calculate the parameter of a DNA segment from local
+            parameters of all base-pairs/steps that are between the range
+            given through ``bp``.
+            Currently accepted keywords are as follows:
 
-                                * ``merge_method = mean``: Average of local parameters
-                                * ``merge_method = sum``: Sum of local parameters
+                * ``merge_method = mean``: Average of local parameters
+                * ``merge_method = sum``: Sum of local parameters
+
+        masked : bool
+            ``Dfault=False``. To skip specific frames/snapshots.
+            ``DNA.mask`` array should be set to use this functionality.
+            This array contains boolean (either ``True`` or ``False``) value
+            for each frame to mask the frames. Presently, mask array is
+            automatically generated during :meth:`DNA.generate_smooth_axis` to
+            skip those frames where 3D fitting curve was not successfull within
+            the given critera.
 
 
-                * ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
-
-
-            **Returns:**
-                * ``time  (1D array)``: array containing time of length number of frames
-                * ``value (1D array)``: array containing parameter values of length number of frames
+        Returns
+        -------
+        time : 1D array
+            Array containing time of each frame from trajectory
+        value : 1D array
+            Array containing parameter values for each frame from trajectory
 
         """
         if not (isinstance(bp, list) or isinstance(bp, np.ndarray)):
@@ -408,34 +477,54 @@ class DNA:
     def parameter_distribution(self, parameter, bp, bins=30, merge=False, merge_method='mean', masked=False):
         """To get the parameter distribution of either a specfic base-pair/step or a DNA segment over the MD simulation.
 
-        **Arguments:**
+        parameters
+        ----------
+        parameter : str
+            Name of a base-pair or base-step or helical parameter
+            For details about accepted keywords, see ``parameter`` in the method
+            :meth:`DNA.get_parameters`.
 
-                * ``parameter (string)``: Name of a base-pair or base-step or helical parameter
-                                                                For details about accepted keywords, see ``parameter`` in the method :meth:`dnaMD.DNA.get_parameters`.
+        bp : 1D list or array
+            base-pairs to analyze
+            Example: ::
 
-                * ``bp (1D list) or (1D array)``: base-pairs to analyze
-                        Example: ::
+                bp = [6]                                  # merge = False
+                bp = [4,15]                               # merge = True
 
-                                                bp = [6]                                  # merge = False
-                                                bp = [4,15]                               # merge = True
+        bins int
+            Number of bins to calculate histogram
 
-                * ``bins  (int)``: Number of bins to calculate histogram
+        merge : bool
+            ``Dfault=False``: As shown above, if ``True``, bp should a list of
+            range otherwise a list of single value. If ``bp = True``, the
+            parameter for the respective DNA segment could be merged or
+            calculated by ``merge_method``.
 
-                * ``merge (bool)``: ``Dfault=False``: As shown above, if ``True``, bp should a list of range otherwise a list of single value. If ``bp = True``, the parameter for the respective DNA segment could be merged or calculated by ``merge_method``.
+        merge_method : str
+            Method to calculate the parameter of a DNA segment from local
+            parameters of all base-pairs/steps that are between the range given
+            through ``bp``.
+            Currently accepted keywords are as follows:
 
-                * ``merge_method  (string)``: Method to calculate the parameter of a DNA segment from local parameters of all base-pairs/steps that are between the range given through ``bp``.
-                        Currently accepted keywords are as follows:
+                * ``merge_method = mean``: Average of local parameters
+                * ``merge_method = sum``: Sum of local parameters
 
-                                * ``merge_method = mean``: Average of local parameters
-                                * ``merge_method = sum``: Sum of local parameters
+        masked : bool
+            ``Dfault=False``. To skip specific frames/snapshots.
+            ``DNA.mask`` array should be set to use this functionality.
+            This array contains boolean (either ``True`` or ``False``) value
+            for each frame to mask the frames. Presently, mask array is
+            automatically generated during :meth:`DNA.generate_smooth_axis` to
+            skip those frames where 3D fitting curve was not successfull within
+            the given critera.
 
 
-                * ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
-
-
-        **Returns:**
-            * ``values   (1D array)``: array containing parameter values
-            * ``density  (1D array)``: array containing density for respective parameter values
+        Returns
+        -------
+        values : 1D array
+            Array containing parameter values
+        density : 1D array
+            Array containing density for respective parameter values
 
         """
         if not (isinstance(bp, list) or isinstance(bp, np.ndarray)):
@@ -488,47 +577,35 @@ class DNA:
         return np.array(values), density
 
     def set_base_pair_parameters(self, filename, bp, parameters=['shear', 'stretch', 'stagger', 'buckle', 'propeller', 'opening'], bp_range=True):
-        """     To read and store basepairs parameters (shear, stretch, stagger, buckle, propeller and opening) from an input file.
+        """To read and store basepairs parameters (shear, stretch, stagger, buckle, propeller and opening) from an input file.
 
-        **Arguments:**
+        parameters
+        ----------
+        filename : str
+            Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
 
-                * ``filename (string)``: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
+        bp : 1D list or array
+            base-pairs to analyze
+            Example: ::
+                bp = [6]                                # bp_range = False
+                bp = [4,15]                             # bp_range = True
+                bp = range(4,15)                        # bp_range = False
+                bp = np.arange(4,15)                    # bp_range = False
+                bp = [2,5,6,7,9,12,18]                  # bp_range = False
 
-                * ``bp (1D list) or (1D array)``: base-pairs to analyze
-                        Example: ::
+        parameters : 1D list
+            List of base-pairs parameters as follows:
+                * ``shear``
+                * ``stretch``
+                * ``stagger``
+                * ``buckle4``
+                * ``propeller``
+                * ``opening6``
 
-                                                bp = [6]                                # bp_range = False
-                                                bp = [4,15]                             # bp_range = True
-                                                bp = range(4,15)                        # bp_range = False
-                                                bp = np.arange(4,15)                    # bp_range = False
-                                                bp = [2,5,6,7,9,12,18]                  # bp_range = False
+            By default all six parameters will be extracted from the file.
 
-
-                * ``parameters (1D list)``: List of numbers corrosponding to base-pairs parameters as follows:
-
-                                        * ``shear      ->  1``
-                                        * ``stretch    ->  2``
-                                        * ``stagger    ->  3``
-                                        * ``buckle     ->  4``
-                                        * ``propeller  ->  5``
-                                        * ``opening    ->  6``
-
-                        Example:
-
-                                *For shear, buckle, and propeller:*
-
-                                                        ``parameters = [1,4,6]``
-
-                                *For stretch, stagger, buckle, and propeller:*
-
-                                                        ``parameters = range(2,6)``
-
-                                                        ``parameters = [2,3,4,5]``
-
-                * ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
-
-        **Returns:**
-            ``None``
+        bp_range : bool
+            ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
         """
         if not (isinstance(bp, list) or isinstance(bp, np.ndarray)):
@@ -571,50 +648,43 @@ class DNA:
                 self._set_data(data[i][j], 'bp', bp_num, param, scaleoffset=2)
 
     def set_major_minor_groove(self, filename, bp_step, parameters=[  'minor groove', 'minor groove refined', 'major groove', 'major groove refined'], step_range=True):
-        """     To read and store Major and Minor grooves from an input file.
+        """To read and store Major and Minor grooves from an input file.
 
-                * Minor groove : direct P-P distance
-                * Minor Grrove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones
-                * Major groove : direct P-P distance
-                * Major Grrove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones
+        * Minor groove : direct P-P distance
+        * Minor Grrove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones
+        * Major groove : direct P-P distance
+        * Major Grrove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones
 
-                .. warning::
+        .. warning::
 
-                        * The major and minor grooves (direct P-P) cannot be calculated for first and last two base-steps
-                        * The major and minor grooves (refined P-P) cannot be calculated for first and last three base-steps
+                * The major and minor grooves (direct P-P) cannot be calculated for first and last two base-steps
+                * The major and minor grooves (refined P-P) cannot be calculated for first and last three base-steps
 
-        **Arguments:**
+        Parameters
+        ----------
+        filename : str
+            Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
 
-                * ``filename (string)``: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
+        bp_step : 1D list or array
+            base-steps to analyze
+            Example: ::
+                bp_step = [6]                                # step_range = False
+                bp_step = [4,15]                             # step_range = True
+                bp_step = range(4,15)                        # step_range = False
+                bp_step = np.arange(4,15)                    # step_range = False
+                bp_step = [2,5,6,7,9,12,18]                  # step_range = False
 
-                * ``bp_step (1D list) or (1D array)``: bases-steps to analyze
-                        Example: ::
+        parameters : 1D list
+            List of groove parameter names as follows:
+                * ``minor groove``
+                * ``minor grrove refined``
+                * ``major groove``
+                * ``major grrove refined``
 
-                                                bp_step = [6]                                # step_range = False
-                                                bp_step = [4,15]                             # step_range = True
-                                                bp_step = range(4,15)                        # step_range = False
-                                                bp_step = np.arange(4,15)                    # step_range = False
-                                                bp_step = [2,5,6,7,9,12,18]                  # step_range = False
+            By default all four groove parameters will be extracted from the file.
 
-
-                * ``parameters (1D list)``: List of numbers corrosponding to base-pairs parameters as follows:
-
-                                        * ``Minor Groove          ->  1``
-                                        * ``Minor Grrove Refined  ->  2``
-                                        * ``Major Groove          ->  3``
-                                        * ``Major Grrove Refined  ->  4``
-
-                        Example:
-
-                                *For minor (refined) and major (refined) grooves:*
-
-                                                        ``parameters = [2,4]``
-
-
-                * ``step_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array
-
-        **Returns:**
-                        ``None``
+        bp_range : bool
+            ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
         """
         if not (isinstance(bp_step, list) or isinstance(bp_step, np.ndarray)):
@@ -657,7 +727,7 @@ class DNA:
                     self._set_data(np.asarray(data[i][j], dtype=np.float), 'bps', bp_num, param, scaleoffset=1)
 
     def set_backbone_dihedrals(self, filename, bp, parameters='All', bp_range=True):
-        """     To read and store backbone dihedrals (alpha, beta, gamma, delta, epsilon and zeta) and chi dihedral of both strands from an input file.
+        """To read and store backbone dihedrals (alpha, beta, gamma, delta, epsilon and zeta) and chi dihedral of both strands from an input file.
 
         .. note::
 
@@ -671,53 +741,39 @@ class DNA:
                 * chi for purines(R): O4'-C1'-N9-C4
 
 
-        **Arguments:**
+        Parameters
+        ----------
+        filename : str
+            Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
 
-                * ``filename (string)``: Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
+        bp : 1D list or array
+            base-pairs to analyze
+            Example: ::
+                bp = [6]                                # bp_range = False
+                bp = [4,15]                             # bp_range = True
+                bp = range(4,15)                        # bp_range = False
+                bp = np.arange(4,15)                    # bp_range = False
+                bp = [2,5,6,7,9,12,18]                  # bp_range = False
 
-                * ``bp (1D list) or (1D array)``: base-pairs to analyze
-                        Example: ::
+        parameters : str or 1D list
+            Either ``All`` to extract all angles or list of angles as follows:
+                * ``alpha S1``
+                * ``beta S1``
+                * ``gamma S1``
+                * ``delta S1``
+                * ``epsilon S1``
+                * ``zeta S1``
+                * ``chi S1``
+                * ``alpha S2``
+                * ``beta S2``
+                * ``gamma S2``
+                * ``delta S2``
+                * ``epsilon S2``
+                * ``zeta S2``
+                * ``chi S2``
 
-                                                bp = [6]                                # bp_range = False
-                                                bp = [4,15]                             # bp_range = True
-                                                bp = range(4,15)                        # bp_range = False
-                                                bp = np.arange(4,15)                    # bp_range = False
-                                                bp = [2,5,6,7,9,12,18]                  # bp_range = False
-
-
-                * ``parameters (1D list)``: List of numbers corrosponding to base-pairs parameters as follows:
-
-                                        * ``Alpha Strand I    ->   1``
-                                        * ``Beta Strand I     ->   2``
-                                        * ``Gamma Strand I    ->   3``
-                                        * ``Delta Strand I    ->   4``
-                                        * ``Epsilon Strand I  ->   5``
-                                        * ``Zeta Strand I     ->   6``
-                                        * ``Chi Strand I      ->   7``
-                                        * ``Alpha Strand II   ->   8``
-                                        * ``Beta Strand II    ->   9``
-                                        * ``Gamma Strand II   ->  10``
-                                        * ``Delta Strand II   ->  11``
-                                        * ``Epsilon Strand II ->  12``
-                                        * ``Zeta Strand II    ->  13``
-                                        * ``Chi Strand II     ->  14``
-
-                        Example:
-
-                                *For alpha, delta, and zeta of strand I:*
-
-                                                        ``parameters = [1,4,6]``
-
-                                *For beta, gamma, delta, and epsilon of strand II:*
-
-                                                        ``parameters = range(9,13)``
-
-                                                        ``parameters = [9, 10, 11, 12]``
-
-                * ``bp_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array
-
-        **Returns:**
-                        ``None``
+        bp_range : bool
+            ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
         """
         if not (isinstance(bp, list) or isinstance(bp, np.ndarray)):

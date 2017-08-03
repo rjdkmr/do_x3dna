@@ -4,6 +4,7 @@ How to use dnaMD tool?
 Therefore, ``dnaMD`` is developed to analyze data obtained from **do_x3dna**. It contains
 set of tools to analyze the data.
 
+**Other tools are presently in development.**
 
 .. list-table:: Graphical User Interface Applications
     :widths: 1, 4
