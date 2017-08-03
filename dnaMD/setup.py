@@ -68,7 +68,7 @@ setup(
     author_email = "rjdkmr@gmail.com",
     url = 'https://github.com/rjdkmr/do_x3dna',
     description = "To analyze fluctuations in DNA or RNA structures in molecular dynamics trajectories",
-    long_description = read('../README.rst'),
+    long_description = read('README.rst'),
     keywords = ["DNA", "MD Simulation", "Elastic Properties", "DNA Analysis MD Simulations"],
     license = 'GNU General Public License v3 (GPLv3)',
     classifiers = [
