@@ -55,7 +55,7 @@ data.
 
 **Last Update: August. 2017**
 
-**For detailed documentation about the do_x3dna, please visit  `do_x3dna home-page <http://rjdkmr.github.io/do_x3dna>`_.**
+**For detailed documentation about the do_x3dna, please visit  `do_x3dna home-page<http://rjdkmr.github.io/do_x3dna>`_.**
 
 
 Citations
