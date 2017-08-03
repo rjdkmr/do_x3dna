@@ -14,6 +14,11 @@
 
    <a href="http://pdb.org/pdb/explore/explore.do?structureId=3Ut9" target="_blank">nucleosome</a>
 
+.. |do_x3dna homepage| raw:: html
+
+  <a href="http://rjdkmr.github.io/do_x3dna" target="_blank">do_x3dna homepage</a>
+
+
 Introduction
 ============
 
@@ -55,7 +60,7 @@ data.
 
 **Last Update: August. 2017**
 
-**For detailed documentation about the do_x3dna, please visit  `do_x3dna home-page<http://rjdkmr.github.io/do_x3dna>`_.**
+**For detailed documentation about the do_x3dna, please visit |do_x3dna homepage| .**
 
 
 Citations
