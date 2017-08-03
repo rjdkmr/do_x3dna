@@ -2,21 +2,13 @@
 
    <a href="http://x3dna.org" target="_blank">3DNA package</a>
 
-.. |dnaMD.py| raw:: html
-
-   <a href="https://github.com/rjdkmr/do_x3dna/blob/master/Python_API/dnaMD.py" target="_blank">dnaMD.py</a>
-
 .. |mitochondiral DNA| raw:: html
 
    <a href="http://pdb.org/pdb/explore/explore.do?structureId=3tmm" target="_blank">mitochondiral DNA</a>
 
-.. |nucleosome| raw:: html
-
-   <a href="http://pdb.org/pdb/explore/explore.do?structureId=3Ut9" target="_blank">nucleosome</a>
-
 .. |do_x3dna homepage| raw:: html
 
-  <a href="http://rjdkmr.github.io/do_x3dna" target="_blank">do_x3dna homepage</a>
+  <a href="http://do-x3dna.readthedocs.io" target="_blank">do_x3dna homepage</a>
 
 
 Introduction
@@ -36,9 +28,13 @@ descriptors of DNA/RNA from the GROMACS MD trajectory. It executes 3DNA tools to
 calculate these descriptors and subsequently, extracts these output and saves in to
 external output files as a function of time.
 
-From the MD trajectory, several `output files <http://rjdkmr.github.io/do_x3dna/usage.html#output-files>`_ are generated.
-For easy analysis of the obtained data, do_x3dna package includes a Python code |dnaMD.py|, which contains
-several `methods <http://rjdkmr.github.io/do_x3dna/apidoc.html>`_ for the analysis of structural descriptors.
+From the MD trajectory, several `output files <http://do-x3dna.readthedocs.io/en/latest/do_x3dna_usage.html#output-files>`_ are generated.
+For easy analysis of the obtained data, do_x3dna package includes a `dnaMD`_ tool and Python module, which contains
+several `tools <http://do-x3dna.readthedocs.io/en/latest/dnaMD_usage.html>`_ and
+ `methods <http://do-x3dna.readthedocs.io/en/latest/api_summary.html>`_ for the analysis of structural descriptors.
+
+**GROMACS versions supported:** 4.5.x, 4.6.x, 5.0.x, 5.1.x, and 2016.x versions.
+For higher versions, a PDB file can be used in place of a GROMACS **tpr** file.
 
 .. note::
     do_x3dna can be used with trajectory files that are obtained from other MD packages such as NAMD and AMBER.

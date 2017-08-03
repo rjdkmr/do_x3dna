@@ -7,10 +7,6 @@
 
    <a href="http://x3dna.org" target="_blank">3DNA package</a>
 
-.. |dnaMD.py| raw:: html
-
-   <a href="https://github.com/rjdkmr/do_x3dna/blob/master/Python_API/dnaMD.py" target="_blank">dnaMD.py</a>
-
 .. |mitochondiral DNA| raw:: html
 
    <a href="http://pdb.org/pdb/explore/explore.do?structureId=3tmm" target="_blank">mitochondiral DNA</a>
@@ -34,10 +30,11 @@ do_x3dna
 It is the wrapper tool, which uses |3DNA package| to calculate several structural
 descriptors of DNA/RNA from the GROMACS MD trajectory. It executes 3DNA tools to
 calculate these descriptors and subsequently, extracts these output and saves in to
-external `output files <http://rjdkmr.github.io/do_x3dna/usage.html#output-files>`_
+external `output files <http://do-x3dna.readthedocs.io/en/latest/do_x3dna_usage.html#output-files>`_
 as a function of time.
 
-It can be used with Gromacs **4.5.x**, **4.6.x**, **5.0.x**, **5.1.x**, and **2016.x** versions.
+**GROMACS versions supported:** 4.5.x, 4.6.x, 5.0.x, 5.1.x, and 2016.x versions.
+For higher versions, a PDB file can be used in place of a GROMACS **tpr** file.
 
 .. note::
     do_x3dna can be used with trajectory files that are obtained from other MD packages such as NAMD and AMBER.
