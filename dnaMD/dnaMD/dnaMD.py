@@ -270,6 +270,7 @@ class DNA:
         parameter : str
             Input parameter name.
             Parameter from following list are accepted:
+
                 * ``shear``
                 * ``stretch``
                 * ``stagger``
@@ -587,6 +588,7 @@ class DNA:
         bp : 1D list or array
             base-pairs to analyze
             Example: ::
+
                 bp = [6]                                # bp_range = False
                 bp = [4,15]                             # bp_range = True
                 bp = range(4,15)                        # bp_range = False
@@ -595,6 +597,7 @@ class DNA:
 
         parameters : 1D list
             List of base-pairs parameters as follows:
+
                 * ``shear``
                 * ``stretch``
                 * ``stagger``
@@ -663,11 +666,12 @@ class DNA:
         Parameters
         ----------
         filename : str
-            Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
+            Input file, which is generated from do_x3dna. e.g. MGroove_g.dat
 
         bp_step : 1D list or array
             base-steps to analyze
             Example: ::
+
                 bp_step = [6]                                # step_range = False
                 bp_step = [4,15]                             # step_range = True
                 bp_step = range(4,15)                        # step_range = False
@@ -683,8 +687,8 @@ class DNA:
 
             By default all four groove parameters will be extracted from the file.
 
-        bp_range : bool
-            ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+        step_range : bool
+            ``Dfault=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array.
 
         """
         if not (isinstance(bp_step, list) or isinstance(bp_step, np.ndarray)):
@@ -744,11 +748,12 @@ class DNA:
         Parameters
         ----------
         filename : str
-            Input file, which is generated from do_x3dna. e.g. L-BP_g.dat
+            Input file, which is generated from do_x3dna. e.g. BackBoneCHiDihedrals_g.dat
 
         bp : 1D list or array
             base-pairs to analyze
             Example: ::
+
                 bp = [6]                                # bp_range = False
                 bp = [4,15]                             # bp_range = True
                 bp = range(4,15)                        # bp_range = False
@@ -757,6 +762,7 @@ class DNA:
 
         parameters : str or 1D list
             Either ``All`` to extract all angles or list of angles as follows:
+
                 * ``alpha S1``
                 * ``beta S1``
                 * ``gamma S1``
@@ -822,30 +828,36 @@ class DNA:
                     self._set_data(np.asarray(data[i][j], dtype=np.float), 'bp', bp_num, param, scaleoffset=1)
 
     def set_helical_radius(self, filename, bp, atomname='P', full=False, bp_range=True):
-        """     To read and set local helical radius of both strand
+        """To read and set local helical radius of both strand
 
-        **Arguments:**
+        Parameters
+        ----------
+        filename : str
+            Input file, which is generated from do_x3dna. e.g. HelixRad_g.dat
 
-                * ``filename (string)``: Input file, which is generated from do_x3dna. e.g. HelixRad_g.dat
+        bp : 1D list or array
+            base-pairs to analyze
+            Example: ::
 
-                * ``bp (1D list) or (1D array)``: base-pairs to analyze
-                        Example: ::
+                bp = [6]                                # bp_range = False
+                bp = [4,15]                             # bp_range = True
+                bp = range(4,15)                        # bp_range = False
+                bp = np.arange(4,15)                    # bp_range = False
+                bp = [2,5,6,7,9,12,18]                  # bp_range = False
 
-                                                bp = [6]                                # bp_range = False
-                                                bp = [4,15]                             # bp_range = True
-                                                bp = range(4,15)                        # bp_range = False
-                                                bp = np.arange(4,15)                    # bp_range = False
-                                                bp = [2,5,6,7,9,12,18]                  # bp_range = False
+        atomname : str
+            Atom name to consider for the DNA helix (accepted keywords:
+            ``P``, ``O4*``, ``O4'``, ``C1*`` and ``C1``)
 
+        full : bool
+            To calculate full helical radius. Overrides atomname option and
+            uses atom ``P``, and 1 A is added to the radius calculated by 3DNA
+            package
 
-                * ``atomname (string)``: list of atom names to consider for the DNA helix (accepted keywords: ``P, O4*, O4', C1* and C1``)
+        bp_range : bool
+            ``Dfault=True``: As shown above, if ``True``, bp is taken as a
+            range otherwise list or numpy array.
 
-                * ``full (bool)``: To calculate full helical radius. Overrides atomname option and uses atom 'P', subsequently added 1 A to the radius calculated by 3DNA package
-
-                * ``bp_range (bool)``: Shown above. if True, bp should be a range otherwise list or numpy array
-
-        **Returns:**
-                        ``None``
         """
         if not (isinstance(bp, list) or isinstance(bp, np.ndarray)):
             raise AssertionError(
@@ -882,8 +894,6 @@ class DNA:
         if full:
             data = np.add(data, 1.0)
 
-        'radius s-1', 'radius s-2',
-
         for i in range(len(data)):
             bp_num = str( bp_idx[i]+self.startBP )
             if (atomname == 'P') or (full):
@@ -899,56 +909,52 @@ class DNA:
                 self._set_data(data[i][5], 'bps', bp_num, 'radius s-2', scaleoffset=1)
 
     def set_base_step_parameters(self, filename, bp_step, parameters='All', step_range=True, helical=False):
-        """     To read and store base-step (Shift, Slide, Rise, Tilt, Roll and Twist) and helical base-step (X-disp, Y-disp, h-Rise, Inclination, Tip and h-Twist) parameters from an input file
+        """To read and store base-step (Shift, Slide, Rise, Tilt, Roll and Twist) and helical base-step (X-disp, Y-disp, h-Rise, Inclination, Tip and h-Twist) parameters from an input file
 
-        **Arguments:**
+        Parameters
+        ----------
+        filename : str
+            Input file, which is generated from do_x3dna. e.g. L-BPS_g.dat or L-BPH_g.dat.
 
-                * ``filename (string)``: Input file, which is generated from do_x3dna. e.g. ``L-BPS_g.dat`` or ``L-BPH_g.dat``
+        bp_step : 1D list or array
+            base-steps to analyze
+            Example: ::
 
-                * ``bp_step (1D list) or (1D array)``: base-steps to analyze
-                        Example: ::
+                bp_step = [6]                                # step_range = False
+                bp_step = [4,15]                             # step_range = True
+                bp_step = range(4,15)                        # step_range = False
+                bp_step = np.arange(4,15)                    # step_range = False
+                bp_step = [2,5,6,7,9,12,18]                  # step_range = False
 
-                                                bp_step = [6]                                # step_range = False
-                                                bp_step = [4,15]                             # step_range = True
-                                                bp_step = range(4,15)                        # step_range = False
-                                                bp_step = np.arange(4,15)                    # step_range = False
-                                                bp_step = [2,5,6,7,9,12,18]                  # step_range = False
+        parameters : str or 1D list
+            Either ``All`` to extract all parameter available in input file
+            or list of either base-step or helical base-step parameter as follows:
 
+            If helical = ``False``:
 
-                * ``parameters (1D list)``: List of numbers corrosponding to base-steps parameters as follows:
+                * ``shift``
+                * ``slide``
+                * ``rise``
+                * ``tilt``
+                * ``roll``
+                * ``twist``
 
-                                If ``helical = False``:
-                                                * ``Shift       ->  1``
-                                                * ``Slide       ->  2``
-                                                * ``Rise        ->  3``
-                                                * ``Tilt        ->  4``
-                                                * ``Roll        ->  5``
-                                                * ``Twist       ->  6``
+            If helical = ``True``:
 
-                                If ``helical = True``:
-                                                * ``X-disp      ->  1``
-                                                * ``Y-disp      ->  2``
-                                                * ``h-Rise      ->  3``
-                                                * ``Inclination ->  4``
-                                                * ``Tip         ->  5``
-                                                * ``h-Twist     ->  6``
+                * ``X-disp``
+                * ``Y-disp``
+                * ``h-Rise``
+                * ``Inclination``
+                * ``Tip``
+                * ``h-Twist``
 
-                                Example:
+        step_range : bool
+            ``Dfault=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array.
 
-                                        *For Shift, Tilt and Twist*:
+        helical : bool
+            If ``True``, parameters in input file will be considered as helical base-steps parameters
+            If ``False``, parameters will be considered as base-steps parameters.
 
-                                                        ``parameters = [1,4,6]``
-
-                                        *For Slide, Rise, Tilt and Roll*:
-
-                                                        ``parameters = range(2,6)``
-
-                                                        ``parameters = [2,3,4,5]``
-
-                * ``step_range (bool)``: ``Dfault=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array
-
-        **Returns:**
-                        ``None``
         """
         if not (isinstance(bp_step, list) or isinstance(bp_step, np.ndarray)):
             raise AssertionError(
@@ -999,47 +1005,74 @@ class DNA:
                 param = targetParameters[OutParamIndex[j]+1]
                 self._set_data(data[i][j], 'bps', bp_num, param, scaleoffset=2)
 
-    def get_mean_error(self, bp, parameter, err_type='std', bp_range=True, merge_bp=1, merge_method='mean', masked=False):
+    def get_mean_error(self, bp, parameter, err_type='std', bp_range=True, merge_bp=1, merge_method='mean', masked=False, tool='g_analyze'):
         """To calculate average and error of the given parameter for the gieven set of base-pairs/steps
 
-        **Arguments:**
-                * ``bp (1D list) or (1D array)``: base-pairs or base-steps to analyze
-                        Example: ::
+        .. warning::
+                To calculate errors by using ``error = 'acf'`` or ``error = 'block'``,
+                GROMACS tool ``g_analyze`` or ``gmx analyze`` should be present in ``$PATH``.
 
-                                bp = [6]                                # bp_range = False
-                                bp = [4,15]                             # bp_range = True
-                                bp = range(4,15)                        # bp_range = False
-                                bp = np.arange(4,15)                    # bp_range = False
+        Parameters
+        ----------
 
-                * ``parameter (string)``: Name of a base-pair or base-step or helical parameter
-                                                                For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
+        bp : 1D list or array
+            base-pairs to analyze
+            Example: ::
 
-                * ``error     (string)``:  Method of error estimation.
-                        Currently accepted method as follows:
-                                * ``error = 'std'``   : Standard Deviation
-                                * ``error = 'acf'``   : Standard error using autocorrelation time (requires: g_analyze)
-                                * ``error = 'block'`` : Standard error using block averaging method (requires: g_analyze)
+                bp = [6]                                # bp_range = False
+                bp = [4,15]                             # bp_range = True
+                bp = range(4,15)                        # bp_range = False
+                bp = np.arange(4,15)                    # bp_range = False
+                bp = [2,5,6,7,9,12,18]                  # bp_range = False
 
-                                .. warning::
-                                        to calculate errors by using ``error = 'acf'`` or ``error = 'block'`` , GROMACS tool ``g_analyze`` should be present in ``$PATH``.
+        parameter : str
+            Name of a parameter. For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
 
-                * ``bp_range (bool)``: Shown above. if True, bp should be a range otherwise list or numpy array
+        error : str
+            Method of error estimation.
+            Currently accepted method as follows:
 
-                * ``merge_bp (integer)``: Number of base-pairs or steps to merge for creating the small DNA segments
+                * ``error = 'std'``   : Standard Deviation
+                * ``error = 'acf'``   : Standard error using autocorrelation time (requires: ``g_analyze`` or ``gmx analyze``)
+                * ``error = 'block'`` : Standard error using block averaging method (requires: ``g_analyze`` or ``gmx analyze``)
 
-                * ``merge_method  (string)``: Method to calculate the parameter of a DNA segment from local parameters of all base-pairs/steps that are between the range given through ``bp``.
-                        Currently accepted keywords are as follows:
+        bp_range : bool
+            ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
-                                * ``merge_method = mean``: Average of local parameters
-                                * ``merge_method = sum``: Sum of local parameters
+        merge_bp : int
+            Number of base-pairs or steps to merge for creating the small DNA segments
 
-                * ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
+        merge_method : str
+            Method to calculate the parameter of a DNA segment from local
+            parameters of all base-pairs/steps that are between the range
+            given through ``bp``.
+            Currently accepted keywords are as follows:
 
+                * ``merge_method = mean``: Average of local parameters
+                * ``merge_method = sum``: Sum of local parameters
 
-        **Returns:**
-            * ``basepairs/steps (1D array)``: Number of base pair-steps. If ``merge_bp>1``, middle number will be returned.
-            * ``avg. parameter values (1D array)``: average values of the parameter
-            * ``error (1D array)``: Error values for corresponding average values
+        masked : bool
+            ``Dfault=False``. To skip specific frames/snapshots.
+            ``DNA.mask`` array should be set to use this functionality.
+            This array contains boolean (either ``True`` or ``False``) value
+            for each frame to mask the frames. Presently, mask array is
+            automatically generated during :meth:`DNA.generate_smooth_axis` to
+            skip those frames where 3D fitting curve was not successfull within
+            the given critera.
+
+        tool : str
+            Gromacs tool ``g_analyze`` or ``gmx analyze`` or ``gmx_mpi analyze`` etc.
+            It will be used to calculate autocorrelation time or  block averaging error.
+            It should be present in ``$PATH``
+
+        Returns
+        -------
+        basepairs/steps : 1D array
+            Number of base pair-steps. If ``merge_bp>1``, middle number will be returned.
+        values : 1D array
+            Average values of the parameter
+        errors : 1D array
+            Error values for corresponding average values
 
         """
 
@@ -1058,8 +1091,7 @@ class DNA:
                 "merge method %s is not available." % merge_method)
             exit(1)
 
-        data, bp_idx = self.get_parameters(
-            parameter, bp, bp_range, masked=masked)
+        data, bp_idx = self.get_parameters(parameter, bp, bp_range, masked=masked)
 
         bp_number = np.add(bp_idx, self.startBP)
         data = np.array(data)
@@ -1099,11 +1131,9 @@ class DNA:
 
         if (err_type == 'acf') or (err_type == 'block'):
             if(merge):
-                error = get_error(
-                    self.time, merge_data, len(mid_bin), err_type=err_type)
+                error = get_error(self.time, merge_data, len(mid_bin), err_type=err_type, tool=tool)
             else:
-                error = get_error(
-                    self.time, data, len(bp_idx), err_type=err_type)
+                error = get_error(self.time, data, len(bp_idx), err_type=err_type, tool=tool)
 
         if(merge):
             return mid_bin, np.mean(merge_data, axis=1), error
@@ -1114,26 +1144,21 @@ class DNA:
         """
         To read and set local helical-axis postions from an input file.
 
-        **Arguments:**
+        Parameters
+        ----------
+        filename : str
+            Input file, which is generated from do_x3dna. e.g. HelAxis_g.dat
+        step_range : bool
+            * ``step_range = True`` : read axis coordinates of base-steps for the given range of base-steps
+            * ``step_range = False``: read axis coordinates of all base-steps
+        step : list
+            List containing lower and higher limit of base-steps range.
+                * This option only works with ``step_range=True``.
+                * This list should not contain more than two number.
+                * First number should be less than second number.
 
-                * ``filename (string)``: Input file, which is generated from do_x3dna. e.g. HelAxis_g.dat
-
-                * ``step_range (bool)``:
-                                * ``step_range = True`` : read axis coordinates of base-steps for the given range of base-steps
-                                * ``step_range = False``: read axis coordinates of all base-steps
-
-                * ``step (list)``: list containing lower and higher limit of base-steps range
-                                                * This option only works with ``step_range=True``.
-                                                * This list should not contain more than two number.
-                                                * First number should be less than second number.
-
-                                Example:
-
-                                        *For base-step 4 to 15*:
-                                                ``step = [4,15]         # step_range = True``
-
-        **Returns:**
-                                ``None``
+            Example for base-step 4 to 15:
+                ``step = [4,15]         # step_range = True``
 
         """
 
@@ -1183,48 +1208,62 @@ class DNA:
                 self._set_data(data[i][j], 'bps', bp_num, param, scaleoffset=2)
 
     def generate_smooth_axis(self, step_range=False, step=None, smooth=500.0, spline=3, fill_point=6, cut_off_angle=20):
-        """     To smoothen the helical axis using spline interpolation.
+        """To determine the global helical axis by smoothening local axis using spline interpolation.
 
         .. note::
-                A 3D curve is fitted on local helical axis that are calculated using ``do_x3dna`` tool. Sometimes in few frames, fitting **may not** be accurate and produces artifact. To record these frames, dnaMD.DNA.mask array containing boolean values are generated. If value is ``True``, fitting might not be correct and vice versa. This array could be used in later analysis to skip/mask the frames containing inaccurate axis.
+            A 3D curve is fitted on local helical axis that are calculated using
+            ``do_x3dna`` tool. Sometimes in few frames, fitting **may not** be
+            accurate and produces artifact. To record these frames, ``DNA.mask``
+            array containing boolean values are generated. If value is ``True``,
+            fitting might not be correct and vice versa. This array could be
+            used in later analysis to skip/mask the frames containing inaccurate
+            axis.
 
         .. warning::
                 This function requires `SciPy package <http://www.scipy.org/>`_.
 
-        **Arguments:**
+        Parameters
+        ----------
+        step_range : bool
+            * ``step_range = True`` : Smoothen axis for the given range of base-steps
+            * ``step_range = False``: Smoothen axis for entire DNA. If original helical-axis of any base-step will be found to be not available, error will be raised.
 
-                * ``step_range (bool)``:
-                                * ``step_range = True`` : Smoothen axis for the given range of base-steps
-                                * ``step_range = False``: Smoothen axis for entire DNA. If original helical-axis of any base-step will be found to be not available, error will be raised.
+        step : list
+            List containing lower and higher limit of base-steps range.
+                * This option only works with ``step_range=True``.
+                * This list should not contain more than two number.
+                * First number should be less than second number.
 
-                * ``step (list)``: list containing lower and higher limit of base-steps range
-                                                * This option only works with ``step_range=True``.
-                                                * This list should not contain more than two number.
-                                                * First number should be less than second number.
+            Example for base-step 4 to 15:
+                ``step = [4,15]         # step_range = True``
 
-                                Example:
+        smooth : float
+            A smoothing condition. For more details, see about ``s = None``, which is paased into
+            `scipy.interpolate.splprep() <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html>`_ method.
 
-                                        *For base-step 4 to 15*:
-                                                ``step = [4,15]         # step_range = True``
+            .. warning ::
+                * Lower value may lead to an artifact of local sharp kink in the smoothed axis.
+                * Higher value may lead to the calculation of wrong helical axis.
 
-                * ``smooth (float)``: A smoothing condition. For more details, see about ``s = None``, which is paased into  `scipy.interpolate.splprep() <http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html#scipy.interpolate.splprep>`_ method.
-                        .. warning ::
+        spline : int
+            Degree of spline. For more details, see about ``k = 3``, which is paased into
+            `scipy.interpolate.splprep() <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html>`_ method.
 
-                                * Lower value may lead to an artifact of local sharp kink in the smoothed axis.
-                                * Higher value may lead to the calculation of wrong helical axis.
+        fill_point : int
+            Number of intrapolated points between two adjacent helical-axis coordinates.
 
+        cut_off_angle : float
+            Cut-off bending angle to define sharp kink in fitted curve. If angle
+            in fitted curve is larger than this cut-off, refitting will be performed
+            after deleting few of the original helical axis positions. If after
+            this deletions, bending angle will not reduce below cut-off angle,
+            value of ``smooth`` will be increased by 100 and entire cycle of
+            fitting-refitting will be performed. When, value of ``smooth`` increases
+            to more than 10000 during this fitting-refitting cycles, fitting process
+            will be stopped with a warning message.
 
-                * ``spline (int)``: Degree of spline. For more details, see about ``k = 3``, which is paased into  `scipy.interpolate.splprep() <http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html#scipy.interpolate.splprep>`_ method.
-
-
-                * ``fill_point (int)``: Number of intrapolated points between two adjacent helical-axis coordinates.
-
-
-                * ``cut_off_angle (float)``: Cut-off bending angle to define sharp kink in fitted curve. If angle in fitted curve is larger than this cut-off, refitting will be performed after deleting few of the original helical axis positions. If after this deletions, bending angle will not reduce below cut-off angle, value of ``smooth`` will be increased by 100 and entire cycle of fitting-refitting will be performed. When, value of ``smooth`` increases to more than 10000 during this fitting-refitting cycles, fitting process will be stopped with a warning message.
-
-
-        **Returns:**
-                                ``None``
+            To record the frames with bad fitting, ``True`` value will be
+            stored in ``DNA.mask`` array for respective frame.
 
         """
 
@@ -1295,38 +1334,40 @@ class DNA:
         self._set_mask(maskArray)
 
     def write_haxis_pdb(self, filename='helical_axis.pdb', step_range=False, step=None, write_smooth_axis=True, write_orig_axis=False, write_curv=False, scale_curv=1):
-        """
-        To write trajectory of helcial-axis as a PDB format file. Helical axis could be original or smoothed. For smoothed axis, curvature could be written in B-factor field of PDB file.
+        """To write trajectory of helcial-axis as a PDB format file.
 
-        **Arguments:**
+        Both local helical axis and global (smoothened) axis can be written to PDB file.
+        For global axis, curvature could be written in B-factor field of PDB file.
 
-                * ``filename (string)``: Name of the output PDB format file.
+        Parameters
+        ----------
+        filename : str
+            Name of the output PDB format file.
 
-                * ``step_range (bool)``:
-                                * ``step_range = True`` : Smoothen axis for the given range of base-steps
-                                * ``step_range = False``: Smoothen axis for entire DNA. If original helical-axis of any base-step will be found to be not available, error will be raised.
+        step_range : bool
+            * ``step_range = True`` : Smoothen axis for the given range of base-steps
+            * ``step_range = False``: Smoothen axis for entire DNA. If original helical-axis of any base-step will be found to be not available, error will be raised.
 
-                * ``step (list)``: list containing lower and higher limit of base-steps range
-                                                * This option only works with ``step_range=True``.
-                                                * This list should not contain more than two number.
-                                                * First number should be less than second number.
+        step : list
+            List containing lower and higher limit of base-steps range.
+                * This option only works with ``step_range=True``.
+                * This list should not contain more than two number.
+                * First number should be less than second number.
 
-                                Example:
+            Example for base-step 4 to 15:
+                ``step = [4,15]         # step_range = True``
 
-                                        *For base-step 4 to 15*:
-                                                ``step = [4,15]         # step_range = True``
+        write_smooth_axis : bool
+            Write coordinates of smoothed helical axis as chain A.
 
-                * ``write_smooth_axis (bool)``: Write coordinates of smoothed helical axis as chain A.
+        write_orig_axis : bool
+            Write coordinates of original helical axis (output from do_x3dna) as chain B.
 
-                * ``write_orig_axis (bool)``: Write coordinates of original helical axis (output from do_x3dna) as chain B.
+        write_curv : bool
+            Write curvature of smoothed helical axis in B-factor coloumn of PDB file.
 
-                * ``write_curv (bool)``: Write curvature of smoothed helical axis in B-factor coloumn of PDB file.
-
-                * ``scale_curv (int)``: Scaling of curvature. ``curvature * scale_curv`` is written in  B-factor coloumn of PDB file.
-
-        **Returns:**
-
-                        None
+        scale_curv : int
+            Scaling of curvature. ``curvature * scale_curv`` is written in  B-factor coloumn of PDB file.
 
         """
 
@@ -1447,33 +1488,33 @@ class DNA:
         f.close()
 
     def calculate_curvature_tangent(self, step_range=False, step=None, store_tangent=False):
-        """
-        To calculate curvatures and tangent vectors along the helical axis. The curvature and tangent vectors are calculated using Frenet-Serret formula. The calculated values are stored in DNA object.
+        """To calculate curvatures and tangent vectors along the helical axis.
 
-        **Arguments:**
+        The curvature and tangent vectors are calculated using Frenet-Serret formula.
+        The calculated values are stored in ``DNA.data`` dictionary and also in HDF5 file.
 
-                * ``step_range (bool)``:
-                                * ``step_range = True`` : Calculate curvature and tangent vectors for the given range of base-steps
-                                * ``step_range = False``: Calculate curvature and tangent vectors for entire DNA. If smoothed helical-axis of any base-step will be found to be not available, error will be raised.
+        Parameters
+        ----------
+        step_range : bool
+            * ``step_range = True`` : Calculate curvature and tangent vectors for the given range of base-steps
+            * ``step_range = False``: Calculate curvature and tangent vectors for entire DNA. If smoothed helical-axis of any base-step will be found to be not available, error will be raised.
 
-                * ``step (list)``: list containing lower and higher limit of base-steps range
-                                                * This option only works with ``step_range=True``.
-                                                * This list should not contain more than two number.
-                                                * First number should be less than second number.
+        step : list
+            List containing lower and higher limit of base-steps range.
+                * This option only works with ``step_range=True``.
+                * This list should not contain more than two number.
+                * First number should be less than second number.
 
-                                Example:
+            Example for base-step 4 to 15:
+                ``step = [4,15]         # step_range = True``
 
-                                        *For base-step 4 to 15*:
-                                                ``step = [4,15]         # step_range = True``
+        store_tangent : bool
+            * ``store_tangent = True`` : The calculated tangent vectors will be stored for later use.
+            * ``store_tangent = False``:  The calculated tangent vectors will be discarded.
 
-
-                * ``store_tangent (bool)``:
-                                * ``store_tangent = True`` : The calculated tangent vectors will be stored for later use.
-                                * ``store_tangent = False``:  The calculated tangent vectors will be discarded.
-
-
-        **Returns:**
-                                ``None``
+            In case of HDF5 file, calculated tangents will be stroed in this
+            file and it will not add cost to memory. However, without HDF5 file,
+            storing tangents in ``DNA.data`` will be expansive for memory.
 
         """
 
@@ -1542,23 +1583,40 @@ class DNA:
                 self._set_data(np.asarray(final_tan[i]), 'bps', bp_num, 'helical axis tangent',  scaleoffset=3)
 
     def calculate_angle_bw_tangents(self, base_step, cumulative=False, masked=False):
-        """
-        To calculate angle (Radian) between two tangent vectors of smoothed helical axis.
+        """To calculate angle (Radian) between two tangent vectors of global helical axis.
 
-        **Arguments:**
-                        * ``base_step (1D list)``: List of two base-steps for which angle will be calculated.
+        Parameters
+        ----------
+        base_step : 1D list
+            List of two base-steps for which angle will be calculated.
+            For example: **base_step** = ``[5, 50]`` either of following can be calculated.
 
-                                *Example:*
+                (1) angle between tangent vector 5th and 50th base-steps.
+                (2) summation over 44 angles that are formed between adjacent tangent
+                    vectors of 5-50 bp DNA segment.
 
-                                        ``[5, 50]`` # Calculate (1) angle between tangent vectors of 5th and 50th base-steps; or (2) summation over 44 angles that are formed between adjacent tangent vectors of 5-50 bp DNA segment. See below two choose between these two types.
+            See below two choose between these two types.
 
-                        * ``cumulative (bool)``: ``Default: False``: If it is false, first type of angle is calculated otherwise second type of angle is calculated as explained in the above example of option ``base_step``.
+        cumulative : bool)
+            ``Default: False``: If it is false, first type of angle is calculated
+            otherwise second type of angle is calculated as explained in the above
+            example of option ``base_step``.
 
+        masked : bool
+            ``Dfault=False``. To skip specific frames/snapshots.
+            ``DNA.mask`` array should be set to use this functionality.
+            This array contains boolean (either ``True`` or ``False``) value
+            for each frame to mask the frames. Presently, mask array is
+            automatically generated during :meth:`DNA.generate_smooth_axis` to
+            skip those frames where 3D fitting curve was not successfull within
+            the given critera.
 
-                        * ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
-
-        **Returns:**
-                * ``angle (1D array)``: Array of calculated angle of length is equal to number of frames. When ``masked`` is applied, length of this array can be smaller than total number of frames.
+        Returns
+        -------
+        angle : 1D array
+            Array of calculated angle of length is equal to number of frames.
+            When ``masked`` is applied, length of this array can be smaller than
+            total number of frames.
 
         """
 
@@ -1587,23 +1645,53 @@ class DNA:
         return np.asarray(angle)
 
     def calculate_2D_angles_bw_tangents(self, paxis, base_step, masked=True):
-        """
-        To calculate angle (Radian) between two tangent vectors of smoothed helical axis.
+        """ To calculate angles (Radian) in 2D plane between two tangent vectors of global helical axis.
 
-        **Arguments:**
-                        * ``base_step (1D list)``: List of two base-steps for which angle will be calculated.
+        .. list-table::  Principal axis and respective 2D planes
+            :widths: 1, 4
+            :header-rows: 1
+            :name: gui-table
 
-                                *Example:*
+            * - Principal Axis
+              - 2D planes
 
-                                        ``[5, 50]`` # Calculate (1) angle between tangent vectors of 5th and 50th base-steps; or (2) summation over 44 angles that are formed between adjacent tangent vectors of 5-50 bp DNA segment. See below two choose between these two types.
+            * - X-axis
+              - XY and XZ planes
 
-                        * ``cumulative (bool)``: ``Default: False``: If it is false, first type of angle is calculated otherwise second type of angle is calculated as explained in the above example of option ``base_step``.
+            * - Y-axis
+              - XY and YZ planes
 
+            * - Z-axis
+              - XZ and YZ planes
 
-                        * ``masked (bool)``: ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should be set to use this functionality. This array contains boolean (either ``True`` or ``False``) value for each frame to mask the frames. Presently, mask array is automatically generated during :meth:`dnaMD.DNA.generate_smooth_axis` method to skip those frames where 3D fitting curve was not successfull within the given critera.
+        Parameters
+        ----------
+        paxis : str
+            Principal axis parallel to the DNA axis. For example, IF DNA helical
+            axis is parallel or aligned with Z-axis, paxis should be ``'Z'``.
+        base_step : 1D list
+            List of two base-steps for which angle will be calculated.
+            For example: **base_step** = ``[5, 50]`` angle between tangent vector
+            5th and 50th base-steps will be calculated.
+        masked : bool
+            ``Dfault=False``. To skip specific frames/snapshots.
+            ``DNA.mask`` array should be set to use this functionality.
+            This array contains boolean (either ``True`` or ``False``) value
+            for each frame to mask the frames. Presently, mask array is
+            automatically generated during :meth:`DNA.generate_smooth_axis` to
+            skip those frames where 3D fitting curve was not successfull within
+            the given critera.
 
-        **Returns:**
-                * ``angle (1D array)``: Array of calculated angle of length is equal to number of frames. When ``masked`` is applied, length of this array can be smaller than total number of frames.
+        Returns
+        -------
+        angle-one : 1D array
+            Array of calculated angle in first plane of length is equal to
+            number of frames. When ``masked`` is applied, length of this array
+            can be smaller than total number of frames.
+        angle-two : 1D array
+            Array of calculated angle in second plane of length is equal to
+            number of frames. When ``masked`` is applied, length of this array
+            can be smaller than total number of frames.
 
         """
 
@@ -1620,14 +1708,10 @@ class DNA:
         elif paxis == 'Y':
             planes = [0, 2]
         else:
-            raise ValueError(
-                '{0} is not accepted keyword. USE: X Y or Z for DNA-axis.')
+            raise ValueError('{0} is not accepted keyword. USE: X Y or Z for DNA-axis.')
 
-
-        tangent1, idx1 = self.get_parameters(
-        'helical axis tangent', bp=[base_step[0]], bp_range=False, masked=masked)
-        tangent2, idx2 = self.get_parameters(
-        'helical axis tangent', bp=[base_step[1]], bp_range=False, masked=masked)
+        tangent1, idx1 = self.get_parameters('helical axis tangent', bp=[base_step[0]], bp_range=False, masked=masked)
+        tangent2, idx2 = self.get_parameters('helical axis tangent', bp=[base_step[1]], bp_range=False, masked=masked)
 
         angles = []
         for plane in planes:
@@ -1691,6 +1775,8 @@ class DNA:
 
 
 def checkParametersInputFile(filename):
+    """Check the do_x3dna output file and return list of parameters present in the file.
+    """
     fin = open(filename, 'r')
     line = fin.readline()
     line2 = fin.readline()
@@ -1722,12 +1808,30 @@ def checkParametersInputFile(filename):
 
 
 def setParametersFromFile(dna, filename, parameter, bp=None):
-    """ Set parameter from a file with a given parameter name.
-    It automatically load neccessary parameter from a file to dna object.
+    """Read a specific parameter from the do_x3dna output file.
+    It automatically load the input parameter from a file to dna object or HDF5 file.
     It automatically decides from input parameter, what will be format of input file.
+
+    Parameters
+    ----------
+    dna : :class:`DNA`
+        Input :class:`DNA` instance.
+    filename : str
+        Input filename. This file should be output from do_x3dna.
+    parameter : str
+        Name of parameter. For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
+        Note that parameter that are calculated from do_x3dna cannot be used here.
+    bp : list
+        List containing lower and higher limit of base-pair/step range.
+            * This list should not contain more than two number.
+            * First number should be less than second number.
+
+        Example for base-pairs/steps 4 to 15:
+            ``bp = [4,15]         # step_range = True``
+
+        If ``None``, all base-pairs/steps will be considered.
+
     """
-
-
 
     gotParamterList = False
     param_type = None
@@ -1791,70 +1895,88 @@ def setParametersFromFile(dna, filename, parameter, bp=None):
         raise ValueError ('Not able to set these parameters: {0}... '.format(parameter))
 
 
-def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='std', bp_range=True, merge_bp=1, merge_method='mean'):
+def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='std', bp_range=True, merge_bp=1, merge_method='mean', tool='g_analyze'):
     """To calculate deviation in the given parameters of a Subject DNA with respect to a Reference DNA along the base-pairs/steps.
 
-            *Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)*
+    .. note:: Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)
 
-            .. warning:: Number of base-pairs/steps should be similar in reference and subject DNA.
+    .. warning:: Number of base-pairs/steps should be similar in reference and subject DNA.
 
-    **Arguments:**
+    .. warning::
+            To calculate errors by using ``error = 'acf'`` or ``error = 'block'``,
+            GROMACS tool ``g_analyze`` or ``gmx analyze`` should be present in ``$PATH``.
 
-            * ``dnaRef  (DNA object)``:   Reference DNA
+    Parameters
+    ----------
+    dnaRef  : :class:`DNA`
+        Reference DNA
 
+    bpRef : 1D list array
+        base-pairs or base-steps to consider from Reference DNA
+        Example: ::
 
-            * ``bpRef (1D list) or (1D array)``: base-pairs or base-steps to consider from Reference DNA
-                            Example: ::
-
-                                    bp = [6]                                # bp_range = False
-                                    bp = [4,15]                             # bp_range = True
-                                    bp = range(4,15)                        # bp_range = False
-                                    bp = np.arange(4,15)                    # bp_range = False
-
-
-            * ``dnaSubj (DNA object)``:   Subject DNA. Number of base-pairs in Reference and Subject DNA **should be** same.
-
-
-            * ``bpSubj (1D list) or (1D array)``: base-pairs or base-steps to consider from Reference DNA. Foe more, see above example of ``bpSubj``.
-
-
-            * ``parameter (string)``:   Name of a base-pair or base-step or helical base-step parameter
-                                                                    For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
-
-            * ``error_type   (string)``:  Method of error estimation.
-                            Currently accepted method as follows:
-
-                            * ``error = 'std'``   : Standard Deviation
-                            * ``error = 'acf'``   : Standard error using autocorrelation time (requires: g_analyze)
-                            * ``error = 'block'`` : Standard error using block averaging method (requires: g_analyze)
-
-                    .. warning::
-                                    to calculate errors by using ``error = 'acf'`` or ``error = 'block'`` , GROMACS tool ``g_analyze`` should be present in ``$PATH``.
-
-            * ``bp_range (bool)``: Shown above. if True, bp should be range otherwise list or numpy array
-
-            * ``merge_bp  (int)``: Number of base-pairs or steps to merge for creating the small DNA segments
-
-            * ``merge_method  (string)``: Method to calculate the parameter of a DNA segment from local parameters of all base-pairs/steps that are between the range given through ``bp``.
-                            Currently accepted keywords are as follows:
-
-                            * ``merge_method = mean``: Average of local parameters
-                            * ``merge_method = sum``: Sum of local parameters
+            bp = [6]                                # bp_range = False
+            bp = [4,15]                             # bp_range = True
+            bp = range(4,15)                        # bp_range = False
+            bp = np.arange(4,15)                    # bp_range = False
 
 
+    dnaSubj : :class:`DNA`
+        Subject DNA. Number of base-pairs in Reference and Subject DNA **should be** same.
 
-    **Returns:**
-            * ``bpRef       (1D array)``: base-pair/step numbers of reference DNA. If ``merge_bp>1``, middle number will is returned.`
-            * ``bpSubj      (1D array)``: base-pair/step numbers of subject DNA. If ``merge_bp>1``, middle number will is returned.`
-            * ``deviation   (1D array)``: Deviation in the parameter of subject DNA with respect to reference DNA.
-            * ``error       (1D array)``: Standard error of respective deviation
+    bpSubj : 1D list or array
+        base-pairs or base-steps to consider from Reference DNA. Foe more, see above example of ``bpSubj``.
+
+    parameter : str
+        Name of a base-pair or base-step or helical base-step parameter
+        For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
+
+    error_type : str
+        Method of error estimation.
+        Currently accepted method as follows:
+
+            * ``error = 'std'``   : Standard Deviation
+            * ``error = 'acf'``   : Standard error using autocorrelation time (requires: ``g_analyze`` or ``gmx analyze``)
+            * ``error = 'block'`` : Standard error using block averaging method (requires: ``g_analyze`` or ``gmx analyze``)
+
+    bp_range : bool
+        ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+
+    merge_bp : int
+        Number of base-pairs or steps to merge for creating the small DNA segments
+
+    merge_method : str
+        Method to calculate the parameter of a DNA segment from local
+        parameters of all base-pairs/steps that are between the range
+        given through ``bp``.
+        Currently accepted keywords are as follows:
+
+            * ``merge_method = mean``: Average of local parameters
+            * ``merge_method = sum``: Sum of local parameters
+
+    tool : str
+        Gromacs tool ``g_analyze`` or ``gmx analyze`` or ``gmx_mpi analyze`` etc.
+        It will be used to calculate autocorrelation time or  block averaging error.
+        It should be present in ``$PATH``
+
+    Returns
+    -------
+    bpRef  : 1D array)
+        base-pair/step numbers of reference DNA. If ``merge_bp>1``, middle number will is returned.`
+    bpSubj : 1D array
+        base-pair/step numbers of subject DNA. If ``merge_bp>1``, middle number will is returned.`
+    deviation  : 1D array
+        Deviation in the parameter of subject DNA with respect to reference DNA.
+    error  : 1D array
+        Standard error of respective deviation
+
     """
 
     bpRef, RefAvgValue, RefError = dnaRef.get_mean_error(
-        bpRef, parameter, err_type=err_type, bp_range=True, merge_bp=merge_bp, merge_method=merge_method)
+        bpRef, parameter, err_type=err_type, bp_range=True, merge_bp=merge_bp, merge_method=merge_method, tool=tool)
 
     bpSubj, SubjAvgValue, SubjError = dnaSubj.get_mean_error(
-        bpSubj, parameter, err_type=err_type, bp_range=True, merge_bp=merge_bp, merge_method=merge_method)
+        bpSubj, parameter, err_type=err_type, bp_range=True, merge_bp=merge_bp, merge_method=merge_method, tool=tool)
 
     if len(bpRef) != len(bpSubj):
         raise ValueError(
@@ -1867,39 +1989,68 @@ def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='st
     return bpRef, bpSubj, deviation, error
 
 
-def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis='Z', bp_range=True, windows=10, err_type='block'):
+def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis='Z', bp_range=True, windows=10, err_type='block', tool='g_analyze'):
     """To calculate deviation in the given parameters of a Subject DNA to Reference DNA along the given axis.
 
-            *Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)*
+    .. note:: Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)
 
-    **Arguments:**
+    .. warning::
+            To calculate errors by using ``error = 'acf'`` or ``error = 'block'``,
+            GROMACS tool ``g_analyze`` or ``gmx analyze`` should be present in ``$PATH``.
 
-            * ``dnaRef  (DNA object)``:   Reference DNA
+    Parameters
+    ----------
+    dnaRef  : :class:`DNA`
+        Reference DNA
+    dnaSubj : :class:`DNA`
+        Subject DNA. Number of base-pairs in Reference and Subject DNA **should be** same.
+    parameter : str
+        Name of a base-pair or base-step or helical base-step parameter
+        For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
 
-            * ``dnaSubj (DNA object)``:   Subject DNA. Number of base-pairs in Reference and Subject DNA **should be** same.
+    bp : 1D list or array
+        base-pairs to analyze
+        Example: ::
 
-            * ``parameter (string)``:   Name of a base-pair or base-step or helical base-step parameter
-                                                                    For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
+            bp = [6]                                # bp_range = False
+            bp = [4,15]                             # bp_range = True
+            bp = range(4,15)                        # bp_range = False
+            bp = np.arange(4,15)                    # bp_range = False
+            bp = [2,5,6,7,9,12,18]                  # bp_range = False
 
-            * ``bp (1D list) or (1D array)``: base-pairs or base-steps to analyze
-                            Example: ::
+    bp_range : bool
+        ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
-                                    bp = [6]                                # bp_range = False
-                                    bp = [4,15]                             # bp_range = True
-                                    bp = range(4,15)                        # bp_range = False
-                                    bp = np.arange(4,15)                    # bp_range = False
-                                    bp = [2,5,6,7,9,12,18]                  # bp_range = False
+    axis : str
+        Axis along which DNA axis is parallel. Keywords: ``X``, ``Y`` and ``Z``.
 
+    windows  : int
+        Number of bins along the axis
 
-            * ``bp_range (bool)``: Shown above. if True, bp should be range otherwise list or numpy array
+    err_type : str
+        Method of error estimation.
+        Currently accepted method as follows:
 
-            * ``windows  (int)``: Number of bins along the axis
+            * ``error = 'std'``   : Standard Deviation
+            * ``error = 'acf'``   : Standard error using autocorrelation time (requires: ``g_analyze`` or ``gmx analyze``)
+            * ``error = 'block'`` : Standard error using block averaging method (requires: ``g_analyze`` or ``gmx analyze``)
 
-    **Returns:**
-            * ``deviation       (1D array)``: length = no. of windows; Deviation in the parameter for two given DNA
-            * ``deviation_error (1D array)``: length = no. of windows; Standard error in deviation fo each window/bin
-            * ``axis         (1D array)``: length = no. of windows; average position of window/bin along given axis
-            * ``axis_error   (1D array)``: length = no. of windows; Standard error in average position of window/bin along given axis
+    tool : str
+        Gromacs tool ``g_analyze`` or ``gmx analyze`` or ``gmx_mpi analyze`` etc.
+        It will be used to calculate autocorrelation time or  block averaging error.
+        It should be present in ``$PATH``
+
+    Returns
+    -------
+    deviation : 1D array
+        length of no. of windows; Deviation in the parameter for two given DNA
+    deviation_error : 1D array
+        length of no. of windows; Standard error in deviation fo each window/bin
+    axis  : 1D array
+        length of no. of windows; average position of window/bin along given axis
+    axis_error  : 1D array
+        length of no. of windows; Standard error in average position of window/bin along given axis
+
     """
     RefParam, ref_bp_idx = dnaRef.get_parameters(parameter, bp, bp_range)
     RefAxis, dummy = dnaRef.get_parameters(
@@ -1914,12 +2065,9 @@ def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis='Z', bp_range=Tr
     minAxis = np.amin(mean_axis)
     axis_range = (maxAxis - minAxis) / windows
 
-    Ref_param_error = get_error(
-        dnaRef.time, RefParam, len(ref_bp_idx), err_type=err_type)
-    Ref_axis_error = get_error(
-        dnaRef.time, RefAxis, len(ref_bp_idx), err_type=err_type)
-    subj_param_error = get_error(
-        dnaSubj.time, SubjParam, len(subj_bp_idx), err_type=err_type)
+    Ref_param_error = get_error(dnaRef.time, RefParam, len(ref_bp_idx), err_type=err_type, tool=tool)
+    Ref_axis_error = get_error(dnaRef.time, RefAxis, len(ref_bp_idx), err_type=err_type, tool=tool)
+    subj_param_error = get_error(dnaSubj.time, SubjParam, len(subj_bp_idx), err_type=err_type, tool=tool)
 
     merged_ref_param = []
     merged_subj_Param = []
@@ -1966,21 +2114,31 @@ def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis='Z', bp_range=Tr
     return deviation, error, final_axis, final_ref_axis_error
 
 
-def get_error(time, x, sets, err_type='block'):
+def get_error(time, x, sets, err_type='block', tool='g_analyze'):
     """To estimate error using block averaging method
 
     .. warning::
-                            It requires ``g_analyze`` of GROMACS package. ``g_analyze`` should be present in ``$PATH``.
+            To calculate errors by using ``error = 'acf'`` or ``error = 'block'``,
+            GROMACS tool ``g_analyze`` or ``gmx analyze`` should be present in ``$PATH``.
 
-    **Arguments:**
+    Parameters
+    ----------
+    time : 1D list or array
+        :attr:`DNA.time`
+    x   : 2D list or array
+        Shape of (nset, nframe); where *nset* is number of set and *nframe* is
+        total number of frames. *nframe* should be equal to length of time
+        list/array
+    sets : int
+        Number of sets (*nset*)
+    err_type : str
+        Error estimation by autocorrelation method ``err_type='acf'`` or
+        block avearaging method ``err_type='block'``
 
-            * ``time (1D list) or (1D array)``: time
-            * ``x    (2D list) or (2D array)``: Shape of (nset, nframe); where *nset* is number of set and *nframe* is total number of frames. *nframe* should be equal to length of time list/array
-            * ``sets (int)``: Number of sets (*nset*)
-            * ``err_type (string)``: Error estimation by autocorrelation method ``err_type='acf'`` or block avearaging method ``err_type='block'``
-
-    **Return:**
-                    ``error (1D array)``: Of length = number of sets (*nset*)
+    Returns
+    -------
+    error : 1D array
+        Of length = number of sets (*nset*)
 
     """
     for i in range(sets):
@@ -2009,8 +2167,7 @@ def get_error(time, x, sets, err_type='block'):
         fout.write("\n")
     fout.close()
 
-    command = 'g_analyze -f {0} -ee {1} -ac {2} -fitfn exp' .format(
-        filename, eefile, acfile)
+    command = '{0} -f {1} -ee {2} -ac {3} -fitfn exp' .format(tool, filename, eefile, acfile)
 
     p = sub.Popen(command.split(), stdout=sub.PIPE, stderr=sub.PIPE, universal_newlines=True)
     out, outputerror = p.communicate()
@@ -2204,6 +2361,43 @@ def get_idx_of_bp_parameters(bp, parameters, bp_range, startBP=1):
 
 
 def read_param_file(FileName, parameters, bp, bp_range, word=False, startBP=1):
+    """ Read parameters from do_x3dna file.
+
+    It is the main function, which is used to read and extract the parameters
+    values from the do_x3dna ouput files.
+
+    Parameters
+    ----------
+    FileName : str
+        Parameter file produced from do_x3dna.
+    parameters : list
+        List of column indices that has to be extracted. indices here start
+        with one.
+
+    bp : 1D list or array
+        base-pairs to analyze
+        Example: ::
+
+            bp = [6]                                # bp_range = False
+            bp = [4,15]                             # bp_range = True
+            bp = range(4,15)                        # bp_range = False
+            bp = np.arange(4,15)                    # bp_range = False
+            bp = [2,5,6,7,9,12,18]                  # bp_range = False
+    bp_range : bool
+        ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+    word : bool
+        In some parameters, in place of value, ``'---'`` is present in the file.
+        If parameter values contain this, use ``True``.
+    startBP : int
+        Number ID of first base-pair.
+
+    Returns
+    -------
+    data : 3D array
+        Extracted parameters as a 3D array of shape (bp, parameters, time).
+    time : 1D array
+        Time of each frame
+    """
 
     sys.stdout.write("\nReading file : %s\n" % FileName)
     sys.stdout.flush()
@@ -2290,6 +2484,26 @@ def distance(x, y):
 
 
 def vector_angle(x, y, multiple=True, norm=None):
+    """Calculate angle between two vector/s
+
+    Parameters
+    ----------
+    x : 1D or 2D array
+        First vector or array of first vectors
+    y : 1D or 2D array
+        Second vector or array of second vectors
+    multiple : bool
+        If ``x`` and ``y`` are array of vector then use ``True`` otherwise
+        use ``False``
+    norm : vector
+        Normal vector. useful to determine signed angle.
+
+    Returns
+    -------
+    value : float or 1D array
+        Calculated angle value. If ``x`` and ``y`` are array of vector, then array
+        of angle is returned otherwise a single angle value is returned.
+    """
     x = np.asarray(x)
     y = np.asarray(y)
 
@@ -2304,8 +2518,7 @@ def vector_angle(x, y, multiple=True, norm=None):
 
         if norm is not None:
             cross_x_y = np.cross(x, y)
-            sign = np.einsum(
-                'ij, ij->i', cross_x_y, np.tile(norm, (x.shape[0], 1)))
+            sign = np.einsum('ij, ij->i', cross_x_y, np.tile(norm, (x.shape[0], 1)))
             angle = angle * np.sign(sign)
     else:
         # Angle between two vectors

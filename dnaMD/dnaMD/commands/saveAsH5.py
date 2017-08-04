@@ -81,7 +81,7 @@ This file is obtained from do_x3dna. It should contain coordinates of local
 helical axis.
 
 Note that global and smooth helical axis can be calculated using same HDF5
-file as input. 
+file as input.
 
 """
 hradInFileHelp=\
@@ -113,7 +113,7 @@ def main():
     ouputFileExtension = os.path.splitext(args.ouputFile)
     if ouputFileExtension not in ['.h5', '.hdf5', 'hdf']:
         showErrorAndExit(parser, "File extension {0} is not recognized as an \
-        aceeptable HDF5 extension.\n Use '.h5', '.hdf5' \
+        acceptable HDF5 extension.\n Use '.h5', '.hdf5' \
         or '.hdf'.".format(ouputFileExtension))
 
     # initialize DNA object

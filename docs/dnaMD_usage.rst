@@ -6,10 +6,10 @@ set of tools to analyze the data.
 
 **Other tools are presently in development.**
 
-.. list-table:: Graphical User Interface Applications
+.. list-table:: List of sub-commands available in dnaMD
     :widths: 1, 4
     :header-rows: 1
-    :name: gui-table
+    :name: commands-table
 
     * - Command
       - Function

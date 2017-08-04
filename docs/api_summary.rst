@@ -35,10 +35,12 @@ dnaMD module
 ~~~~~~~~~~~~
 .. currentmodule:: dnaMD
 .. autosummary::
+    dnaMD.setParametersFromFile
+    dnaMD.read_param_file
     dnaMD.get_error
     dnaMD.dev_parameters_vs_axis
     dnaMD.dev_bps_vs_parameter
-
+    dnaMD.vector_angle
 
 
 .. toctree::
