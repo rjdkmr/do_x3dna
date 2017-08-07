@@ -75,7 +75,7 @@ helicalAxisParameters = [   'helical x-axis', 'helical y-axis', 'helical z-axis'
 helicalAxisSmoothParameters =  [ 'helical x-axis smooth', 'helical y-axis smooth', 'helical z-axis smooth' ]
 groovesParameters = [ 'major groove', 'major groove refined',
                       'minor groove', 'minor groove refined' ]
-bendingParameters = [ 'helical axis curvature',  'helical axis tangent']
+bendingParameters = [ 'curvature',  'tangent']
 
 
 
@@ -160,7 +160,7 @@ class DNA:
         self.data['bp'] = dict()
         self.data['bps'] = dict()
         self.time = []
-        self.mask = []
+        self.mask = None
         self.h5 = None
 
         # Check h5py is installed or not
@@ -295,8 +295,8 @@ class DNA:
                 * ``helical X-axis smooth``
                 * ``helical Y-axis smooth``
                 * ``helical z-axis smooth``
-                * ``helical axis curvature``
-                * ``helical axis tangent``
+                * ``curvature``
+                * ``tangent``
                 * ``radius S-1``
                 * ``radius S-2``
                 * ``major Groove``
@@ -355,8 +355,8 @@ class DNA:
         midx = []
 
         # Masking values according to mask array
-        if masked and not self.mask:
-            print(" WARNING: mask is either not set or not neccessary. Mask is set during helical axis smoothening. \n")
+        if masked and self.mask is None:
+            print(" WARNING: mask is not set. Mask is set during helical axis smoothening. \n")
             masked = False
 
         for i in range(len(self.time)):
@@ -450,8 +450,8 @@ class DNA:
 
         # Masking values according to mask array
         midx = []
-        if masked and not self.mask:
-            print(" WARNING: mask is either not set or not neccessary. Mask is set during helical axis smoothening. \n")
+        if masked and self.mask is None:
+            print(" WARNING: mask is not set. Mask is set during helical axis smoothening. \n")
             masked = False
 
         for i in range(len(self.time)):
@@ -1404,10 +1404,10 @@ class DNA:
                 SmoothZ, bp_idx = self.get_parameters(
                     'helical z-axis smooth', step, bp_range=True)
 
-            # helical axis curvature
+            # curvature
             if (write_curv):
                 curvature, bp_idx = self.get_parameters(
-                    'helical axis curvature', step, bp_range=True)
+                    'curvature', step, bp_range=True)
 
         else:
 
@@ -1429,10 +1429,10 @@ class DNA:
                 SmoothZ, bp_idx = self.get_parameters(
                     'helical z-axis smooth', [1, self.num_step], bp_range=True)
 
-            # Helical axis curvature
+            # curvature
             if (write_curv):
                 curvature, bp_idx = self.get_parameters(
-                    'helical axis curvature', [1, self.num_step], bp_range=True)
+                    'curvature', [1, self.num_step], bp_range=True)
 
         if (write_orig_axis):
             RawX = np.array(RawX).T
@@ -1567,7 +1567,7 @@ class DNA:
         curvature = np.asarray(curvature).T
         for i in range(len(bp_idx)):
             bp_num = str( bp_idx[i]+self.startBP )
-            self._set_data(curvature[i], 'bps', bp_num, 'helical axis curvature',  scaleoffset=3)
+            self._set_data(curvature[i], 'bps', bp_num, 'curvature',  scaleoffset=3)
 
         if(store_tangent):
             tangent = np.asarray(tangent)
@@ -1580,7 +1580,7 @@ class DNA:
 
             for i in range(len(bp_idx)):
                 bp_num = str( bp_idx[i]+self.startBP )
-                self._set_data(np.asarray(final_tan[i]), 'bps', bp_num, 'helical axis tangent',  scaleoffset=3)
+                self._set_data(np.asarray(final_tan[i]), 'bps', bp_num, 'tangent',  scaleoffset=3)
 
     def calculate_angle_bw_tangents(self, base_step, cumulative=False, masked=False):
         """To calculate angle (Radian) between two tangent vectors of global helical axis.
@@ -1630,16 +1630,16 @@ class DNA:
         if cumulative:
             angle_tmp = []
             tangent, idx = self.get_parameters(
-                'helical axis tangent', bp=base_step, bp_range=True, masked=masked)
+                'tangent', bp=base_step, bp_range=True, masked=masked)
             for i in range(len(idx) - 1):
                 angle_tmp.append(vector_angle(tangent[i], tangent[i + 1]))
             angle = np.asarray(angle_tmp).sum(axis=0)
 
         else:
             tangent1, idx1 = self.get_parameters(
-                'helical axis tangent', bp=[base_step[0]], bp_range=False, masked=masked)
+                'tangent', bp=[base_step[0]], bp_range=False, masked=masked)
             tangent2, idx2 = self.get_parameters(
-                'helical axis tangent', bp=[base_step[1]], bp_range=False, masked=masked)
+                'tangent', bp=[base_step[1]], bp_range=False, masked=masked)
             angle = vector_angle(tangent1[0], tangent2[0])
 
         return np.asarray(angle)
@@ -1710,8 +1710,8 @@ class DNA:
         else:
             raise ValueError('{0} is not accepted keyword. USE: X Y or Z for DNA-axis.')
 
-        tangent1, idx1 = self.get_parameters('helical axis tangent', bp=[base_step[0]], bp_range=False, masked=masked)
-        tangent2, idx2 = self.get_parameters('helical axis tangent', bp=[base_step[1]], bp_range=False, masked=masked)
+        tangent1, idx1 = self.get_parameters('tangent', bp=[base_step[0]], bp_range=False, masked=masked)
+        tangent2, idx2 = self.get_parameters('tangent', bp=[base_step[1]], bp_range=False, masked=masked)
 
         angles = []
         for plane in planes:
@@ -1877,7 +1877,7 @@ def setParametersFromFile(dna, filename, parameter, bp=None):
         dna.set_major_minor_groove(filename, bp, parameters=inputParameter, step_range=bp_range)
         success = True
 
-    if tempParamName in groovesParameters:
+    if tempParamName in backboneDihedrals:
         dna.set_backbone_dihedrals(filename, bp, parameters=inputParameter, bp_range=bp_range)
         success = True
 

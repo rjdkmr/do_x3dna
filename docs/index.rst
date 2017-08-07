@@ -156,6 +156,7 @@ Contents
    Install dnaMD <install_dnaMD>
    How to use do_x3dna? <do_x3dna_usage>
    How to use dnaMD? <dnaMD_usage>
+   Speed up dnaMD with HDF5 file <using_hdf5>
    dnaMD Python module <api_summary>
    dnaMD Python module Tutorial <tutorial>
    View on GitHub <https://github.com/rjdkmr/do_x3dna>

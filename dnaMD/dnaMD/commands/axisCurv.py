@@ -6,7 +6,7 @@ import argparse
 import dnaMD
 
 description=\
-"""Clculate global helical-axis, curvatures and tangents from local helical axis.
+"""Calculate global helical-axis, curvatures and tangents from local helical axis.
 =================================================================================
 It can be used to calulate global helical-axis and further curvatures and
 tangents along it.
@@ -138,11 +138,24 @@ axisPdbOptionHelp=\
 """ Option for helical-axis PDB file.
 
 Following three options can be used to modify the output in PDB file:
-* 'global': Only global smoothed helical axis will be presen.
+* 'global': Only global smoothed helical axis will be present.
 * 'local' : Only local helical axis calculated from do_x3dna will be present.
 * 'both' : Both global and local helical axis will be present.
 
 """
+
+scaleCurvPdbHelp=\
+""" Store curvature in PDB file
+
+This option writes the curvature values of smoothed global helical 
+axis in B-factor column of PDB file. This value further scale the
+calculated curvature value in PDB file.
+
+For example: '-scp 10' option will multiply all curvature values with
+10 and write it to PDB file's B-factor column.
+
+"""
+
 
 def main():
     parser, args = parseArguments()
@@ -192,7 +205,7 @@ def main():
 
     # Determine file-extension type
     fileType = 'hdf5'
-    ouputFileExtension = os.path.splitext(args.ioFile)
+    ouputFileExtension = os.path.splitext(args.ioFile)[1]
     if ouputFileExtension not in ['.h5', '.hdf5', 'hdf']:
         showErrorAndExit(parser, "File extension {0} is not recognized as an \
         aceeptable HDF5 extension.\n Use '.h5', '.hdf5' \
@@ -210,6 +223,34 @@ def main():
         dna.calculate_curvature_tangent(step_range=step_range, step=step,
                                         store_tangent=True)
         print("                              ... Finished")
+
+    if args.pdbFile is not None:
+
+        if args.pdbAxisOption == 'both':
+            write_smooth_axis = True
+            write_orig_axis = True
+        elif pdbAxisOption == 'global':
+            write_smooth_axis = True
+            write_orig_axis = False
+        elif pdbAxisOption == 'local':
+            write_smooth_axis = False
+            write_orig_axis = True
+        else:
+            write_smooth_axis = True
+            write_orig_axis = False
+            
+        if args.scaleCurvPdb is None:
+            write_curv = False
+            args.scaleCurvPdb = 1
+        else:
+            write_curv = True
+
+        dna.write_haxis_pdb(filename=args.pdbFile, 
+                            step_range=step_range, 
+                            step=step, write_smooth_axis=write_smooth_axis, 
+                            write_orig_axis=write_orig_axis, 
+                            write_curv=write_curv, 
+                            scale_curv=args.scaleCurvPdb)
 
 def parseArguments():
     parser = argparse.ArgumentParser(prog='dnaMD smoothenAxis',
@@ -246,11 +287,6 @@ def parseArguments():
                         metavar='500.0',default=500.0,
                         help=smoothHelp)
 
-    parser.add_argument('-st', '--smooth', action='store',
-                        type=float, dest='smooth',
-                        metavar='500.0',default=500.0,
-                        help=smoothHelp)
-
     parser.add_argument('-sp', '--spline', action='store',
                         type=int, dest='spline',
                         metavar=3,default=3,choices=[1,2,3,4,5],
@@ -258,7 +294,7 @@ def parseArguments():
 
     parser.add_argument('-fp', '--fill-point', action='store',
                         type=int, dest='fill_point',
-                        metavar=6,default=6, choices=range(1,stop=10),
+                        metavar=6,default=6, choices=list(range(1,10)),
                         help=fillpointHelp)
 
     parser.add_argument('-cta', '--cut-off-angle', action='store',
@@ -267,18 +303,23 @@ def parseArguments():
                         help=cutoffAngleHelp)
 
     parser.add_argument('-ap', '--axis-pdb', action='store',
-                        type=float, dest='pdbFile',
+                        type=str, dest='pdbFile',
                         metavar='helical_axis.pdb',default='helical_axis.pdb',
                         help=axisPdbHelp)
 
     parser.add_argument('-apo', '--axis-pdb-option', action='store',
-                        type=float, dest='pdbAxisOption',
+                        type=str, dest='pdbAxisOption',
                         metavar='both',default='both',
                         choices=['global', 'local', 'both'],
                         help=axisPdbOptionHelp)
 
+    parser.add_argument('-scp', '--scale-curv-pdb', action='store',
+                        type=float, dest='scaleCurvPdb',
+                        metavar=1.0,default=None,
+                        help=scaleCurvPdbHelp)
 
-    idx = sys.argv.index("smoothenAxis")+1
+
+    idx = sys.argv.index("axisCurv")+1
     args = parser.parse_args(args=sys.argv[idx:])
 
     return parser, args

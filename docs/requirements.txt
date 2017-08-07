@@ -4,4 +4,4 @@ h5py>=2.2.1
 nbsphinx>=0.2.8
 jupyter_client>=4.1.0
 ipython>=6.0.0
-dnaMD>=2.0.5
+dnaMD>=2.0.6

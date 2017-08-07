@@ -8,7 +8,7 @@ import dnaMD
 description=\
 """Save parameters to a HDF5 file
 =================================
-The parameters can be read from the do_x3dna ouput files and stored in a HDF5
+The parameters can be read from the do_x3dna output files and stored in a HDF5
 file. This step enables rapid reading and processing for subsequent analysis of
 data.
 
@@ -106,18 +106,18 @@ def main():
     else:
         totalBP = args.totalBP
 
-    inputFilesDict = checkForInputFile(parser, args)
+    inputFilesDict = checkForInputFile(args, parser)
 
     # Determine file-extension type
     fileType = 'hdf5'
-    ouputFileExtension = os.path.splitext(args.ouputFile)
+    ouputFileExtension = os.path.splitext(args.ouputFile)[1]
     if ouputFileExtension not in ['.h5', '.hdf5', 'hdf']:
         showErrorAndExit(parser, "File extension {0} is not recognized as an \
         acceptable HDF5 extension.\n Use '.h5', '.hdf5' \
         or '.hdf'.".format(ouputFileExtension))
 
     # initialize DNA object
-    dna = dnaMD.DNA(totalBP, filename=filename, startBP=firstBP)
+    dna = dnaMD.DNA(totalBP, filename=args.ouputFile, startBP=firstBP)
 
     if 'bp' in inputFilesDict:
         dnaMD.setParametersFromFile(dna, inputFilesDict['bp'], dnaMD.basePairParameters[:])

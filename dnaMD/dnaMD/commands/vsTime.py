@@ -63,7 +63,7 @@ option will be extracted.
 """
 
 mergeMethodHelp=\
-"""Method to merge the paremeter of a DNA segment from local parameters
+"""Method to merge the parameter of a DNA segment from local parameters
 of all base-pairs/steps that are within the range given by '-bs' and '-be'.
 
 Currently accepted keywords are as follows:
@@ -88,7 +88,7 @@ def main():
 
     # Determine file-extension type
     fileType = 'text'
-    inputFileExtension = os.path.splitext(inputFile)
+    inputFileExtension = os.path.splitext(inputFile)[1]
     if inputFileExtension in ['.h5', '.hdf5', 'hdf']:
         fileType = 'hdf5'
 
@@ -104,17 +104,17 @@ def main():
     if args.parameter is None:
         showErrorAndExit(parser, "No Parameter name!!!\n")
 
-    if not ( (args.parameter in dnaMD.basepairParameterNames) or \
-            (args.parameter in dnaMD.basestepParamterNames) ):
+    if not ( (args.parameter in dnaMD.basePairTypeParameters) or \
+            (args.parameter in dnaMD.baseStepTypeParameters) ):
         parser.print_help()
         print("\n===== ERROR =======")
         print('Unknown parameter name "{0}"!!!\n'.format(args.parameter))
         print("Accepted parameters are as follows:")
         count = 1
-        for parameter in dnaMD.basepairParameterNames:
+        for parameter in dnaMD.basePairTypeParameters:
             print('{0}. "{1}"'.format(count, parameter))
             count += 1
-        for parameter in dnaMD.basestepParamterNames:
+        for parameter in dnaMD.baseStepTypeParameters:
             print('{0}. "{1}"'.format(count, parameter))
             count += 1
         print("\n===================")
@@ -175,7 +175,7 @@ def main():
     dna = dnaMD.DNA(totalBP, filename=filename, startBP=firstBP)
 
     # Check if mask is in object
-    if dna.mask:
+    if dna.mask is not None:
         masked = True
     else:
         masked = False

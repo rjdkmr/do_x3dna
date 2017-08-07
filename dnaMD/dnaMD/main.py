@@ -7,7 +7,8 @@ import re
 def main():
 
     options = {'vsTime':'Extract a parameter as a function of time.',
-               'saveAsH5' : 'Store parameters from text file to HDF5 file.'
+               'saveAsH5' : 'Store parameters from text file to HDF5 file.',
+               'axisCurv' : 'Calculate global helical-axis, curvatures and tangents'
               }
 
     if len(sys.argv)<=1:
@@ -26,6 +27,11 @@ def main():
     if sys.argv[1] == 'saveAsH5':
         from .commands import saveAsH5
         saveAsH5.main()
+
+    if sys.argv[1] == 'axisCurv':
+        from .commands import axisCurv
+        axisCurv.main()
+
 
 def show_help(options):
     print(' ==============================')

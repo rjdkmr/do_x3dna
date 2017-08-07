@@ -48,12 +48,12 @@ Options
 
     Option     Filename  Type         Description
     ------------------------------------------------------------
-    -f       traj.xtc  Input        Trajectory: xtc trr trj gro g96 pdb cpt
-    -s      topol.tpr  Input        Structure+mass(db): tpr tpb tpa gro g96 pdb
-    -n      index.ndx  Input, Opt.  Index file
-    -o   BP_count.xvg  Output       xvgr/xmgr file
+      -f       traj.xtc  Input        Trajectory: xtc trr trj gro g96 pdb cpt
+      -s      topol.tpr  Input        Structure+mass(db): tpr tpb tpa gro g96 pdb
+      -n      index.ndx  Input, Opt.  Index file
+      -o   BP_count.xvg  Output       xvgr/xmgr file
     -map     BP_map.xpm  Output, Opt. X PixMap compatible matrix file
-    -g        map.log  Output, Opt. Log file
+      -g        map.log  Output, Opt. Log file
 
     Option       Type   Value   Description
     ------------------------------------------------------
@@ -67,8 +67,7 @@ Options
     -xvg         enum   xmgrace  xvg plot formatting: xmgrace, xmgr or none
     -[no]noisy   bool   no      Generate information from the X3DNA package
     -[no]hbond   bool   no      Hydrogen bond map for base pairs
-    -[no]ref     bool   no      Base pair parameters will be calculated from base
-                                      pair of the reference frame
+    -[no]ref     bool   no      Base pair parameters will be calculated from base pair of the reference frame
     -name        string g       Output file names will be suffixed by this word after "_"
     -[no]fit     bool   yes     Fitting frames on reference structure
     -[no]mwa     bool   yes     Mass weighted fitting
@@ -76,6 +75,7 @@ Options
     -[no]lbpsm   bool   no      To calculate local base-pair step parameters
     -[no]lbphm   bool   no      To calculate local base-pair helical parameters
     -[no]avg     bool   yes     Average and Standard Deviation over all the frames
+    -[no]c       bool   no      Output structural parameters between helical regions ("----" by default). It will invoke "-c" option with 3DNA analyze command.
 
 
 
@@ -129,10 +129,15 @@ Local Base Pair-Helical Parameters (X-displacement, Y-displacement, H-rise, Incl
 Tip and H-twist) with function of time, and average (with ``-avg`` ) of these parameters
 with function of the base-steps.
 
+``-c``
+~~~~~~
+3DNA generates outputs for base-pairs/steps that form the double-helix. However, some nucleotides
+might not be the part of the double helix. To calculate of these mis-matched nucleotides, ``-c``
+option can be used.
 
 
 .. note::
-    Apart from the above parameters, follwing parameters are calculated using 3DNA package
+    Apart from the above parameters, following parameters are calculated using 3DNA package
     for each frame and written in separate files as a function of time.
 
       * local helical axis
@@ -149,75 +154,106 @@ Output Files
 
 Following files are generated from ``do_x3dna`` with and without options:
 
-+----------------------------+---------------------------------------------------------------------------------+
-| File name                  | Output contents                                                                 |
-|                            |                                                                                 |
-+============================+=================================================================================+
-| base_pairs_g.dat           | Base-pairs                                                                      |
-+----------------------------+---------------------------------------------------------------------------------+
-| h-bond_g.dat               | Hydrogen bonds between base-pairs                                               |
-+----------------------------+---------------------------------------------------------------------------------+
-| L-BP_g.dat                 | Base-pairs parameters                                                           |
-+----------------------------+---------------------------------------------------------------------------------+
-| L-BPS_g.dat                | Base-steps parameters                                                           |
-+----------------------------+---------------------------------------------------------------------------------+
-| L-BPH_g.dat                | Helical Base-steps parameters                                                   |
-+----------------------------+---------------------------------------------------------------------------------+
-| HelAxis_g.dat              | Local helical axis coordinates                                                  |
-+----------------------------+---------------------------------------------------------------------------------+
-| MGroove_g.dat              | Major and Minor grooves                                                         |
-+----------------------------+---------------------------------------------------------------------------------+
-| HelixRad_g.dat             | Local helical radius                                                            |
-+----------------------------+---------------------------------------------------------------------------------+
-| BackBoneCHiDihedrals_g.dat | Backbone dihederal angles including Chi-dihedral                                |
-+----------------------------+---------------------------------------------------------------------------------+
-| SugarDihedrals_g.dat       | Sugar dihederal angles including puckring type                                  |
-+----------------------------+---------------------------------------------------------------------------------+
-| Stretch_g.xvg              | Stretch of base-pairs as a function of time                                     |
-+----------------------------+---------------------------------------------------------------------------------+
-| Shear_g.xvg                | Shear of base-pairs as a function of time                                       |
-+----------------------------+---------------------------------------------------------------------------------+
-| Stagger_g.xvg              | Stagger of base-pairs as a function of time                                     |
-+----------------------------+---------------------------------------------------------------------------------+
-| Buckle_g.xvg               | Buckle of base-pairs as a function of time                                      |
-+----------------------------+---------------------------------------------------------------------------------+
-| Propeller_g.xvg            | Propeller of base-pairs as a function of time                                   |
-+----------------------------+---------------------------------------------------------------------------------+
-| Opening_g.xvg              | Opening of base-pairs as a function of time                                     |
-+----------------------------+---------------------------------------------------------------------------------+
-| Shift_g.xvg                | Shift of base-steps as a function of time                                       |
-+----------------------------+---------------------------------------------------------------------------------+
-| Slide_g.xvg                | Slide of base-steps as a function of time                                       |
-+----------------------------+---------------------------------------------------------------------------------+
-| Rise_g.xvg                 | Rise of base-steps as a function of time                                        |
-+----------------------------+---------------------------------------------------------------------------------+
-| Tilt_g.xvg                 | Tilt of base-steps as a function of time                                        |
-+----------------------------+---------------------------------------------------------------------------------+
-| Roll_g.xvg                 | Roll of base-steps as a function of time                                        |
-+----------------------------+---------------------------------------------------------------------------------+
-| Twist_g.xvg                | Twist of base-steps as a function of time                                       |
-+----------------------------+---------------------------------------------------------------------------------+
-| X-displacement_g.xvg       | Helical X-displacment of helical base-steps as a function of time               |
-+----------------------------+---------------------------------------------------------------------------------+
-| Y-displacement_g.xvg       | Helical Y-displacment of base-steps as a function of time                       |
-+----------------------------+---------------------------------------------------------------------------------+
-| Tip_g.xvg                  | Tip of base-steps as a function of time                                         |
-+----------------------------+---------------------------------------------------------------------------------+
-| Inclination_g.xvg          | Helical inclination of base-steps as a function of time                         |
-+----------------------------+---------------------------------------------------------------------------------+
-| H-twist_g.xvg              | Helical twist of helical base-steps as a function of time                       |
-+----------------------------+---------------------------------------------------------------------------------+
-| H-rise_g.xvg               | Helical rise of base-steps as a function of time                                |
-+----------------------------+---------------------------------------------------------------------------------+
-| Avg_Local_BP_param_g.xvg   | Average and standard deviations of Base-pairs parameters with                   |
-|                            | respect to base-pairs                                                           |
-+----------------------------+---------------------------------------------------------------------------------+
-| Avg_bp_step_param_g.xvg    | Average and standard deviations of Base-steps parameters with                   |
-|                            | respect to base-steps                                                           |
-+----------------------------+---------------------------------------------------------------------------------+
-| Avg_bp_helical_param_g.xvg | Average and standard deviations of helical Base-steps parameters                |
-|                            | with respect to base-steps                                                      |
-+----------------------------+---------------------------------------------------------------------------------+
+.. list-table:: List of output files from do_x3dna
+    :widths: 1, 4
+    :header-rows: 1
+    :name: output-files-table
+
+    * - File name
+      - Output contents
+      
+    * - base_pairs_g.dat
+      - Base-pairs
+      
+    * - h-bond_g.dat
+      - Hydrogen bonds between base-pairs
+      
+    * - L-BP_g.dat
+      - Base-pairs parameters
+      
+    * - L-BPS_g.dat
+      - Base-steps parameters
+       
+    * - L-BPH_g.dat
+      - Helical Base-steps parameters
+       
+    * - HelAxis_g.dat
+      - Local helical axis coordinates
+       
+    * - MGroove_g.dat
+      - Major and Minor grooves
+       
+    * - HelixRad_g.dat
+      - Local helical radius
+       
+    * - BackBoneCHiDihedrals_g.dat
+      - Backbone dihederal angles including Chi-dihedral
+       
+    * - SugarDihedrals_g.dat
+      - Sugar dihederal angles including puckring type
+       
+    * - Stretch_g.xvg
+      - Stretch of base-pairs as a function of time
+       
+    * - Shear_g.xvg
+      - Shear of base-pairs as a function of time
+       
+    * - Stagger_g.xvg
+      - Stagger of base-pairs as a function of time
+       
+    * - Buckle_g.xvg
+      - Buckle of base-pairs as a function of time
+       
+    * - Propeller_g.xvg
+      - Propeller of base-pairs as a function of time
+       
+    * - Opening_g.xvg
+      - Opening of base-pairs as a function of time
+       
+    * - Shift_g.xvg
+      - Shift of base-steps as a function of time
+       
+    * - Slide_g.xvg
+      - Slide of base-steps as a function of time
+       
+    * - Rise_g.xvg
+      - Rise of base-steps as a function of time
+       
+    * - Tilt_g.xvg
+      - Tilt of base-steps as a function of time
+       
+    * - Roll_g.xvg
+      - Roll of base-steps as a function of time
+       
+    * - Twist_g.xvg
+      - Twist of base-steps as a function of time
+       
+    * - X-displacement_g.xvg
+      - Helical X-displacement of helical base-steps as a function of time
+       
+    * - Y-displacement_g.xvg
+      - Helical Y-displacement of base-steps as a function of time
+       
+    * - Tip_g.xvg
+      - Tip of base-steps as a function of time
+       
+    * - Inclination_g.xvg
+      - Helical inclination of base-steps as a function of time
+       
+    * - H-twist_g.xvg
+      - Helical twist of helical base-steps as a function of time
+       
+    * - H-rise_g.xvg
+      - Helical rise of base-steps as a function of time
+       
+    * - Avg_Local_BP_param_g.xvg
+      - Average and standard deviations of Base-pairs parameters with respect to base-pairs
+       
+    * - Avg_bp_step_param_g.xvg
+      - Average and standard deviations of Base-steps parameters with respect to base-steps
+       
+    * - Avg_bp_helical_param_g.xvg
+      - Average and standard deviations of helical Base-steps parameters with respect to base-steps                                                      |
 
 
 Name of these files could be change by setting different suffix instead of ``g`` using ``-name`` option. These
