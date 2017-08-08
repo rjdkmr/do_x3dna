@@ -1,8 +1,14 @@
 How to use dnaMD tool?
 ======================
-**do_x3dna** generates large amount of data and analyzing these data is difficult.
-Therefore, ``dnaMD`` is developed to analyze data obtained from **do_x3dna**. It contains
-set of tools to analyze the data.
+
+`do_x3dna <do_x3dna_usage.html>`_ generates `large amount of data <do_x3dna_usage.html#output-files-table>`_
+and analyzing these data is difficult. Therefore, ``dnaMD`` tools are
+developed to analyze data obtained from `do_x3dna output files <do_x3dna_usage.html#output-files-table>`_.
+It contains set of tools to analyze the data.
+
+These tools are particulalry developed for the users with no programming experiences.
+These can be used as commands and the resultant output files can be used
+in external plotting program like xmgrace, gnuplot, excel etc to plot the results.
 
 **Other tools are presently in development.**
 

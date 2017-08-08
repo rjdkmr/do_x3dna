@@ -38,7 +38,7 @@ Here, we named the HDF5 file as ``dna.h5``.
 The usage of all methods and functions will be same because the file will be automatically used 
 as a container to store and to retrieve the parameter values. 
 
-The detail has been described in `this tutorial <notebooks/tutorial_hdf5.html>`_.
+The detail has been described in `this tutorial <notebooks/hdf5_tutorial.html>`_.
 
 Using HDF5 file with dnaMD tools
 --------------------------------

@@ -1,6 +1,10 @@
 dnaMD Module
 ============
 
+**dnaMD** is written in Python and it is also available as Python module. It
+can be used in Python scripting for fast and flexible analysis
+of `do_x3dna <do_x3dna_usage.html>`_ data.
+
 **dnaMD** module contain a :class:`dnaMD.DNA` class and other functions.
 
 .. currentmodule:: dnaMD

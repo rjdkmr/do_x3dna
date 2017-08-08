@@ -21,40 +21,34 @@ Introduction
 do_x3dna has been developed for analysis of the DNA/RNA dynamics during the molecular dynamics simulations.
 It consists of three main components:
 
-    * `do_x3dna`_ - To calculate structural descriptors of DNA/RNA from MD trajectory.
-    * `dnaMD`_    - To extract and analyze the data obtained from do_x3dna.
-    * `dnaMD Python module`_ - To extract and analyze the data obtained from do_x3dna.
+    * `do_x3dna <do_x3dna_usage.html>`_ ---
+      To calculate structural descriptors of DNA/RNA from MD trajectory.
 
-do_x3dna
---------
-It is the wrapper tool, which uses |3DNA package| to calculate several structural
-descriptors of DNA/RNA from the GROMACS MD trajectory. It executes 3DNA tools to
-calculate these descriptors and subsequently, extracts these output and saves in to
-external `output files <http://do-x3dna.readthedocs.io/en/latest/do_x3dna_usage.html#output-files>`_
-as a function of time.
+    * `dnaMD <dnaMD_usage.html>`_
+      --- Command line tool to extract and analyze the data obtained from do_x3dna
+      for **users without programming experinces**.
 
-**GROMACS versions supported:** 4.5.x, 4.6.x, 5.0.x, 5.1.x, and 2016.x versions.
-For higher versions, a PDB file can be used in place of a GROMACS **tpr** file.
-
-.. note::
-    do_x3dna can be used with trajectory files that are obtained from other MD packages such as NAMD and AMBER.
-    Input trajectory files should be converted in to Gromacs format trajectory files. A PDB file could be used in place
-    of a GROMACS **tpr** file.
-
-dnaMD
------
-`do_x3dna`_ generates large amount of data and analyzing these data is difficult.
-Therefore, ``dnaMD`` is developed to analyze data obtained from `do_x3dna`_. It contains
-set of tools to analyze the data.
+    * `dnaMD Python module <api_summary.html>`_
+      --- To extract and analyze the data obtained from do_x3dna for
+      **users with programming experinces**.
 
 
-dnaMD Python module
--------------------
-`dnaMD`_ is written in Python and it is also available as Python module.
-It can be used in Python scripting for fast and flexible analysis of `do_x3dna`_
-data.
+**Last Update: Aug. 2017**
 
-**Last Update: June. 2017**
+**For Questions and Discussions, please visit:** `do_x3dna forum <https://groups.google.com/forum/#!forum/do_x3dna>`_.
+
+Release Note 2017
+-----------------
+
+  * `do_x3dna <do_x3dna_usage.html>`_ can be compiled and used with **GROMACS**
+    **4.5.x**, **4.6.x**, **5.0.x**, **5.1.x**, and **2016.x** versions.
+
+  * More user friendly --- `dnaMD <dnaMD_usage.html>`_ tools to analyze
+    `do_x3dna data <do_x3dna_usage.html#output-files-table>`_ --- No
+    programming experiences needed now to analyze do_x3dna data.
+
+  * `Speed up dnaMD analysis with HDF5 file <using_hdf5.html>`_
+
 
 Features
 --------
