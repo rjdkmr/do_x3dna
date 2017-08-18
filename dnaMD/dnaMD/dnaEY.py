@@ -1,19 +1,212 @@
 #!/usr/bin/env python
-
-#AUTHOR: Rajendra Kumar
-#EMAIL: rkumar@gwdg.de
-#DATE: Jun 27, 2013
-#ARCH: any unix
-#REQUIRES: numpy, dna_main
-#STATUSCOMMENTS: Version 1.0
-#DESCRIPTION: To calculate elastic force constant and deformation energy of the DNA
-#USAGE: import dna_elasticity
-#EXAMPLE:
-###ENDHEADER###
-
+#
+#
+# This file is part of do_x3dna
+#
+# Author: Rajendra Kumar
+# Copyright (C) 2014-2017  Rajendra Kumar
+#
+# do_x3dna uses 3DNA package (http://x3dna.org).
+# Please cite the original publication of the 3DNA package:
+# Xiang-Jun Lu & Wilma K. Olson (2003)
+# 3DNA: a software package for the analysis, rebuilding and visualization of
+# three-dimensional nucleic acid structures
+# Nucleic Acids Res. 31(17), 5108-21.
+#
+# do_x3dna is a free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# do_x3dna is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with do_x3dna.  If not, see <http://www.gnu.org/licenses/>.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+# TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#============================================================================
 
 import numpy as np
-import dnaMD as dm
+
+from . import dnaMD
+
+
+class eyDNA:
+
+	def __init__(self, num_bp, filename=None, startBP=1):
+		self.dna = dnaMD.DNA(num_bp, filename=filename, startBP=startBP)
+		self.esMatrix = dict()
+		self.minimumPoint = dict()
+
+	def getElasticMatrix(self, inputArray):
+		inputArray = np.array( inputArray )
+
+		# Calculation of covariance matrix
+		CovMat = np.cov(inputArray, bias=1)
+
+		# Change to a matrix object
+		CovMat = np.matrix(CovMat)
+
+		# Inverse of the covariance matrix
+		InvCovMat = CovMat.I
+
+		return np.asarray(InvCovMat)
+
+
+	def getStretchTwistBend(self, bp, frames=None, paxis='Z', masked=True):
+
+		if frames is None:
+			frames = [0, -1]
+		else:
+			if (len(frames) != 2):
+				raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
+
+			if frames[1] != -1 and frames[0] > frames[1]:
+				raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
+
+		if (len(bp) != 2):
+			raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
+
+		if bp[0] > bp[1]:
+			raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
+
+
+		time, clen = self.dna.time_vs_parameter('h-rise', bp=bp, merge=True, merge_method='sum', masked=masked)
+		clen = np.asarray(clen) * 0.1  # conversion to nm
+
+		time, htwist = self.dna.time_vs_parameter('h-twist', bp=bp, merge=True, merge_method='sum', masked=masked)
+		htwist = np.deg2rad(htwist)  # Conversion to radian
+
+		angleOne, angleTwo = self.dna.calculate_2D_angles_bw_tangents(paxis, bp, masked=masked)
+
+
+		# Rarely there are nan during angle calculation, remove those nan
+		nanInOne = np.isnan( angleOne[frames[0]:frames[1]] )
+		nanInTwo = np.isnan( angleTwo[frames[0]:frames[1]] )
+		notNan = ~(nanInOne + nanInTwo)
+		notNanIdx = np.nonzero( notNan )
+
+		if frames[1] == -1:
+			array = np.array( [ angleOne[frames[0]:][notNanIdx], angleTwo[frames[0]:][notNanIdx],
+								clen[frames[0]:][notNanIdx], htwist[frames[0]:][notNanIdx] ] )
+		else:
+
+			array = np.array( [ angleOne[frames[0]:frames[1]][notNanIdx], angleTwo[frames[0]:frames[1]][notNanIdx],
+								clen[frames[0]:frames[1]][notNanIdx], htwist[frames[0]:frames[1]][notNanIdx] ] )
+
+		mean = np.mean(array, axis = 1)
+
+		esMatrix = self.getElasticMatrix(array)
+
+		modulus = 4.1419464 * np.array(esMatrix) * mean[2]
+
+		return mean, modulus
+
+	def getStretchTwist(self, bp, frames=None, masked=False):
+
+		if frames is None:
+			frames = [0, -1]
+		else:
+			if (len(frames) != 2):
+				raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
+
+			if frames[1] != -1 and frames[0] > frames[1]:
+				raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
+
+		if (len(bp) != 2):
+			raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
+
+		if bp[0] > bp[1]:
+			raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
+
+		time, clen = self.dna.time_vs_parameter('h-rise', bp=bp, merge=True, merge_method='sum', masked=masked)
+		clen = np.asarray(clen) * 0.1  # conversion to nm
+
+		time, htwist = self.dna.time_vs_parameter('h-twist', bp=bp, merge=True, merge_method='sum', masked=masked)
+		htwist = np.deg2rad(htwist)  # Conversion to radian
+
+		if frames[1] == -1:
+			array = np.array( [clen[frames[0]:], htwist[frames[0]:] ] )
+		else:
+			array = np.array( [ clen[frames[0]:frames[1]], htwist[frames[0]:frames[1]]] )
+
+		mean = np.mean(array, axis = 1)
+
+		esMatrix = self.getElasticMatrix(array)
+
+		modulus = 4.1419464 * np.array(esMatrix) * mean[0]
+
+		return mean, modulus
+
+	def getElasticityByTime(self, esType, bp, skip, masked=False, paxis='Z'):
+		"""
+
+			1) bending-1
+
+			2) bending-2
+
+			3) Stretching
+
+			4) Twisting
+
+			5) bending-1-bending-2
+
+			6) bending-2-stretching
+
+			7) Stretching-Twisting
+
+			8) bending-1-stretching
+
+			9) bending2-Twisting
+
+			10) bending-1-twisting
+
+		"""
+
+		if esType not in ['BST', 'ST']:
+			raise ValueError('Accepted keywords are BST and ST !!!')
+
+		length = len(self.dna.time[:])
+
+		time, modulus = [], []
+		for i in range(skip, length, skip):
+
+			props = None
+			if esType == 'BST':
+				mean, modulus_t = self.getStretchTwistBend(bp, frames=[0, i], paxis=paxis, masked=True)
+
+				props = np.diagonal(modulus_t, offset=0)
+				props = np.hstack((props, np.diagonal(modulus_t, offset=1)))
+				props = np.hstack((props, np.diagonal(modulus_t, offset=2)))
+				props = np.hstack((props, np.diagonal(modulus_t, offset=3)))
+
+			if esType == 'ST':
+				mean, modulus_t = self.getStretchTwist(bp, frames=[0, i], masked=masked)
+
+				props = np.diagonal(modulus_t, offset=0)
+				props = np.hstack((props, np.diagonal(modulus_t, offset=1)))
+
+			time.append(self.dna.time[i])
+			modulus.append(props)
+
+		modulus = np.asarray(modulus)
+
+		return time, modulus.T
+
 
 def calc_energy_by_axis(RefDna, SubjDna, bp, axis ='Z', bp_range=True, windows=10, dof=['h-Twist','h-Rise'], err_type='acf'):
 
@@ -174,118 +367,3 @@ def calc_elastic_constants(dna, bp, bp_range=True, dof=['h-Twist','h-Rise']):
 	InvCovMat = np.array(InvCovMat)
 
 	return Mean_parameters, InvCovMat
-
-def calc_ST_props(dna, bp, dof=['h-Rise','h-Twist'], frames=[0, -1], masked=False):
-
-	allowed_parms = ['h-Rise','h-Twist', 'Rise', 'Twist']
-	unit_conv = { 'h-Rise':0.1, 'h-Twist': (np.pi/180), 'Rise':0.1, 'Twist': (np.pi/180)}
-
-	for p in range(len(dof)):
-		if not dof[p] in allowed_parms:
-			raise ValueError('\nParameter {0} is not allowed... Allowed parameters: {1}' .format(dof[p], allowed_parms))
-
-	if (len(frames) != 2):
-		raise ValueError("See, documentation for frames usage!!!")
-
-	if frames[1] != -1 and frames[0] > frames[1]:
-		raise ValueError("See, documentation for frames usage!!!")
-
-	if (len(bp) != 2):
-		raise ValueError("See, documentation for bp usage!!!")
-
-	if bp[0] > bp[1]:
-		raise ValueError("See, documentation for bp usage!!!")
-
-	parameters = []
-	rise_idx = -9999
-	for i in range(len(dof)):
-		time, parameter = dna.time_vs_parameter(dof[i], bp, merge=True, merge_method='sum', masked=masked)
-
-		if dof[i]== 'h-Rise' or dof[i]== 'Rise':
-			rise_idx = i
-
-		if frames[1] == -1:
-			parameters.append(np.multiply(parameter[frames[0]:], unit_conv[dof[i]]))
-		else:
-			parameters.append(np.multiply(parameter[frames[0]:frames[1]], unit_conv[dof[i]]))
-
-	mean = []
-	for parameter in parameters:
-		mean.append(np.mean(parameter))
-
-	# Calculation of covariance matrix
-	array = np.array(parameters)
-	CovMat = np.cov(array,bias=1)
-
-	# Change to a matrix object
-	CovMat = np.matrix(CovMat)
-
-	# Inverse of the covariance matrix
-	InvCovMat = CovMat.I
-
-	# Convertion of matrix to array
-	InvCovMat = np.array(InvCovMat)
-
-	modulus = 4.1419464 * mean[rise_idx] * InvCovMat
-
-	return mean, CovMat, modulus
-
-
-def calc_STB_modulus(dna, bp, frames=[0, -1], paxis='Z', masked=True):
-
-
-	if (len(frames) != 2):
-		raise ValueError("See, documentation for frames usage!!!")
-
-	if frames[1] != -1 and frames[0] > frames[1]:
-		raise ValueError("See, documentation for frames usage!!!")
-
-	if (len(bp) != 2):
-		raise ValueError("See, documentation for bp usage!!!")
-
-	if bp[0] > bp[1]:
-		raise ValueError("See, documentation for bp usage!!!")
-
-
-	time, clen = dna.time_vs_parameter('h-Rise', bp=bp, merge=True, merge_method='sum', masked=True)
-	clen = np.asarray(clen) * 0.1  # conversion to nm
-
-	time, htwist = dna.time_vs_parameter('h-Twist', bp=bp, merge=True, merge_method='sum', masked=True)
-	htwist = np.deg2rad(htwist)  # Conversion to radian
-
-	angleOne, angleTwo = dna.calculate_2D_angles_bw_tangents(paxis, bp)
-
-
-	if frames[1] == -1:
-		# Rarely there are nan during angle calculation, remove those nan
-		nanInOne = np.isnan( angleOne[frames[0]:] )
-		nanInTwo = np.isnan( angleTwo[frames[0]:] )
-		notNan = ~(nanInOne + nanInTwo)
-		notNanIdx = np.nonzero( notNan )
-
-		array = np.array( [ angleOne[frames[0]:][notNanIdx], angleTwo[frames[0]:][notNanIdx],
-							clen[frames[0]:][notNanIdx], htwist[frames[0]:][notNanIdx] ] )
-	else:
-		# Rarely there are nan during angle calculation, remove those nan
-		nanInOne = np.isnan( angleOne[frames[0]:frames[1]] )
-		nanInTwo = np.isnan( angleTwo[frames[0]:frames[1]] )
-		notNan = ~(nanInOne + nanInTwo)
-		notNanIdx = np.nonzero( notNan )
-
-		array = np.array( [ angleOne[frames[0]:frames[1]][notNanIdx], angleTwo[frames[0]:frames[1]][notNanIdx],
-							clen[frames[0]:frames[1]][notNanIdx], htwist[frames[0]:frames[1]][notNanIdx] ] )
-
-	mean = np.mean(array, axis = 1)
-
-	# Calculation of covariance matrix
-	CovMat = np.cov(array,bias=1)
-
-	# Change to a matrix object
-	CovMat = np.matrix(CovMat)
-
-	# Inverse of the covariance matrix
-	InvCovMat = CovMat.I
-
-	modulus = 4.1419464 * np.array(InvCovMat) * mean[2]
-
-	return mean, InvCovMat, modulus

@@ -24,11 +24,11 @@ It consists of three main components:
 
     * `dnaMD <http://do-x3dna.readthedocs.io/en/latest/dnaMD_usage.html>`_
       --- Command line tool to extract and analyze the data obtained from do_x3dna
-      for **users without programming experinces**.
+      for **users without programming experiences**.
 
     * `dnaMD Python module <http://do-x3dna.readthedocs.io/en/latest/api_summary.html>`_
       --- To extract and analyze the data obtained from do_x3dna for
-      **users with programming experinces**.
+      **users with programming experiences**.
 
 
 **Last Update: Aug. 2017**

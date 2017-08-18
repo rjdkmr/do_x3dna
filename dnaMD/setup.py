@@ -4,12 +4,13 @@
 # This file is part of do_x3dna
 #
 # Author: Rajendra Kumar
-# Copyright (C) 2014  Rajendra Kumar
+# Copyright (C) 2014-2017  Rajendra Kumar
 #
 # do_x3dna uses 3DNA package (http://x3dna.org).
 # Please cite the original publication of the 3DNA package:
 # Xiang-Jun Lu & Wilma K. Olson (2003)
-# 3DNA: a software package for the analysis, rebuilding and visualization of three-dimensional nucleic acid structures
+# 3DNA: a software package for the analysis, rebuilding and visualization of
+# three-dimensional nucleic acid structures
 # Nucleic Acids Res. 31(17), 5108-21.
 #
 # do_x3dna is a free software: you can redistribute it and/or modify
@@ -37,7 +38,7 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-#=============================================================================
+#============================================================================
 
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
@@ -52,7 +53,7 @@ def read(fname):
 
 setup(
     name = 'dnaMD',
-    version = '2.0.6',
+    version = '2.0.7',
 
     # Required packages
     install_requires = [ 'numpy>=1.6',  'scipy>=0.9', 'h5py>=2.2.1' ],
