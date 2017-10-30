@@ -1,5 +1,5 @@
-Download and Installation
-=========================
+Download and Installation of do_x3dna for GROMACS
+=================================================
 
 Download
 --------

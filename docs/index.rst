@@ -149,10 +149,10 @@ Contents
 .. toctree::
    :maxdepth: 1
 
-   Download and Install do_x3dna <install_do_x3dna>
+   do_x3dna for GROMACS <install_do_x3dna>
+   How to use GROMACS do_x3dna? <do_x3dna_usage>
    do_x3dna plugin for VMD  <vmd_plugin>
    Install dnaMD <install_dnaMD>
-   How to use do_x3dna? <do_x3dna_usage>
    How to use dnaMD? <dnaMD_usage>
    Speed up dnaMD with HDF5 file <using_hdf5>
    dnaMD Python module <api_summary>
