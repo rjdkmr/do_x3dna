@@ -58,7 +58,7 @@ typedef int cbool;
 #define STRLEN 256
 #endif
 
-double* extract_coulmn_double(char *str, int col_min, int col_max);
+double* extract_column_double(char *str, int col_min, int col_max);
 /*
  return pointer of array of size [(col_max-col_min)+1]
  array contains floating point numbers range from from col_min to col_max of the given line/string.
@@ -68,15 +68,15 @@ double* extract_coulmn_double(char *str, int col_min, int col_max);
  	char *line = "    24 U-A       0.07      0.02      0.49     -2.48     -7.63     -0.38";
  	char *input=NULL;
  	input = strdup(line);
-	out = extract_coulmn_double(input, 3, 5);
+	out = extract_column_double(input, 3, 5);
 	printf("%15.3f%15.3f%15.3f\n",out[0], out[1], out[2]);
 -----------------------------------------
 	OUTPUT $          0.070          0.020          0.490
  */
 
-int* extract_coulmn_integer(char *str, int col_min, int col_max);
+int* extract_column_integer(char *str, int col_min, int col_max);
 /*
- Similar to extract_coulmn_double but extract integer data.
+ Similar to extract_column_double but extract integer data.
  */
 
 char** get_all_lines(FILE *fp, int *num_line);
@@ -174,7 +174,7 @@ char* extract_digits(char *str);
 
  */
 
-cbool is_first_numerics(char *str);
+cbool is_first_numeric(char *str);
 
 char** get_block_lines(FILE *fp, const char *delimeter, int *num_line);
 

@@ -21,6 +21,8 @@ It consists of three main components:
 
     * `do_x3dna <http://do-x3dna.readthedocs.io/en/latest/do_x3dna_usage.html>`_
       --- To calculate structural descriptors of DNA/RNA from MD trajectory.
+      Also available as a stand-alone and independent
+      `VMD plugin <http://do-x3dna.readthedocs.io/en/latest/vmd_plugin.html>`_.
 
     * `dnaMD <http://do-x3dna.readthedocs.io/en/latest/dnaMD_usage.html>`_
       --- Command line tool to extract and analyze the data obtained from do_x3dna
@@ -31,7 +33,7 @@ It consists of three main components:
       **users with programming experiences**.
 
 
-**Last Update: Aug. 2017**
+**Last Update: Oct. 2017**
 
 **For detailed documentation about the do_x3dna, please visit:** |do_x3dna homepage|.
 
@@ -42,6 +44,8 @@ Release Note 2017
 
   * `do_x3dna <do_x3dna_usage.html>`_ can be compiled and used with **GROMACS**
     **4.5.x**, **4.6.x**, **5.0.x**, **5.1.x**, and **2016.x** versions.
+
+  * `do_x3dna VMD plugin <http://do-x3dna.readthedocs.io/en/latest/vmd_plugin.html>`_
 
   * More user friendly --- `dnaMD <dnaMD_usage.html>`_ tools to analyze
     `do_x3dna data <do_x3dna_usage.html#output-files-table>`_ --- No

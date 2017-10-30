@@ -63,13 +63,13 @@ except:
     pass
 
 
-## parameter count -- equal to basepairs
+# parameter count -- equal to basepairs
 basePairParameters = ['shear', 'stretch', 'stagger', 'buckle', 'propeller', 'opening' ]
 backboneDihedrals =  [  'alpha S1', 'beta S1', 'gamma S1', 'delta S1', 'epsilon S1', 'zeta S1', 'chi S1',
                         'alpha S2', 'beta S2', 'gamma S2', 'delta S2', 'epsilon S2', 'zeta S2', 'chi S2'
                      ]
 
-## parameter count -- less than one of basepairs
+# parameter count -- less than one of basepairs
 baseStepParameters = [ 'shift', 'slide', 'rise', 'tilt', 'roll', 'twist' ]
 helicalBaseStepParameters = [ 'x-disp', 'y-disp', 'h-rise', 'inclination', 'tip', 'h-twist' ]
 helicalRadiusParameters = [ 'radius s-1', 'radius s-2']
@@ -139,7 +139,7 @@ class DNA:
     startBP : int
         Number ID of first basepair.
     smooth_axis : bool
-        If axis is smoothened and global axis is already determined.
+        If axis is smoothed and global axis is already determined.
     data : dictionary
         Dictionary of data. All data are stored in this dictionary.
     time : ndarray
@@ -331,14 +331,14 @@ class DNA:
                 bp = [2,5,6,7,9,12,18]                  # bp_range = False
 
         bp_range : bool
-            ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+            ``Default=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
         masked : bool
-            ``Dfault=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should
+            ``Default=False``: To skip specific frames/snapshots. dnaMD.DNA.mask array should
             be set to use this functionality. This array contains boolean (either ``True`` or ``False``)
             value for each frame to mask the frames. Presently, mask array is automatically generated
             during :meth:`DNA.generate_smooth_axis` method to skip those frames where 3D fitting
-            curve was not successfull within the given critera.
+            curve was not successful within the given critera.
 
 
         Returns
@@ -358,7 +358,7 @@ class DNA:
 
         # Masking values according to mask array
         if masked and self.mask is None:
-            print(" WARNING: mask is not set. Mask is set during helical axis smoothening. \n")
+            print(" WARNING: mask is not set. Mask is set during helical axis smoothing. \n")
             masked = False
 
         for i in range(len(self.time)):
@@ -402,7 +402,7 @@ class DNA:
                 bp = [4,15]                               # merge = True
 
         merge : bool
-            ``Dfault=False``. As shown above, if ``True``, bp should a list of
+            ``Default=False``. As shown above, if ``True``, bp should a list of
             range otherwise a list of single value. If ``bp = True``, the
             parameter for the respective DNA segment could be merged or
             calculated by ``merge_method``.
@@ -417,13 +417,13 @@ class DNA:
                 * ``merge_method = sum``: Sum of local parameters
 
         masked : bool
-            ``Dfault=False``. To skip specific frames/snapshots.
+            ``Default=False``. To skip specific frames/snapshots.
             ``DNA.mask`` array should be set to use this functionality.
             This array contains boolean (either ``True`` or ``False``) value
             for each frame to mask the frames. Presently, mask array is
             automatically generated during :meth:`DNA.generate_smooth_axis` to
-            skip those frames where 3D fitting curve was not successfull within
-            the given critera.
+            skip those frames where 3D fitting curve was not successful within
+            the given criteria.
 
 
         Returns
@@ -453,7 +453,7 @@ class DNA:
         # Masking values according to mask array
         midx = []
         if masked and self.mask is None:
-            print(" WARNING: mask is not set. Mask is set during helical axis smoothening. \n")
+            print(" WARNING: mask is not set. Mask is set during helical axis smoothing. \n")
             masked = False
 
         for i in range(len(self.time)):
@@ -478,7 +478,7 @@ class DNA:
             return self.time[midx], param_value[0]
 
     def parameter_distribution(self, parameter, bp, bins=30, merge=False, merge_method='mean', masked=False):
-        """To get the parameter distribution of either a specfic base-pair/step or a DNA segment over the MD simulation.
+        """To get the parameter distribution of either a specific base-pair/step or a DNA segment over the MD simulation.
 
         parameters
         ----------
@@ -498,7 +498,7 @@ class DNA:
             Number of bins to calculate histogram
 
         merge : bool
-            ``Dfault=False``: As shown above, if ``True``, bp should a list of
+            ``Default=False``: As shown above, if ``True``, bp should a list of
             range otherwise a list of single value. If ``bp = True``, the
             parameter for the respective DNA segment could be merged or
             calculated by ``merge_method``.
@@ -513,13 +513,13 @@ class DNA:
                 * ``merge_method = sum``: Sum of local parameters
 
         masked : bool
-            ``Dfault=False``. To skip specific frames/snapshots.
+            ``Default=False``. To skip specific frames/snapshots.
             ``DNA.mask`` array should be set to use this functionality.
             This array contains boolean (either ``True`` or ``False``) value
             for each frame to mask the frames. Presently, mask array is
             automatically generated during :meth:`DNA.generate_smooth_axis` to
-            skip those frames where 3D fitting curve was not successfull within
-            the given critera.
+            skip those frames where 3D fitting curve was not successful within
+            the given criteria.
 
 
         Returns
@@ -610,7 +610,7 @@ class DNA:
             By default all six parameters will be extracted from the file.
 
         bp_range : bool
-            ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+            ``Default=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
         """
         if not (isinstance(bp, list) or isinstance(bp, np.ndarray)):
@@ -626,7 +626,7 @@ class DNA:
         # Check if requested parameters found within input file
         gotParametersInputFile = checkParametersInputFile(filename)
         if gotParametersInputFile is None:
-            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an ouput from do_x3dna.'.format(filename))
+            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an output from do_x3dna.'.format(filename))
         for parameter in parameters:
             if parameter not in gotParametersInputFile:
                 raise ValueError(' Parameter {0} not found in input file. \n This file contains following parameters: \n {1}'.format(parameter, gotParametersInputFile))
@@ -656,9 +656,9 @@ class DNA:
         """To read and store Major and Minor grooves from an input file.
 
         * Minor groove : direct P-P distance
-        * Minor Grrove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones
+        * Minor Groove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones
         * Major groove : direct P-P distance
-        * Major Grrove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones
+        * Major Groove Refined : refined P-P distance which take into account the directions of the sugar-phosphate backbones
 
         .. warning::
 
@@ -683,14 +683,14 @@ class DNA:
         parameters : 1D list
             List of groove parameter names as follows:
                 * ``minor groove``
-                * ``minor grrove refined``
+                * ``minor groove refined``
                 * ``major groove``
-                * ``major grrove refined``
+                * ``major groove refined``
 
             By default all four groove parameters will be extracted from the file.
 
         step_range : bool
-            ``Dfault=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array.
+            ``Default=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array.
 
         """
         if not (isinstance(bp_step, list) or isinstance(bp_step, np.ndarray)):
@@ -707,7 +707,7 @@ class DNA:
         # Check if requested parameters found within input file
         gotParametersInputFile = checkParametersInputFile(filename)
         if gotParametersInputFile is None:
-            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an ouput from do_x3dna.'.format(filename))
+            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an output from do_x3dna.'.format(filename))
         for parameter in parameters:
             if parameter not in gotParametersInputFile:
                 raise ValueError(' Parameter {0} not found in input file. \n This file contains following parameters: \n {1}'.format(parameter, gotParametersInputFile))
@@ -717,7 +717,7 @@ class DNA:
             if parameter in targetParameters.values():
                 InputParamIndex.append( targetParametersReverse[parameter] )
             else:
-                print('\nWARNING: base pair parameters \"{0}\" not accepted. Skiiping it !!\n' .format(parameter))
+                print('\nWARNING: base pair parameters \"{0}\" not accepted. Skipping it !!\n' .format(parameter))
 
         data, time = read_param_file(filename, InputParamIndex, bp_step, step_range, word=True, startBP=self.startBP)
         self._set_time(time)
@@ -781,7 +781,7 @@ class DNA:
                 * ``chi S2``
 
         bp_range : bool
-            ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+            ``Default=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
         """
         if not (isinstance(bp, list) or isinstance(bp, np.ndarray)):
@@ -802,7 +802,7 @@ class DNA:
         # Check if requested parameters found within input file
         gotParametersInputFile = checkParametersInputFile(filename)
         if gotParametersInputFile is None:
-            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an ouput from do_x3dna.'.format(filename))
+            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an output from do_x3dna.'.format(filename))
         for parameter in parameters:
             if parameter not in gotParametersInputFile:
                 raise ValueError(' Parameter {0} not found in input file. \n This file contains following parameters: \n {1}'.format(parameter, gotParametersInputFile))
@@ -857,7 +857,7 @@ class DNA:
             package
 
         bp_range : bool
-            ``Dfault=True``: As shown above, if ``True``, bp is taken as a
+            ``Default=True``: As shown above, if ``True``, bp is taken as a
             range otherwise list or numpy array.
 
         """
@@ -872,7 +872,7 @@ class DNA:
         # Check if requested parameters found within input file
         gotParametersInputFile = checkParametersInputFile(filename)
         if gotParametersInputFile is None:
-            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an ouput from do_x3dna.'.format(filename))
+            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an output from do_x3dna.'.format(filename))
         for p in helicalRadiusParameters:
             if p not in gotParametersInputFile:
                 raise ValueError(' Parameter {0} not found in input file. \n This file contains following parameters: \n {1}'.format(parameter, gotParametersInputFile))
@@ -981,7 +981,7 @@ class DNA:
         # Check if requested parameters found within input file
         gotParametersInputFile = checkParametersInputFile(filename)
         if gotParametersInputFile is None:
-            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an ouput from do_x3dna.'.format(filename))
+            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an output from do_x3dna.'.format(filename))
         for parameter in parameters:
             if parameter not in gotParametersInputFile:
                 raise ValueError(' Parameter {0} not found in input file. \n This file contains following parameters: \n {1}'.format(parameter, gotParametersInputFile))
@@ -991,7 +991,7 @@ class DNA:
             if parameter in targetParameters.values():
                 InputParamIndex.append( targetParametersReverse[parameter] )
             else:
-                print('\nWARNING: base pair parameters \"{0}\" not accepted. Skiiping it !!\n' .format(parameter))
+                print('\nWARNING: base pair parameters \"{0}\" not accepted. Skipping it !!\n' .format(parameter))
 
         if not InputParamIndex:
             raise ValueError("No acceptable base-pair parameters found!!!")
@@ -1008,7 +1008,7 @@ class DNA:
                 self._set_data(data[i][j], 'bps', bp_num, param, scaleoffset=2)
 
     def get_mean_error(self, bp, parameter, err_type='std', bp_range=True, merge_bp=1, merge_method='mean', masked=False, tool='g_analyze'):
-        """To calculate average and error of the given parameter for the gieven set of base-pairs/steps
+        """To calculate average and error of the given parameter for the given set of base-pairs/steps
 
         .. warning::
                 To calculate errors by using ``error = 'acf'`` or ``error = 'block'``,
@@ -1039,7 +1039,7 @@ class DNA:
                 * ``error = 'block'`` : Standard error using block averaging method (requires: ``g_analyze`` or ``gmx analyze``)
 
         bp_range : bool
-            ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+            ``Default=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
         merge_bp : int
             Number of base-pairs or steps to merge for creating the small DNA segments
@@ -1054,13 +1054,13 @@ class DNA:
                 * ``merge_method = sum``: Sum of local parameters
 
         masked : bool
-            ``Dfault=False``. To skip specific frames/snapshots.
+            ``Default=False``. To skip specific frames/snapshots.
             ``DNA.mask`` array should be set to use this functionality.
             This array contains boolean (either ``True`` or ``False``) value
             for each frame to mask the frames. Presently, mask array is
             automatically generated during :meth:`DNA.generate_smooth_axis` to
-            skip those frames where 3D fitting curve was not successfull within
-            the given critera.
+            skip those frames where 3D fitting curve was not successful within
+            the given criteria
 
         tool : str
             Gromacs tool ``g_analyze`` or ``gmx analyze`` or ``gmx_mpi analyze`` etc.
@@ -1144,7 +1144,7 @@ class DNA:
 
     def set_helical_axis(self, filename, step_range=False, step=None):
         """
-        To read and set local helical-axis postions from an input file.
+        To read and set local helical-axis positions from an input file.
 
         Parameters
         ----------
@@ -1179,7 +1179,7 @@ class DNA:
         # Check if requested parameters found within input file
         gotParametersInputFile = checkParametersInputFile(filename)
         if gotParametersInputFile is None:
-            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an ouput from do_x3dna.'.format(filename))
+            raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an output from do_x3dna.'.format(filename))
         for p in helicalAxisParameters:
             if p not in gotParametersInputFile:
                 raise ValueError(' Parameter {0} not found in input file. \n This file contains following parameters: \n {1}'.format(parameter, gotParametersInputFile))
@@ -1210,7 +1210,7 @@ class DNA:
                 self._set_data(data[i][j], 'bps', bp_num, param, scaleoffset=2)
 
     def generate_smooth_axis(self, step_range=False, step=None, smooth=500.0, spline=3, fill_point=6, cut_off_angle=20):
-        """To determine the global helical axis by smoothening local axis using spline interpolation.
+        """To determine the global helical axis by smoothing local axis using spline interpolation.
 
         .. note::
             A 3D curve is fitted on local helical axis that are calculated using
@@ -1227,8 +1227,9 @@ class DNA:
         Parameters
         ----------
         step_range : bool
-            * ``step_range = True`` : Smoothen axis for the given range of base-steps
-            * ``step_range = False``: Smoothen axis for entire DNA. If original helical-axis of any base-step will be found to be not available, error will be raised.
+            * ``step_range = True`` : Make axis smooth for the given range of base-steps
+            * ``step_range = False``: Make axis smooth for for entire DNA. If original helical-axis of any base-step
+                will be found to be not available, error will be raised.
 
         step : list
             List containing lower and higher limit of base-steps range.
@@ -1240,7 +1241,7 @@ class DNA:
                 ``step = [4,15]         # step_range = True``
 
         smooth : float
-            A smoothing condition. For more details, see about ``s = None``, which is paased into
+            A smoothing condition. For more details, see about ``s = None``, which is passed into
             `scipy.interpolate.splprep() <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html>`_ method.
 
             .. warning ::
@@ -1248,7 +1249,7 @@ class DNA:
                 * Higher value may lead to the calculation of wrong helical axis.
 
         spline : int
-            Degree of spline. For more details, see about ``k = 3``, which is paased into
+            Degree of spline. For more details, see about ``k = 3``, which is passed into
             `scipy.interpolate.splprep() <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html>`_ method.
 
         fill_point : int
@@ -1307,7 +1308,7 @@ class DNA:
 
             frame_number = i + 1
             if((frame_number < 100) and (frame_number % 10 == 0)) or ((frame_number < 1000) and (frame_number % 100 == 0)) or (frame_number % 1000 == 0):
-                sys.stdout.write("\rFitting spline curve on helcial axis of frame %d out of %d frames" % (
+                sys.stdout.write("\rFitting spline curve on helical axis of frame %d out of %d frames" % (
                     frame_number, nframes))
                 sys.stdout.flush()
 
@@ -1338,7 +1339,7 @@ class DNA:
     def write_haxis_pdb(self, filename='helical_axis.pdb', step_range=False, step=None, write_smooth_axis=True, write_orig_axis=False, write_curv=False, scale_curv=1):
         """To write trajectory of helcial-axis as a PDB format file.
 
-        Both local helical axis and global (smoothened) axis can be written to PDB file.
+        Both local helical axis and global (smoothed) axis can be written to PDB file.
         For global axis, curvature could be written in B-factor field of PDB file.
 
         Parameters
@@ -1347,8 +1348,9 @@ class DNA:
             Name of the output PDB format file.
 
         step_range : bool
-            * ``step_range = True`` : Smoothen axis for the given range of base-steps
-            * ``step_range = False``: Smoothen axis for entire DNA. If original helical-axis of any base-step will be found to be not available, error will be raised.
+            * ``step_range = True`` : Make axis smooth for the given range of base-steps
+            * ``step_range = False``: Make axis smooth for entire DNA. If original helical-axis of any base-step will
+                be found to be not available, error will be raised.
 
         step : list
             List containing lower and higher limit of base-steps range.
@@ -1366,10 +1368,10 @@ class DNA:
             Write coordinates of original helical axis (output from do_x3dna) as chain B.
 
         write_curv : bool
-            Write curvature of smoothed helical axis in B-factor coloumn of PDB file.
+            Write curvature of smoothed helical axis in B-factor column of PDB file.
 
         scale_curv : int
-            Scaling of curvature. ``curvature * scale_curv`` is written in  B-factor coloumn of PDB file.
+            Scaling of curvature. ``curvature * scale_curv`` is written in  B-factor column of PDB file.
 
         """
 
@@ -1379,7 +1381,7 @@ class DNA:
 
         if not write_orig_axis and not write_smooth_axis:
             raise ValueError(
-                "Nothing to write as both \"write_orig_axis=Flase\" and \"write_smooth_axis=False\" !!!")
+                "Nothing to write as both \"write_orig_axis=False\" and \"write_smooth_axis=False\" !!!")
 
         if step_range:
             if (len(step) != 2):
@@ -1388,7 +1390,7 @@ class DNA:
             if step[0] > step[1]:
                 raise ValueError("See, documentation for step usage!!!")
 
-            # Orignal helical axis
+            # Original helical axis
             if (write_orig_axis):
                 RawX, bp_idx = self.get_parameters(
                     'helical x-axis', step, bp_range=True)
@@ -1413,7 +1415,7 @@ class DNA:
 
         else:
 
-            # Orignal helical axis
+            # Original helical axis
             if (write_orig_axis):
                 RawX, bp_idx = self.get_parameters(
                     'helical x-axis', [1, self.num_step], bp_range=True)
@@ -1514,7 +1516,7 @@ class DNA:
             * ``store_tangent = True`` : The calculated tangent vectors will be stored for later use.
             * ``store_tangent = False``:  The calculated tangent vectors will be discarded.
 
-            In case of HDF5 file, calculated tangents will be stroed in this
+            In case of HDF5 file, calculated tangents will be stored in this
             file and it will not add cost to memory. However, without HDF5 file,
             storing tangents in ``DNA.data`` will be expansive for memory.
 
@@ -1605,13 +1607,13 @@ class DNA:
             example of option ``base_step``.
 
         masked : bool
-            ``Dfault=False``. To skip specific frames/snapshots.
+            ``Default=False``. To skip specific frames/snapshots.
             ``DNA.mask`` array should be set to use this functionality.
             This array contains boolean (either ``True`` or ``False``) value
             for each frame to mask the frames. Presently, mask array is
             automatically generated during :meth:`DNA.generate_smooth_axis` to
-            skip those frames where 3D fitting curve was not successfull within
-            the given critera.
+            skip those frames where 3D fitting curve was not successful within
+            the given criteria.
 
         Returns
         -------
@@ -1676,13 +1678,13 @@ class DNA:
             For example: **base_step** = ``[5, 50]`` angle between tangent vector
             5th and 50th base-steps will be calculated.
         masked : bool
-            ``Dfault=False``. To skip specific frames/snapshots.
+            ``Default=False``. To skip specific frames/snapshots.
             ``DNA.mask`` array should be set to use this functionality.
             This array contains boolean (either ``True`` or ``False``) value
             for each frame to mask the frames. Presently, mask array is
             automatically generated during :meth:`DNA.generate_smooth_axis` to
-            skip those frames where 3D fitting curve was not successfull within
-            the given critera.
+            skip those frames where 3D fitting curve was not successful within
+            the given criteria.
 
         Returns
         -------
@@ -1835,10 +1837,10 @@ def setParametersFromFile(dna, filename, parameter, bp=None):
 
     """
 
-    gotParamterList = False
+    gotParameterList = False
     param_type = None
     if isinstance(parameter, list) or isinstance(parameter, np.ndarray):
-        gotParamterList = True
+        gotParameterList = True
         parameter = list(parameter)
         param_type = getParameterType(parameter[0])
     else:
@@ -1855,7 +1857,7 @@ def setParametersFromFile(dna, filename, parameter, bp=None):
     else:
         bp_range = True
 
-    if not gotParamterList:
+    if not gotParameterList:
         tempParamName = parameter
         inputParameter = [ parameter ]
     else:
@@ -1942,7 +1944,7 @@ def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='st
             * ``error = 'block'`` : Standard error using block averaging method (requires: ``g_analyze`` or ``gmx analyze``)
 
     bp_range : bool
-        ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+        ``Default=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
     merge_bp : int
         Number of base-pairs or steps to merge for creating the small DNA segments
@@ -2021,7 +2023,7 @@ def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis='Z', bp_range=Tr
             bp = [2,5,6,7,9,12,18]                  # bp_range = False
 
     bp_range : bool
-        ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+        ``Default=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
 
     axis : str
         Axis along which DNA axis is parallel. Keywords: ``X``, ``Y`` and ``Z``.
@@ -2135,7 +2137,7 @@ def get_error(time, x, sets, err_type='block', tool='g_analyze'):
         Number of sets (*nset*)
     err_type : str
         Error estimation by autocorrelation method ``err_type='acf'`` or
-        block avearaging method ``err_type='block'``
+        block averaging method ``err_type='block'``
 
     Returns
     -------
@@ -2149,7 +2151,7 @@ def get_error(time, x, sets, err_type='block', tool='g_analyze'):
                 len(time), len(x[i]), i))
 
     if not((err_type == 'block') or (err_type == 'acf')):
-        print('\nWarning: Method {0} is not implemented. Swtiching to \'acf\'.\n' .format(
+        print('\nWarning: Method {0} is not implemented. Switching to \'acf\'.\n' .format(
             err_type))
         err_type = 'acf'
 
@@ -2209,7 +2211,7 @@ def get_error(time, x, sets, err_type='block', tool='g_analyze'):
 def get_deviation(Ref, RefErr, x, xerr):
     if (len(Ref) != len(x)):
         print (
-            "\nErrori: Number of base pairs/steps mismatch from reference to target!!\n")
+            "\nError: Number of base pairs/steps mismatch from reference to target!!\n")
         exit(1)
     Ref = np.array(Ref)
     RefErr = np.array(RefErr)
@@ -2366,7 +2368,7 @@ def read_param_file(FileName, parameters, bp, bp_range, word=False, startBP=1):
     """ Read parameters from do_x3dna file.
 
     It is the main function, which is used to read and extract the parameters
-    values from the do_x3dna ouput files.
+    values from the do_x3dna output files.
 
     Parameters
     ----------
@@ -2386,7 +2388,7 @@ def read_param_file(FileName, parameters, bp, bp_range, word=False, startBP=1):
             bp = np.arange(4,15)                    # bp_range = False
             bp = [2,5,6,7,9,12,18]                  # bp_range = False
     bp_range : bool
-        ``Dfault=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
+        ``Default=True``: As shown above, if ``True``, bp is taken as a range otherwise list or numpy array.
     word : bool
         In some parameters, in place of value, ``'---'`` is present in the file.
         If parameter values contain this, use ``True``.
@@ -2423,7 +2425,7 @@ def read_param_file(FileName, parameters, bp, bp_range, word=False, startBP=1):
     block = []
     for line in infile:
 
-        # Removing last new line charecter
+        # Removing last new line character
         line = line.rstrip('\n')
 
         # Skipping blank/empty line
@@ -2473,7 +2475,7 @@ def read_param_file(FileName, parameters, bp, bp_range, word=False, startBP=1):
     data_transpose = np.array(data).T
 
     sys.stdout.write(
-        "\nFinishid reading.... Total number of frame read =  %d\n" % frame_number)
+        "\nFinished reading.... Total number of frame read =  %d\n" % frame_number)
     sys.stdout.flush()
 
     return data_transpose, time
@@ -2635,7 +2637,7 @@ def fit_axis(bp_idx, nframe, RawX, RawY, RawZ, smooth, spline, fill_point, cut_o
                 mask = True
 
                 if smooth >= 10000:
-                    sys.stdout.write('\n\n|frame:{0:>10}| WARNING: Maximum Bending Angle = {1:.2f} at index {2}, which might be artifect. Please, check by visualizing PDB trajectory file...\n\n' .format(
+                    sys.stdout.write('\n\n|frame:{0:>10}| WARNING: Maximum Bending Angle = {1:.2f} at index {2}, which might be artifact. Please, check by visualizing PDB trajectory file...\n\n' .format(
                         nframe, angle[j], j))
                     sys.stdout.flush()
                     bsmooth = True

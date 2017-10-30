@@ -7,9 +7,9 @@
 
    <a href="http://x3dna.org" target="_blank">3DNA package</a>
 
-.. |mitochondiral DNA| raw:: html
+.. |mitochondrial DNA| raw:: html
 
-   <a href="http://pdb.org/pdb/explore/explore.do?structureId=3tmm" target="_blank">mitochondiral DNA</a>
+   <a href="http://pdb.org/pdb/explore/explore.do?structureId=3tmm" target="_blank">mitochondrial DNA</a>
 
 .. |nucleosome| raw:: html
 
@@ -23,6 +23,7 @@ It consists of three main components:
 
     * `do_x3dna <do_x3dna_usage.html>`_ ---
       To calculate structural descriptors of DNA/RNA from MD trajectory.
+      Also available as a stand-alone and independent `VMD plugin <vmd_plugin.html>`_.
 
     * `dnaMD <dnaMD_usage.html>`_
       --- Command line tool to extract and analyze the data obtained from do_x3dna
@@ -33,7 +34,7 @@ It consists of three main components:
       **users with programming experiences**.
 
 
-**Last Update: Aug. 2017**
+**Last Update: Oct. 2017**
 
 **For Questions and Discussions, please visit:** `do_x3dna forum <https://groups.google.com/forum/#!forum/do_x3dna>`_.
 
@@ -42,6 +43,8 @@ Release Note 2017
 
   * `do_x3dna <do_x3dna_usage.html>`_ can be compiled and used with **GROMACS**
     **4.5.x**, **4.6.x**, **5.0.x**, **5.1.x**, and **2016.x** versions.
+
+  * `do_x3dna VMD plugin <vmd_plugin.html>`_
 
   * More user friendly --- `dnaMD <dnaMD_usage.html>`_ tools to analyze
     `do_x3dna data <do_x3dna_usage.html#output-files-table>`_ --- No
@@ -109,7 +112,7 @@ Helical axis and its curvature
 
 **Examples:**
 
-* Bending in the helical axis of a |mitochondiral DNA|:
+* Bending in the helical axis of a |mitochondrial DNA|:
 
 .. image:: ./images/p3tmm.png
    :scale: 60 %
@@ -129,7 +132,7 @@ Helical axis and its curvature
 Citations
 ---------
 
-**Please cite the follwoing publications:**
+**Please cite the following publications:**
 
 * | Xiang-Jun Lu & Wilma K. Olson (2003)
   | 3DNA: a software package for the analysis, rebuilding and visualization of three-dimensional nucleic acid structures.
@@ -147,6 +150,7 @@ Contents
    :maxdepth: 1
 
    Download and Install do_x3dna <install_do_x3dna>
+   do_x3dna plugin for VMD  <vmd_plugin>
    Install dnaMD <install_dnaMD>
    How to use do_x3dna? <do_x3dna_usage>
    How to use dnaMD? <dnaMD_usage>

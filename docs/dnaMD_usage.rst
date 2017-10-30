@@ -6,7 +6,7 @@ and analyzing these data is difficult. Therefore, ``dnaMD`` tools are
 developed to analyze data obtained from `do_x3dna output files <do_x3dna_usage.html#output-files-table>`_.
 It contains set of tools to analyze the data.
 
-These tools are particulalry developed for the users with no programming experiences.
+These tools are particularly developed for the users with no programming experiences.
 These can be used as commands and the resultant output files can be used
 in external plotting program like xmgrace, gnuplot, excel etc to plot the results.
 

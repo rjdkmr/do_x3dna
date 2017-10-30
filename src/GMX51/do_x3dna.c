@@ -202,15 +202,15 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 
 		for(i=0;i<num1-2;i++)	{
 
-			  if(!is_first_numerics(lines1[i]))
+			  if(!is_first_numeric(lines1[i]))
 				  continue;
 
 			  if(strstr(lines2[i],"----")!=NULL)
 				  continue;
 
-			  tmp_bp1 = extract_coulmn_integer(lines1[i],1,2);
-			  tmp_bp2 = extract_coulmn_integer(lines1[i+1],1,2);
-			  lbps = extract_coulmn_double(lines2[i],1,6);
+			  tmp_bp1 = extract_column_integer(lines1[i],1,2);
+			  tmp_bp2 = extract_column_integer(lines1[i+1],1,2);
+			  lbps = extract_column_double(lines2[i],1,6);
 
 			  //printf("%d % d%d %d %f %f %f %f %f %f\n",tmp_bp1[0],tmp_bp1[1], tmp_bp2[0],tmp_bp2[1], lbps[0], lbps[1], lbps[2], lbps[3], lbps[4], lbps[5]);
 
@@ -255,15 +255,15 @@ int local_base_pair_step_out(gmx_bool bAvg, char *fn_avg_out, char *property[], 
 			lines2 = get_all_lines(f_inp_lbps,&num2);
 
 			for(i=0;i<num1-1;i++)	{
-				  if(!is_first_numerics(lines1[i]))
+				  if(!is_first_numeric(lines1[i]))
 					  continue;
 
 				  if(strstr(lines2[i],"----")!=NULL)
 					  continue;
 
-				  tmp_bp1 = extract_coulmn_integer(lines1[i],1,2);
-				  tmp_bp2 = extract_coulmn_integer(lines1[i+1],1,2);
-				  lbps = extract_coulmn_double(lines2[i],1,6);
+				  tmp_bp1 = extract_column_integer(lines1[i],1,2);
+				  tmp_bp2 = extract_column_integer(lines1[i+1],1,2);
+				  lbps = extract_column_double(lines2[i],1,6);
 
 				  for(j=0;j<max_num_bps;j++)	{
 					  if	(
@@ -449,11 +449,11 @@ int local_base_pair_out(gmx_bool bAvg, char *ComName[], int nframe, int **max_bp
 
 		for(i=0;i<num1;i++)	{
 
-			  if(!is_first_numerics(lines1[i]))
+			  if(!is_first_numeric(lines1[i]))
 				  continue;
 
-			  tmp_bp = extract_coulmn_integer(lines1[i],1,2);
-			  lbp = extract_coulmn_double(lines2[i],1,6);
+			  tmp_bp = extract_column_integer(lines1[i],1,2);
+			  lbp = extract_column_double(lines2[i],1,6);
 
 			  //printf("%d %d %f %f %f %f %f %f\n",tmp_bp[0],tmp_bp[1], lbp[0], lbp[1], lbp[2], lbp[3], lbp[4], lbp[5]);
 
@@ -485,11 +485,11 @@ int local_base_pair_out(gmx_bool bAvg, char *ComName[], int nframe, int **max_bp
 			lines2 = get_all_lines(f_inp_lbp,&num2);
 
 			for(i=0;i<num1;i++)	{
-				  if(!is_first_numerics(lines1[i]))
+				  if(!is_first_numeric(lines1[i]))
 					  continue;
 
-				  tmp_bp = extract_coulmn_integer(lines1[i],1,2);
-				  lbp = extract_coulmn_double(lines2[i],1,6);
+				  tmp_bp = extract_column_integer(lines1[i],1,2);
+				  lbp = extract_column_double(lines2[i],1,6);
 
 				  for(j=0;j<max_num_bp;j++)	{
 					  if( ((max_bp[j][0]==tmp_bp[0]) && (max_bp[j][1]==tmp_bp[1]) ) || ( (max_bp[j][0]==tmp_bp[1]) && (max_bp[j][1]==tmp_bp[0]) ))	{
@@ -662,11 +662,11 @@ void hbond_process(int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_p
 
 
 		for(i=0;i<num1;i++)	{
-			  if(!is_first_numerics(lines1[i]))
+			  if(!is_first_numeric(lines1[i]))
 				  continue;
 
-			  tmp_bp = extract_coulmn_integer(lines1[i],1,2);
-			  hbond = extract_coulmn_integer(lines2[i],1,1);
+			  tmp_bp = extract_column_integer(lines1[i],1,2);
+			  hbond = extract_column_integer(lines2[i],1,1);
 
 			  for(j=0;j<max_num_bp;j++)	{
 				  if( ((max_bp[j][0]==tmp_bp[0]) && (max_bp[j][1]==tmp_bp[1]) ) || ( (max_bp[j][0]==tmp_bp[1]) && (max_bp[j][1]==tmp_bp[0]) ))	{
@@ -690,11 +690,11 @@ void hbond_process(int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_p
 			lines2 = get_all_lines(f_inp_hbond,&num2);
 
 			for(i=0;i<num1;i++)	{
-				  if(!is_first_numerics(lines1[i]))
+				  if(!is_first_numeric(lines1[i]))
 					  continue;
 
-				  tmp_bp = extract_coulmn_integer(lines1[i],1,2);
-				  hbond = extract_coulmn_integer(lines2[i],1,1);
+				  tmp_bp = extract_column_integer(lines1[i],1,2);
+				  hbond = extract_column_integer(lines2[i],1,1);
 
 				  for(j=0;j<max_num_bp;j++)	{
 					  if( ((max_bp[j][0]==tmp_bp[0]) && (max_bp[j][1]==tmp_bp[1]) ) || ( (max_bp[j][0]==tmp_bp[1]) && (max_bp[j][1]==tmp_bp[0]) ))	{
@@ -816,21 +816,21 @@ int** get_max_base_pairs(char *filename, int *num_bp)	{
 
 		  if((bFirst) && (timer==1))	{
 
-			  if(!is_first_numerics(buffer))
+			  if(!is_first_numeric(buffer))
 				  continue;
 
 			  max_num_bp += 1;
 			  srenew(bp, max_num_bp);
-			  bp[max_num_bp-1] = extract_coulmn_integer(buffer,1,2);
+			  bp[max_num_bp-1] = extract_column_integer(buffer,1,2);
 			  fprintf(stderr,"%d:\t%d = %d\n",max_num_bp, bp[max_num_bp-1][0],bp[max_num_bp-1][1]);
 		  }
 
 		  if(timer > 1)		{
 
-			  if(!is_first_numerics(buffer))
+			  if(!is_first_numeric(buffer))
 				  continue;
 			  bToAdd = TRUE;
-			  tmp_bp = extract_coulmn_integer(buffer,1,2);
+			  tmp_bp = extract_column_integer(buffer,1,2);
 			  for(i=0;i<max_num_bp;i++)	{
 				  if(     ((tmp_bp[0]== bp[i][0]) && (tmp_bp[1]==bp[i][1])) \
 					  ||  ((tmp_bp[0]== bp[i][1]) && (tmp_bp[1]==bp[i][0])) )		{
@@ -842,7 +842,7 @@ int** get_max_base_pairs(char *filename, int *num_bp)	{
 			  if(bToAdd)	{
 				  max_num_bp += 1;
 				  srenew(bp,max_num_bp);
-				  bp[max_num_bp-1] = extract_coulmn_integer(buffer,1,2);
+				  bp[max_num_bp-1] = extract_column_integer(buffer,1,2);
 				  fprintf(stderr,"%d:\t%d = %d\n",max_num_bp, bp[max_num_bp-1][0],bp[max_num_bp-1][1]);
 			  }
 
@@ -888,11 +888,11 @@ int** get_max_base_pairs_step(char *filename, int *num_bp)	{
 
 		  if((bFirst) && (timer==1))	{
 
-			  if(!is_first_numerics(buffer))
+			  if(!is_first_numeric(buffer))
 				  continue;
 
 			  if(bFirstBp)	{
-				  tmp_bps_prev = extract_coulmn_integer(buffer,1,2);
+				  tmp_bps_prev = extract_column_integer(buffer,1,2);
 				  bFirstBp = FALSE;
 				  continue;
 			  }
@@ -901,7 +901,7 @@ int** get_max_base_pairs_step(char *filename, int *num_bp)	{
 			  srenew(bps, max_num_bps);
 			  snew(bps[max_num_bps-1],4);
 
-			  tmp_bps_curr = extract_coulmn_integer(buffer,1,2);
+			  tmp_bps_curr = extract_column_integer(buffer,1,2);
 			  bps[max_num_bps-1][0] = tmp_bps_prev[0];
 			  bps[max_num_bps-1][1] = tmp_bps_prev[1];
 			  bps[max_num_bps-1][2] = tmp_bps_curr[0];
@@ -911,17 +911,17 @@ int** get_max_base_pairs_step(char *filename, int *num_bp)	{
 
 		  if(timer > 1)		{
 
-			  if(!is_first_numerics(buffer))
+			  if(!is_first_numeric(buffer))
 				  continue;
 			  bToAdd = TRUE;
 
 			  if(bFirstBp)	{
-				  tmp_bps_prev = extract_coulmn_integer(buffer,1,2);
+				  tmp_bps_prev = extract_column_integer(buffer,1,2);
 				  bFirstBp = FALSE;
 				  continue;
 			  }
 
-			  tmp_bps_curr = extract_coulmn_integer(buffer,1,2);
+			  tmp_bps_curr = extract_column_integer(buffer,1,2);
 
 			  for(i=0;i<max_num_bps;i++)	{
 				  if	(
@@ -1124,7 +1124,7 @@ int add_data_to_files(char *fn_input, FILE *f_cum_data[])		{
 		}
 
 
-		if(!is_first_numerics(data[i]))
+		if(!is_first_numeric(data[i]))
 				continue;
 
 		if(bProp[eBasePairs])	{

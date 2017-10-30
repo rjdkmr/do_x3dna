@@ -47,323 +47,323 @@ from . import dnaMD
 
 class eyDNA:
 
-	def __init__(self, num_bp, filename=None, startBP=1):
-		self.dna = dnaMD.DNA(num_bp, filename=filename, startBP=startBP)
-		self.esMatrix = dict()
-		self.minimumPoint = dict()
+    def __init__(self, num_bp, filename=None, startBP=1):
+        self.dna = dnaMD.DNA(num_bp, filename=filename, startBP=startBP)
+        self.esMatrix = dict()
+        self.minimumPoint = dict()
 
-	def getElasticMatrix(self, inputArray):
-		inputArray = np.array( inputArray )
+    def getElasticMatrix(self, inputArray):
+        inputArray = np.array( inputArray )
 
-		# Calculation of covariance matrix
-		CovMat = np.cov(inputArray, bias=1)
+        # Calculation of covariance matrix
+        CovMat = np.cov(inputArray, bias=1)
 
-		# Change to a matrix object
-		CovMat = np.matrix(CovMat)
+        # Change to a matrix object
+        CovMat = np.matrix(CovMat)
 
-		# Inverse of the covariance matrix
-		InvCovMat = CovMat.I
+        # Inverse of the covariance matrix
+        InvCovMat = CovMat.I
 
-		return np.asarray(InvCovMat)
-
-
-	def getStretchTwistBend(self, bp, frames=None, paxis='Z', masked=True):
-
-		if frames is None:
-			frames = [0, -1]
-		else:
-			if (len(frames) != 2):
-				raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
-
-			if frames[1] != -1 and frames[0] > frames[1]:
-				raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
-
-		if (len(bp) != 2):
-			raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
-
-		if bp[0] > bp[1]:
-			raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
+        return np.asarray(InvCovMat)
 
 
-		time, clen = self.dna.time_vs_parameter('h-rise', bp=bp, merge=True, merge_method='sum', masked=masked)
-		clen = np.asarray(clen) * 0.1  # conversion to nm
+    def getStretchTwistBend(self, bp, frames=None, paxis='Z', masked=True):
 
-		time, htwist = self.dna.time_vs_parameter('h-twist', bp=bp, merge=True, merge_method='sum', masked=masked)
-		htwist = np.deg2rad(htwist)  # Conversion to radian
+        if frames is None:
+            frames = [0, -1]
+        else:
+            if (len(frames) != 2):
+                raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
 
-		angleOne, angleTwo = self.dna.calculate_2D_angles_bw_tangents(paxis, bp, masked=masked)
+            if frames[1] != -1 and frames[0] > frames[1]:
+                raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
+
+        if (len(bp) != 2):
+            raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
+
+        if bp[0] > bp[1]:
+            raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
 
 
-		# Rarely there are nan during angle calculation, remove those nan
-		nanInOne = np.isnan( angleOne[frames[0]:frames[1]] )
-		nanInTwo = np.isnan( angleTwo[frames[0]:frames[1]] )
-		notNan = ~(nanInOne + nanInTwo)
-		notNanIdx = np.nonzero( notNan )
+        time, clen = self.dna.time_vs_parameter('h-rise', bp=bp, merge=True, merge_method='sum', masked=masked)
+        clen = np.asarray(clen) * 0.1  # conversion to nm
 
-		if frames[1] == -1:
-			array = np.array( [ angleOne[frames[0]:][notNanIdx], angleTwo[frames[0]:][notNanIdx],
-								clen[frames[0]:][notNanIdx], htwist[frames[0]:][notNanIdx] ] )
-		else:
+        time, htwist = self.dna.time_vs_parameter('h-twist', bp=bp, merge=True, merge_method='sum', masked=masked)
+        htwist = np.deg2rad(htwist)  # Conversion to radian
 
-			array = np.array( [ angleOne[frames[0]:frames[1]][notNanIdx], angleTwo[frames[0]:frames[1]][notNanIdx],
-								clen[frames[0]:frames[1]][notNanIdx], htwist[frames[0]:frames[1]][notNanIdx] ] )
+        angleOne, angleTwo = self.dna.calculate_2D_angles_bw_tangents(paxis, bp, masked=masked)
 
-		mean = np.mean(array, axis = 1)
 
-		esMatrix = self.getElasticMatrix(array)
+        # Rarely there are nan during angle calculation, remove those nan
+        nanInOne = np.isnan( angleOne[frames[0]:frames[1]] )
+        nanInTwo = np.isnan( angleTwo[frames[0]:frames[1]] )
+        notNan = ~(nanInOne + nanInTwo)
+        notNanIdx = np.nonzero( notNan )
 
-		modulus = 4.1419464 * np.array(esMatrix) * mean[2]
+        if frames[1] == -1:
+            array = np.array( [ angleOne[frames[0]:][notNanIdx], angleTwo[frames[0]:][notNanIdx],
+                                clen[frames[0]:][notNanIdx], htwist[frames[0]:][notNanIdx] ] )
+        else:
 
-		return mean, modulus
+            array = np.array( [ angleOne[frames[0]:frames[1]][notNanIdx], angleTwo[frames[0]:frames[1]][notNanIdx],
+                                clen[frames[0]:frames[1]][notNanIdx], htwist[frames[0]:frames[1]][notNanIdx] ] )
 
-	def getStretchTwist(self, bp, frames=None, masked=False):
+        mean = np.mean(array, axis = 1)
 
-		if frames is None:
-			frames = [0, -1]
-		else:
-			if (len(frames) != 2):
-				raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
+        esMatrix = self.getElasticMatrix(array)
 
-			if frames[1] != -1 and frames[0] > frames[1]:
-				raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
+        modulus = 4.1419464 * np.array(esMatrix) * mean[2]
 
-		if (len(bp) != 2):
-			raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
+        return mean, modulus
 
-		if bp[0] > bp[1]:
-			raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
+    def getStretchTwist(self, bp, frames=None, masked=False):
 
-		time, clen = self.dna.time_vs_parameter('h-rise', bp=bp, merge=True, merge_method='sum', masked=masked)
-		clen = np.asarray(clen) * 0.1  # conversion to nm
+        if frames is None:
+            frames = [0, -1]
+        else:
+            if (len(frames) != 2):
+                raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
 
-		time, htwist = self.dna.time_vs_parameter('h-twist', bp=bp, merge=True, merge_method='sum', masked=masked)
-		htwist = np.deg2rad(htwist)  # Conversion to radian
+            if frames[1] != -1 and frames[0] > frames[1]:
+                raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
 
-		if frames[1] == -1:
-			array = np.array( [clen[frames[0]:], htwist[frames[0]:] ] )
-		else:
-			array = np.array( [ clen[frames[0]:frames[1]], htwist[frames[0]:frames[1]]] )
+        if (len(bp) != 2):
+            raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
 
-		mean = np.mean(array, axis = 1)
+        if bp[0] > bp[1]:
+            raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
 
-		esMatrix = self.getElasticMatrix(array)
+        time, clen = self.dna.time_vs_parameter('h-rise', bp=bp, merge=True, merge_method='sum', masked=masked)
+        clen = np.asarray(clen) * 0.1  # conversion to nm
 
-		modulus = 4.1419464 * np.array(esMatrix) * mean[0]
+        time, htwist = self.dna.time_vs_parameter('h-twist', bp=bp, merge=True, merge_method='sum', masked=masked)
+        htwist = np.deg2rad(htwist)  # Conversion to radian
 
-		return mean, modulus
+        if frames[1] == -1:
+            array = np.array( [clen[frames[0]:], htwist[frames[0]:] ] )
+        else:
+            array = np.array( [ clen[frames[0]:frames[1]], htwist[frames[0]:frames[1]]] )
 
-	def getElasticityByTime(self, esType, bp, skip, masked=False, paxis='Z'):
-		"""
+        mean = np.mean(array, axis = 1)
 
-			1) bending-1
+        esMatrix = self.getElasticMatrix(array)
 
-			2) bending-2
+        modulus = 4.1419464 * np.array(esMatrix) * mean[0]
 
-			3) Stretching
+        return mean, modulus
 
-			4) Twisting
+    def getElasticityByTime(self, esType, bp, skip, masked=False, paxis='Z'):
+        """
 
-			5) bending-1-bending-2
+            1) bending-1
 
-			6) bending-2-stretching
+            2) bending-2
 
-			7) Stretching-Twisting
+            3) Stretching
 
-			8) bending-1-stretching
+            4) Twisting
 
-			9) bending2-Twisting
+            5) bending-1-bending-2
 
-			10) bending-1-twisting
+            6) bending-2-stretching
 
-		"""
+            7) Stretching-Twisting
 
-		if esType not in ['BST', 'ST']:
-			raise ValueError('Accepted keywords are BST and ST !!!')
+            8) bending-1-stretching
 
-		length = len(self.dna.time[:])
+            9) bending2-Twisting
 
-		time, modulus = [], []
-		for i in range(skip, length, skip):
+            10) bending-1-twisting
 
-			props = None
-			if esType == 'BST':
-				mean, modulus_t = self.getStretchTwistBend(bp, frames=[0, i], paxis=paxis, masked=True)
+        """
 
-				props = np.diagonal(modulus_t, offset=0)
-				props = np.hstack((props, np.diagonal(modulus_t, offset=1)))
-				props = np.hstack((props, np.diagonal(modulus_t, offset=2)))
-				props = np.hstack((props, np.diagonal(modulus_t, offset=3)))
+        if esType not in ['BST', 'ST']:
+            raise ValueError('Accepted keywords are BST and ST !!!')
 
-			if esType == 'ST':
-				mean, modulus_t = self.getStretchTwist(bp, frames=[0, i], masked=masked)
+        length = len(self.dna.time[:])
 
-				props = np.diagonal(modulus_t, offset=0)
-				props = np.hstack((props, np.diagonal(modulus_t, offset=1)))
+        time, modulus = [], []
+        for i in range(skip, length, skip):
 
-			time.append(self.dna.time[i])
-			modulus.append(props)
+            props = None
+            if esType == 'BST':
+                mean, modulus_t = self.getStretchTwistBend(bp, frames=[0, i], paxis=paxis, masked=True)
 
-		modulus = np.asarray(modulus)
+                props = np.diagonal(modulus_t, offset=0)
+                props = np.hstack((props, np.diagonal(modulus_t, offset=1)))
+                props = np.hstack((props, np.diagonal(modulus_t, offset=2)))
+                props = np.hstack((props, np.diagonal(modulus_t, offset=3)))
 
-		return time, modulus.T
+            if esType == 'ST':
+                mean, modulus_t = self.getStretchTwist(bp, frames=[0, i], masked=masked)
+
+                props = np.diagonal(modulus_t, offset=0)
+                props = np.hstack((props, np.diagonal(modulus_t, offset=1)))
+
+            time.append(self.dna.time[i])
+            modulus.append(props)
+
+        modulus = np.asarray(modulus)
+
+        return time, modulus.T
 
 
 def calc_energy_by_axis(RefDna, SubjDna, bp, axis ='Z', bp_range=True, windows=10, dof=['h-Twist','h-Rise'], err_type='acf'):
 
-	RefAxis, Ref_bp_idx = SubjDna.get_parameters('Helical {0}-axis' .format(axis),bp, bp_range=bp_range)
+    RefAxis, Ref_bp_idx = SubjDna.get_parameters('Helical {0}-axis' .format(axis),bp, bp_range=bp_range)
 
-	mean_axis = np.mean(RefAxis,axis=1)
-	maxAxis = np.amax(mean_axis)
-	minAxis = np.amin(mean_axis)
-	axis_range = (maxAxis-minAxis)/windows
+    mean_axis = np.mean(RefAxis,axis=1)
+    maxAxis = np.amax(mean_axis)
+    minAxis = np.amin(mean_axis)
+    axis_range = (maxAxis-minAxis)/windows
 
-	bp_index = []
-	final_axis = []
-	for i in range(windows):
-		start = minAxis+(i*axis_range)
-		end = start + axis_range
-		idx = []
-		for j in range(len(mean_axis)):
-			if((start <= mean_axis[j]) and (end>mean_axis[j])):
-				idx.append(Ref_bp_idx[j])
-		if(len(idx)>0):
-			final_axis.append( start + (end-start)/2 )
-			bp_index.append(idx)
+    bp_index = []
+    final_axis = []
+    for i in range(windows):
+        start = minAxis+(i*axis_range)
+        end = start + axis_range
+        idx = []
+        for j in range(len(mean_axis)):
+            if((start <= mean_axis[j]) and (end>mean_axis[j])):
+                idx.append(Ref_bp_idx[j])
+        if(len(idx)>0):
+            final_axis.append( start + (end-start)/2 )
+            bp_index.append(idx)
 
-	energy = []
-	error = []
-	for i in range(len(final_axis)):
-		tmp_en, tmp_err = calc_deform_energy(RefDna, SubjDna, bp_index[i], bp_range=False, dof=dof, err_type=err_type)
-		energy.append(tmp_en)
-		error.append(tmp_err)
+    energy = []
+    error = []
+    for i in range(len(final_axis)):
+        tmp_en, tmp_err = calc_deform_energy(RefDna, SubjDna, bp_index[i], bp_range=False, dof=dof, err_type=err_type)
+        energy.append(tmp_en)
+        error.append(tmp_err)
 
-	return final_axis, energy, error
+    return final_axis, energy, error
 
 def calc_energy_by_base_steps(RefDna, SubjDna, bp, bp_range=True, dof=['h-Twist','h-Rise'], merge_bp=1, err_type='acf'):
 
-	if(not bp_range) and (merge_bp>1):
-		print ("\nERROR: Merging of base pairs/steps only possible with given base pair/steps range\n")
-		exit(1)
+    if(not bp_range) and (merge_bp>1):
+        print ("\nERROR: Merging of base pairs/steps only possible with given base pair/steps range\n")
+        exit(1)
 
-	length = bp[1]-bp[0]+1
-	bins = int(length/merge_bp)
+    length = bp[1]-bp[0]+1
+    bins = int(length/merge_bp)
 
-	mid_bin = []
-	energy = []
-	error = []
+    mid_bin = []
+    energy = []
+    error = []
 
-	i = bp[0]
-	while(1):
-		start = i
-		if((i + merge_bp ) >= length):
-			end = i + (length-i)
-		else:
-			end   = i + merge_bp
+    i = bp[0]
+    while(1):
+        start = i
+        if((i + merge_bp ) >= length):
+            end = i + (length-i)
+        else:
+            end   = i + merge_bp
 
-		if(start < end):
-			mid_bin.append(int(start+(end-start)/2))
-			tmp_en, tmp_err = calc_deform_energy(RefDna, SubjDna, [start, end], bp_range=True, dof=dof, err_type=err_type)
-			energy.append(tmp_en)
-			error.append(tmp_err)
+        if(start < end):
+            mid_bin.append(int(start+(end-start)/2))
+            tmp_en, tmp_err = calc_deform_energy(RefDna, SubjDna, [start, end], bp_range=True, dof=dof, err_type=err_type)
+            energy.append(tmp_en)
+            error.append(tmp_err)
 
-		if(i >= length):
-			break
+        if(i >= length):
+            break
 
-		i += merge_bp
+        i += merge_bp
 
-	return mid_bin, energy, error
+    return mid_bin, energy, error
 
 
 def calc_energy_landscape(dna, bp, range_limit, dof=['h-Twist','h-Rise'], window=[50,50], bp_range=True):
 
-	MeanParameters, elastic_constant = calc_force_constant(dna, bp, bp_range=bp_range, dof=dof)
+    MeanParameters, elastic_constant = calc_force_constant(dna, bp, bp_range=bp_range, dof=dof)
 
-	binx = range_limit[0]/window[0]
-	biny = range_limit[1]/window[1]
+    binx = range_limit[0]/window[0]
+    biny = range_limit[1]/window[1]
 
-	DataX = np.arange(MeanParameters[0]-range_limit[0], MeanParameters[0]+range_limit[0], binx)
-	DataY = np.arange(MeanParameters[1]-range_limit[1], MeanParameters[1]+range_limit[1], biny)
+    DataX = np.arange(MeanParameters[0]-range_limit[0], MeanParameters[0]+range_limit[0], binx)
+    DataY = np.arange(MeanParameters[1]-range_limit[1], MeanParameters[1]+range_limit[1], biny)
 
-	deformation_x = np.subtract(DataX, MeanParameters[0])
-	deformation_y = np.subtract(DataY, MeanParameters[1])
+    deformation_x = np.subtract(DataX, MeanParameters[0])
+    deformation_y = np.subtract(DataY, MeanParameters[1])
 
-	deformation = []
-	energy = []
-	for i in range(len(deformation_x)):
-		tmp_energy = []
-		for j in range(len(deformation_y)):
-			mat = np.array([deformation_x[i], deformation_y[j]])
-			tmpen = 0.5 * np.dot(mat, np.dot(elastic_constant,mat.T))
-			tmp_energy.append(tmpen)
-		energy.append(tmp_energy)
+    deformation = []
+    energy = []
+    for i in range(len(deformation_x)):
+        tmp_energy = []
+        for j in range(len(deformation_y)):
+            mat = np.array([deformation_x[i], deformation_y[j]])
+            tmpen = 0.5 * np.dot(mat, np.dot(elastic_constant,mat.T))
+            tmp_energy.append(tmpen)
+        energy.append(tmp_energy)
 
-	energy = np.array(energy)
+    energy = np.array(energy)
 
-	return DataX, DataY, energy
+    return DataX, DataY, energy
 
 def calc_deform_energy(RefDna, SubjDna, bp, bp_range=True, dof=['h-Twist','h-Rise'], err_type='acf'):
 
-	MeanRefParameters, elastic_constant = calc_force_constant(RefDna, bp, bp_range=bp_range, dof=dof)
+    MeanRefParameters, elastic_constant = calc_force_constant(RefDna, bp, bp_range=bp_range, dof=dof)
 
-	SubjParameters = []
-	for i in range(len(dof)):
-		parameter, bp_idx = SubjDna.get_parameters(dof[i], bp, bp_range=bp_range)
-		SubjParameters.append(parameter)
+    SubjParameters = []
+    for i in range(len(dof)):
+        parameter, bp_idx = SubjDna.get_parameters(dof[i], bp, bp_range=bp_range)
+        SubjParameters.append(parameter)
 
-	Sum_SubjParameters = []
-	for i in range(len(dof)):
-		Sum_SubjParameters.append( np.sum(SubjParameters[i], axis=0) )
+    Sum_SubjParameters = []
+    for i in range(len(dof)):
+        Sum_SubjParameters.append( np.sum(SubjParameters[i], axis=0) )
 
-	dev_parameters = []
-	for i in range(len(dof)):
-		dev_parameters.append(np.mean(Sum_SubjParameters[i]) - MeanRefParameters[i])
+    dev_parameters = []
+    for i in range(len(dof)):
+        dev_parameters.append(np.mean(Sum_SubjParameters[i]) - MeanRefParameters[i])
 
-	mat = np.array(dev_parameters)
-	energy = 0.5 * np.dot(mat, np.dot(elastic_constant,mat.T))
+    mat = np.array(dev_parameters)
+    energy = 0.5 * np.dot(mat, np.dot(elastic_constant,mat.T))
 
-	all_energy = []
-	for i in range(len(Sum_SubjParameters[0])):
-		dev_parameters = []
-		for j in range(len(dof)):
-			dev_parameters.append(Sum_SubjParameters[j][i] - MeanRefParameters[j])
+    all_energy = []
+    for i in range(len(Sum_SubjParameters[0])):
+        dev_parameters = []
+        for j in range(len(dof)):
+            dev_parameters.append(Sum_SubjParameters[j][i] - MeanRefParameters[j])
 
-		mat = np.array(dev_parameters)
-		tmp_energy = 0.5 * np.dot(mat, np.dot(elastic_constant,mat.T))
-		all_energy.append(tmp_energy)
-	energy_error = (dm.get_error(SubjDna.time,[all_energy],1,err_type=err_type))[0]
+        mat = np.array(dev_parameters)
+        tmp_energy = 0.5 * np.dot(mat, np.dot(elastic_constant,mat.T))
+        all_energy.append(tmp_energy)
+    energy_error = (dm.get_error(SubjDna.time,[all_energy],1,err_type=err_type))[0]
 
-	return energy, energy_error
+    return energy, energy_error
 
 def calc_elastic_constants(dna, bp, bp_range=True, dof=['h-Twist','h-Rise']):
 
-	parameters = []
-	for i in range(len(dof)):
-		parameter, bp_idx = dna.get_parameters(dof[i], bp, bp_range=bp_range)
-		parameters.append(parameter)
+    parameters = []
+    for i in range(len(dof)):
+        parameter, bp_idx = dna.get_parameters(dof[i], bp, bp_range=bp_range)
+        parameters.append(parameter)
 
-	sum_parameters = []
-	for i in range(len(parameters)):
-		sum_parameters.append( np.sum(parameters[i], axis=0) )
+    sum_parameters = []
+    for i in range(len(parameters)):
+        sum_parameters.append( np.sum(parameters[i], axis=0) )
 
-	Mean_parameters = []
-	for i in range(len(parameters)):
-		Mean_parameters.append( np.mean(sum_parameters[i]) )
+    Mean_parameters = []
+    for i in range(len(parameters)):
+        Mean_parameters.append( np.mean(sum_parameters[i]) )
 
-	print("Mean values =\n", Mean_parameters)
+    print("Mean values =\n", Mean_parameters)
 
-	# Calculation of covariance matrix
-	array = np.array(sum_parameters)
-	CovMat = np.cov(array,bias=1)
+    # Calculation of covariance matrix
+    array = np.array(sum_parameters)
+    CovMat = np.cov(array,bias=1)
 
-	# Change to a matrix object
-	CovMat = np.matrix(CovMat)
+    # Change to a matrix object
+    CovMat = np.matrix(CovMat)
 
-	# Inverse of the covariance matrix
-	InvCovMat = CovMat.I
+    # Inverse of the covariance matrix
+    InvCovMat = CovMat.I
 
-	print("Spring constant (kT/A or rad) =\n", InvCovMat )
+    print("Spring constant (kT/A or rad) =\n", InvCovMat )
 
-	# Convertion of matrix to array
-	InvCovMat = np.array(InvCovMat)
+    # Conversion of matrix to array
+    InvCovMat = np.array(InvCovMat)
 
-	return Mean_parameters, InvCovMat
+    return Mean_parameters, InvCovMat

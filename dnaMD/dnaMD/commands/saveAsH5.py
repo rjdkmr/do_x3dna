@@ -131,7 +131,7 @@ hradInFileHelp=\
 This file is obtained from do_x3dna. It should contain local helical radius.
 
 """
-ouputFileHelp=\
+outputFileHelp=\
 """ Name of output file.
 It is a hdf5 format file. Therefore, use ".h5" extension with it.
 
@@ -152,14 +152,14 @@ def main():
 
     # Determine file-extension type
     fileType = 'hdf5'
-    ouputFileExtension = os.path.splitext(args.ouputFile)[1]
-    if ouputFileExtension not in ['.h5', '.hdf5', 'hdf']:
+    outputFileExtension = os.path.splitext(args.outputFile)[1]
+    if outputFileExtension not in ['.h5', '.hdf5', 'hdf']:
         showErrorAndExit(parser, "File extension {0} is not recognized as an \
         acceptable HDF5 extension.\n Use '.h5', '.hdf5' \
-        or '.hdf'.".format(ouputFileExtension))
+        or '.hdf'.".format(outputFileExtension))
 
     # initialize DNA object
-    dna = dnaMD.DNA(totalBP, filename=args.ouputFile, startBP=firstBP)
+    dna = dnaMD.DNA(totalBP, filename=args.outputFile, startBP=firstBP)
 
     if 'bp' in inputFilesDict:
         dnaMD.setParametersFromFile(dna, inputFilesDict['bp'], dnaMD.basePairParameters[:])
@@ -220,7 +220,7 @@ def parseArguments():
 
     parser.add_argument('-o', '--output', action='store',
                         type=str, metavar='output.h5',
-                        dest='ouputFile', help=ouputFileHelp)
+                        dest='outputFile', help=outputFileHelp)
 
     idx = sys.argv.index("saveAsH5")+1
     args = parser.parse_args(args=sys.argv[idx:])

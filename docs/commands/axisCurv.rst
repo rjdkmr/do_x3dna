@@ -3,15 +3,15 @@ axisCurv
 
 **Calculate global helical-axis, curvatures and tangents from local helical axis.**
 
-It can be used to calulate global helical-axis and further curvatures and
+It can be used to calculate global helical-axis and further curvatures and
 tangents along it.
 
 The local helical axis coordinates should be present in input HDF5 file. It can
 be stored in HDF5 file using 'dnaMD saveasH5' command with '-ha/--helical-axis'
 option.
 
-At first global helical axis is calulated by spline interpolation using local
-helical axis. This method smoothen the local helical axis and can be used as
+At first global helical axis is calculated by spline interpolation using local
+helical axis. This method makes the local helical axis smooth and can be used as
 global helical axis.
 
 After determining the global helical axis, "-ctan/--curv-tangent" option can be
@@ -75,11 +75,11 @@ angle, overall curvature etc.
                           
                           If this option is not used, curvature and tangents will not be calculated.
                           
-                          The tangets can be used later to calculate bending angle.
+                          The tangents can be used later to calculate bending angle.
                           
     -s 500.0, --smooth 500.0
                           A smoothing condition for spline interpolation.
-                          For more details, see below in the link about "s = None", which is paased into
+                          For more details, see below in the link about "s = None", which is passed into
                           "scipy.interpolate.splprep()" function:
                           http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html#scipy.interpolate.splprep
                           
@@ -88,7 +88,7 @@ angle, overall curvature etc.
                           => Higher value may lead to the calculation of wrong helical axis.
                           
     -sp 3, --spline 3     Degree of spline.
-                          For more details, see below in the link about "k = 3", which is paased into
+                          For more details, see below in the link about "k = 3", which is passed into
                           "scipy.interpolate.splprep()" function:
                           http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.splprep.html#scipy.interpolate.splprep
                           
@@ -108,7 +108,7 @@ angle, overall curvature etc.
                           more than 10000 during this fitting-refitting cycles, fitting process will be
                           stopped with a warning message.
                           
-                          If fitting process is not successfull (angle > cutoff-angle), a mask will be
+                          If fitting process is not successful (angle > cutoff-angle), a mask will be
                           added for the respective frame. This mask can be used later to discard these
                           frames during subsequent analysis.
                           

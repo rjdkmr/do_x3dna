@@ -43,7 +43,7 @@ or over a DNA segment as a function of time.
 
     -p parameter, --parameter parameter
                           Parameter name.
-                          This paramter will be extracted from file. Ensure that parameter is present
+                          This parameter will be extracted from file. Ensure that parameter is present
                           in the file, otherwise wrong values will be extracted from file.
 
     -bs bp/s-start-number, --bp-start bp/s-start-number

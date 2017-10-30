@@ -48,9 +48,9 @@ import argparse
 import dnaMD
 
 description=\
-"""Paramter as a function of time
+"""Parameter as a function of time
 
-This can be used to extract the parameter of either a specfic base-pair/step
+This can be used to extract the parameter of either a specific base-pair/step
 or over a DNA segment as a function of time.
 
 """
@@ -61,8 +61,8 @@ This file should contain the required parameters.
 
 """
 
-ouputFileHelp=\
-"""Name of ouput file.
+outputFileHelp=\
+"""Name of output file.
 The extracted output will be written in output file.
 
 """
@@ -85,7 +85,7 @@ one.
 """
 parameterHelp=\
 """Parameter name.
-This paramter will be extracted from file. Ensure that parameter is present
+This parameter will be extracted from file. Ensure that parameter is present
 in the file, otherwise wrong values will be extracted from file.
 
 """
@@ -163,7 +163,7 @@ def main():
         sys.exit(-1)
 
     # Output file
-    if args.ouputFile is None:
+    if args.outputFile is None:
         showErrorAndExit(parser, "No output File!!!\n")
 
     paramType = dnaMD.getParameterType(args.parameter)
@@ -238,7 +238,7 @@ def main():
     time, value = dna.time_vs_parameter(args.parameter, bp, merge=merge, merge_method=args.merge_method, masked=masked)
 
     # Write the extracted data in a text file
-    fout = open(args.ouputFile, 'w')
+    fout = open(args.outputFile, 'w')
     fout.write('# Time \t "{0}"\n'.format(args.parameter))
     for i in range(len(time)):
         fout.write("{0}\t{1}\n".format(time[i], value[i]))
@@ -255,7 +255,7 @@ def parseArguments():
 
     parser.add_argument('-o', '--output', action='store',
                         type=str, metavar='output.dat',
-                        dest='ouputFile', help=ouputFileHelp)
+                        dest='outputFile', help=outputFileHelp)
 
     parser.add_argument('-tbp', '--total-bp', action='store',
                         type=int, metavar='total-bp-number',

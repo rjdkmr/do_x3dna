@@ -22,7 +22,7 @@ How to use do_x3dna?
   can be used in place of **tpr** file.
 * Trajectories from NAMD and AMBER should be converted to Gromacs compatible formats such as trr, xtc, pdb etc.
 
-**Execute follwing command to get full help**
+**Execute following command to get full help**
 ::
 
     do_x3dna -h
@@ -197,10 +197,10 @@ Following files are generated from ``do_x3dna`` with and without options:
       - Local helical radius
 
     * - BackBoneCHiDihedrals_g.dat
-      - Backbone dihederal angles including Chi-dihedral
+      - Backbone dihedral angles including Chi-dihedral
 
     * - SugarDihedrals_g.dat
-      - Sugar dihederal angles including puckring type
+      - Sugar dihedral angles including puckering type
 
     * - Stretch_g.xvg
       - Stretch of base-pairs as a function of time

@@ -14,14 +14,14 @@ Advantages of using HDF file
 ----------------------------
 
 * Very fast to read and write.
-* Data is indexed --- only required data can be read when neccessary.
+* Data is indexed --- only required data can be read when necessary.
 * Can be read with other programming languages.
 * Data are stored in disk --- reduce RAM consumption.
 
 As can be seen below in examples, we no longer require the do_x3dna output files because 
 all data are stored in HDF5 file. Therefore, data can be rapidly extracted from this HDF5 
 file and can be further processed according to the requirement. Since, only few parameters
-are neccessary at once during analysis, only these few parameters can be extracted
+are necessary at once during analysis, only these few parameters can be extracted
 to reduce the memory consumption.
 
 
@@ -44,7 +44,7 @@ Using HDF5 file with dnaMD tools
 --------------------------------
 
 `saveAsH5 <commands/saveAsH5.html>`_ can be used to store the data from do_x3dna output files.
-For example, to store the data from all do_x3dna ouput files to ``cdna.h5`` file, following command
+For example, to store the data from all do_x3dna output files to ``cdna.h5`` file, following command
 can be used.
 
 .. code-block:: bash

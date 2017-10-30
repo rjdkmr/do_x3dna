@@ -18,7 +18,7 @@ Download
 Installation
 ------------
 
-do_x3dna requires one of the follwing versions of Gromacs:
+do_x3dna requires one of the following versions of Gromacs:
 
     * Gromacs-4.5.x
     * Gromacs-4.6.x
@@ -26,7 +26,7 @@ do_x3dna requires one of the follwing versions of Gromacs:
     * Gromacs-5.1.x
     * Gromacs-2016.x
 
-For Gromacs **4.5.x** and **4.6.x** versions libraies such as ``libmd.a/.so``,
+For Gromacs **4.5.x** and **4.6.x** versions libraries such as ``libmd.a/.so``,
 ``libgmx.a/.so`` and ``libgmxana.a/.so`` are required.
 
 For Gromacs **5.0.x**, **5.1.x**, and **2016.x** version ``libgromacs.a/.so`` is
