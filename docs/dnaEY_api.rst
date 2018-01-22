@@ -1,5 +1,5 @@
-DNA class
----------
+dnaMD.dnaEY class
+=================
 
 .. currentmodule:: dnaMD.dnaEY
 

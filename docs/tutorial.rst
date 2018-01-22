@@ -18,3 +18,5 @@ Tutorial
     Conformational wheel using backbone torsion angles <notebooks/backbone_torsion_wheel_tutorial>
 
     Using HDF5 file for rapid analysis <notebooks/hdf5_tutorial>
+
+    Calculate global and local elastic properties <notebooks/calculate_elasticity_tutorial>

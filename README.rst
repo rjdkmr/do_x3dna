@@ -33,7 +33,7 @@ It consists of three main components:
       **users with programming experiences**.
 
 
-**Last Update: Oct. 2017**
+**Last Update: Jan. 2018**
 
 **For detailed documentation about the do_x3dna, please visit:** |do_x3dna homepage|.
 

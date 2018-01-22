@@ -9,6 +9,9 @@ of `do_x3dna <do_x3dna_usage.html>`_ data.
 
 .. currentmodule:: dnaMD
 
+Summary
+-------
+
 dnaMD.DNA class
 ~~~~~~~~~~~~~~~
 
@@ -29,12 +32,6 @@ dnaMD.DNA class
     DNA.write_haxis_pdb
 
 
-.. toctree::
-   :maxdepth: 1
-
-   DNA class <dna_class_api>
-
-
 dnaMD module
 ~~~~~~~~~~~~
 .. currentmodule:: dnaMD
@@ -47,12 +44,6 @@ dnaMD module
     dnaMD.vector_angle
 
 
-.. toctree::
-   :maxdepth: 1
-
-   Other functions <dnaMD_api>
-
-
 dnaMD.dnaEY class
 ~~~~~~~~~~~~~~~~~
 
@@ -62,9 +53,17 @@ dnaMD.dnaEY class
     dnaEY.getStretchTwistBendModulus
     dnaEY.getStretchTwistModulus
     dnaEY.getModulusByTime
-    dnaEY.calcDeformationEnergy
+    dnaEY.getGlobalDeformationEnergy
+    dnaEY.calculateLocalElasticity
+    dnaEY.getLocalElasticityByTime
+    dnaEY.getLocalDeformationEnergy
+
+Detailed Documentation
+----------------------
 
 .. toctree::
    :maxdepth: 1
 
-   dnaMD.dnaEY class for elasticity calculation <dnaEY_api>
+   dnaMD.DNA class <dna_class_api>
+   Other functions in dnaMD <dnaMD_api>
+   dnaMD.dnaEY class  <dnaEY_api>

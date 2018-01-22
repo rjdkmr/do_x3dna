@@ -1,11 +1,11 @@
-DNA class
----------
+dnaMD.DNA class
+===============
 
 .. currentmodule:: dnaMD.dnaMD
 
 
-dnaMD.DNA class
-~~~~~~~~~~~~~~~
+Summary
+~~~~~~~
 
 .. autosummary::
     DNA.get_parameters
@@ -23,8 +23,8 @@ dnaMD.DNA class
     DNA.calculate_angle_bw_tangents
     DNA.write_haxis_pdb
 
-dnaMD.DNA documentation
-~~~~~~~~~~~~~~~~~~~~~~~
+Documentation
+~~~~~~~~~~~~~
 
 .. autoclass:: DNA
     :members:

@@ -290,36 +290,36 @@ class dnaEY:
             print("WARNING: this is a local property and therefore, longer than 4 base-step may not be suitable..." )
 
         if not helical:
-            time, shift = dna.time_vs_parameter('shift', bp=bp, merge=True, merge_method='mean')
+            time, shift = dna.time_vs_parameter('shift', bp=bp, merge=True, merge_method='sum')
             shift = np.asarray(shift) * 0.1  # conversion to nm
 
-            time, slide = dna.time_vs_parameter('slide', bp=bp, merge=True, merge_method='mean')
+            time, slide = dna.time_vs_parameter('slide', bp=bp, merge=True, merge_method='sum')
             slide = np.asarray(slide) * 0.1  # conversion to nm
 
-            time, rise = dna.time_vs_parameter('rise', bp=bp, merge=True, merge_method='mean')
+            time, rise = dna.time_vs_parameter('rise', bp=bp, merge=True, merge_method='sum')
             rise = np.asarray(rise) * 0.1  # conversion to nm
 
-            time, tilt = dna.time_vs_parameter('tilt', bp=bp, merge=True, merge_method='mean')
+            time, tilt = dna.time_vs_parameter('tilt', bp=bp, merge=True, merge_method='sum')
 
-            time, roll = dna.time_vs_parameter('roll', bp=bp, merge=True, merge_method='mean')
+            time, roll = dna.time_vs_parameter('roll', bp=bp, merge=True, merge_method='sum')
 
-            time, twist = dna.time_vs_parameter('twist', bp=bp, merge=True, merge_method='mean')
+            time, twist = dna.time_vs_parameter('twist', bp=bp, merge=True, merge_method='sum')
 
         else:
-            time, x_disp = dna.time_vs_parameter('x-disp', bp=bp, merge=True, merge_method='mean')
+            time, x_disp = dna.time_vs_parameter('x-disp', bp=bp, merge=True, merge_method='sum')
             x_disp = np.asarray(x_disp) * 0.1  # conversion to nm
 
-            time, y_disp = dna.time_vs_parameter('y-disp', bp=bp, merge=True, merge_method='mean')
+            time, y_disp = dna.time_vs_parameter('y-disp', bp=bp, merge=True, merge_method='sum')
             y_disp = np.asarray(y_disp) * 0.1  # conversion to nm
 
-            time, h_rise = dna.time_vs_parameter('h-rise', bp=bp, merge=True, merge_method='mean')
+            time, h_rise = dna.time_vs_parameter('h-rise', bp=bp, merge=True, merge_method='sum')
             h_rise = np.asarray(h_rise) * 0.1  # conversion to nm
 
-            time, inclination = dna.time_vs_parameter('inclination', bp=bp, merge=True, merge_method='mean')
+            time, inclination = dna.time_vs_parameter('inclination', bp=bp, merge=True, merge_method='sum')
 
-            time, tip = dna.time_vs_parameter('tip', bp=bp, merge=True, merge_method='mean')
+            time, tip = dna.time_vs_parameter('tip', bp=bp, merge=True, merge_method='sum')
 
-            time, h_twist = dna.time_vs_parameter('h-twist', bp=bp, merge=True, merge_method='mean')
+            time, h_twist = dna.time_vs_parameter('h-twist', bp=bp, merge=True, merge_method='sum')
 
         if not helical:
             if frames[1] == -1:
