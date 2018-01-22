@@ -4,7 +4,7 @@
 # This file is part of do_x3dna
 #
 # Author: Rajendra Kumar
-# Copyright (C) 2014-2017  Rajendra Kumar
+# Copyright (C) 2014-2018  Rajendra Kumar
 #
 # do_x3dna uses 3DNA package (http://x3dna.org).
 # Please cite the original publication of the 3DNA package:
@@ -875,7 +875,7 @@ class DNA:
             raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an output from do_x3dna.'.format(filename))
         for p in helicalRadiusParameters:
             if p not in gotParametersInputFile:
-                raise ValueError(' Parameter {0} not found in input file. \n This file contains following parameters: \n {1}'.format(parameter, gotParametersInputFile))
+                raise ValueError(' Helical radius not found in input file. \n This file contains following parameters: \n {0}'.format(gotParametersInputFile))
 
         parameter = []
         if (atomname == 'P') or (full):
@@ -943,12 +943,12 @@ class DNA:
 
             If helical = ``True``:
 
-                * ``X-disp``
-                * ``Y-disp``
-                * ``h-Rise``
-                * ``Inclination``
-                * ``Tip``
-                * ``h-Twist``
+                * ``x-disp``
+                * ``y-disp``
+                * ``h-rise``
+                * ``inclination``
+                * ``tip``
+                * ``h-twist``
 
         step_range : bool
             ``Dfault=True``: As shown above, if ``True``, bp_step is taken as a range otherwise list or numpy array.
@@ -1182,7 +1182,7 @@ class DNA:
             raise IOError(' Something wrong in input file {0}.\n Cannot read parameters.\n File should be an output from do_x3dna.'.format(filename))
         for p in helicalAxisParameters:
             if p not in gotParametersInputFile:
-                raise ValueError(' Parameter {0} not found in input file. \n This file contains following parameters: \n {1}'.format(parameter, gotParametersInputFile))
+                raise ValueError(' Helical axis not found in input file. \n This file contains following parameters: \n {0}'.format(gotParametersInputFile))
 
         targetParameters = { 1:'helical x-axis', 2:'helical y-axis', 3:'helical z-axis' }
 

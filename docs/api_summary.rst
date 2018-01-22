@@ -51,3 +51,20 @@ dnaMD module
    :maxdepth: 1
 
    Other functions <dnaMD_api>
+
+
+dnaMD.dnaEY class
+~~~~~~~~~~~~~~~~~
+
+.. currentmodule:: dnaMD.dnaEY
+
+.. autosummary::
+    dnaEY.getStretchTwistBendModulus
+    dnaEY.getStretchTwistModulus
+    dnaEY.getModulusByTime
+    dnaEY.calcDeformationEnergy
+
+.. toctree::
+   :maxdepth: 1
+
+   dnaMD.dnaEY class for elasticity calculation <dnaEY_api>

@@ -34,7 +34,7 @@ It consists of three main components:
       **users with programming experiences**.
 
 
-**Last Update: Oct. 2017**
+**Last Update: Jan. 2018**
 
 **For Questions and Discussions, please visit:** `do_x3dna forum <https://groups.google.com/forum/#!forum/do_x3dna>`_.
 
@@ -56,6 +56,8 @@ Release Note 2017
 Features
 --------
 
+.. _base-pair-image:
+
 Base-pair parameters
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -64,20 +66,20 @@ Base-pair parameters
    :align: center
 
 
+.. _base-step-image:
 
 Base-step parameters
 ~~~~~~~~~~~~~~~~~~~~
-
 
 .. image:: ./images/bps_parameters.png
    :scale: 28 %
    :align: center
 
 
+.. _helical-base-step-image:
 
-Helical Base-stesp parameters
+Helical Base-step parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 
 .. image:: ./images/bph_parameters.png
@@ -155,6 +157,7 @@ Contents
    Install dnaMD <install_dnaMD>
    How to use dnaMD? <dnaMD_usage>
    Speed up dnaMD with HDF5 file <using_hdf5>
+   How to calculate DNA elasticity? <about_dna_elasticity>
    dnaMD Python module <api_summary>
    dnaMD Python module Tutorial <tutorial>
    View on GitHub <https://github.com/rjdkmr/do_x3dna>

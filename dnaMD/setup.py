@@ -4,7 +4,7 @@
 # This file is part of do_x3dna
 #
 # Author: Rajendra Kumar
-# Copyright (C) 2014-2017  Rajendra Kumar
+# Copyright (C) 2014-2018  Rajendra Kumar
 #
 # do_x3dna uses 3DNA package (http://x3dna.org).
 # Please cite the original publication of the 3DNA package:
@@ -53,7 +53,7 @@ def read(fname):
 
 setup(
     name = 'dnaMD',
-    version = '2.0.8',
+    version = '2.0.9',
 
     # Required packages
     install_requires = [ 'numpy>=1.6',  'scipy>=0.9', 'h5py>=2.2.1' ],
