@@ -50,28 +50,24 @@ can be used.
 .. code-block:: bash
 
     dnaMD saveAsH5  -tbp 60 \ 
-                    -lbp tutorial_data/L-BP_cdna.dat  \
-                    -lbps tutorial_data/L-BPS_cdna.dat \
-                    -lbph tutorial_data/L-BPH_cdna.dat \
-                    -bbd tutorial_data/BackBoneCHiDihedrals_cdna.dat \
-                    -mg tutorial_data/MGroove_cdna.dat \
-                    -ha tutorial_data/HelAxis_cdna.dat \
-                    -hr tutorial_data/HelixRad_cdna.dat \
-                    -o cdna.h5
+                    -i tutorial_data/L-BP_cdna.dat,tutorial_data/L-BPS_cdna.dat,tutorial_data/L-BPH_cdna.dat,\
+                    tutorial_data/BackBoneCHiDihedrals_cdna.dat,tutorial_data/MGroove_cdna.dat,\
+                    tutorial_data/HelAxis_cdna.dat,tutorial_data/HelixRad_cdna.dat \
+                    -o pdna.h5
 
 
 Subsequently, global helical axis, curvature and tangent can be calculated with `axisCurv <commands/axisCurv.html>`_ command.
 
 .. code-block:: bash
 
-    dnaMD axisCurv -tbp 60 -bs 4 -be 56 -io cdna.h5 -ctan -ap cdna_axis.pdb -scp 1.0
+    dnaMD axisCurv -tbp 60 -bs 4 -be 56 -io pdna.h5 -ctan -ap cdna_axis.pdb -scp 1.0
 
 To plot the curvature values between 25th to 35th base-pairs, curvature as a function of time
 can be extracted from HDF5 file by `vsTime <commands/vsTime.html>`_.
 
 .. code-block:: bash
 
-    dnaMD vsTime -i cdna.h5 -tbp 60 -bs 25 -be 35 -p "curvature" -mm sum -o curv.dat
+    dnaMD vsTime -i pdna.h5 -tbp 60 -bs 25 -be 35 -p "curvature" -mm sum -o curv.dat
 
 Following output is obtained in ``curv.dat`` file.
 

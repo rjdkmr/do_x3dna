@@ -70,7 +70,7 @@ class dnaEY:
     filename : str
         HDF5 (.h5) file containing DNA data.
         In case of ``esType='BST'``, it must contains coordinate of global helical axis (done by
-        :meth:`dnaMD.dnaMD.generate_smooth_axis` or 'dnaMD axisCurv').
+        :meth:`dnaMD.generate_smooth_axis` or 'dnaMD axisCurv').
 
     startBP : int
         Number ID of first basepair.
@@ -92,7 +92,7 @@ class dnaEY:
     filename : str
         HDF5 (.h5) file containing DNA data.
         In case of ``esType='BST'``, it must contains coordinate of global helical axis (done by
-        :meth:`dnaMD.dnaMD.generate_smooth_axis` or 'dnaMD axisCurv').
+        :meth:`dnaMD.generate_smooth_axis` or ``dnaMD axisCurv``).
 
     startBP : int
         Number ID of first basepair.
@@ -113,7 +113,7 @@ class dnaEY:
 
     """
 
-    def __init__(self, num_bp, esType, filename=None, startBP=1):
+    def __init__(self, num_bp, esType='ST', filename=None, startBP=1):
         """Initialize Elastic Properties class
 
         """
@@ -305,6 +305,15 @@ class dnaEY:
 
             time, twist = dna.time_vs_parameter('twist', bp=bp, merge=True, merge_method='sum')
 
+            if frames[1] == -1:
+                array = np.array([shift[frames[0]:], slide[frames[0]:], rise[frames[0]:],
+                                  tilt[frames[0]:], roll[frames[0]:], twist[frames[0]:]])
+                time = time[frames[0]:]
+            else:
+                array = np.array([shift[frames[0]:frames[1]], slide[frames[0]:frames[1]], rise[frames[0]:frames[1]],
+                                  tilt[frames[0]:frames[1]], roll[frames[0]:frames[1]], twist[frames[0]:frames[1]]])
+                time = time[frames[0]:frames[1]]
+
         else:
             time, x_disp = dna.time_vs_parameter('x-disp', bp=bp, merge=True, merge_method='sum')
             x_disp = np.asarray(x_disp) * 0.1  # conversion to nm
@@ -321,16 +330,6 @@ class dnaEY:
 
             time, h_twist = dna.time_vs_parameter('h-twist', bp=bp, merge=True, merge_method='sum')
 
-        if not helical:
-            if frames[1] == -1:
-                array = np.array([shift[frames[0]:], slide[frames[0]:], rise[frames[0]:],
-                                  tilt[frames[0]:], roll[frames[0]:], twist[frames[0]:]])
-                time = time[frames[0]:]
-            else:
-                array = np.array([shift[frames[0]:frames[1]], slide[frames[0]:frames[1]], rise[frames[0]:frames[1]],
-                                  tilt[frames[0]:frames[1]], roll[frames[0]:frames[1]], twist[frames[0]:frames[1]]])
-                time = time[frames[0]:frames[1]]
-        else:
             if frames[1] == -1:
                 array = np.array([x_disp[frames[0]:], y_disp[frames[0]:], h_rise[frames[0]:],
                                   inclination[frames[0]:], tip[frames[0]:], h_twist[frames[0]:]])
@@ -401,6 +400,10 @@ class dnaEY:
         result : numpy.ndarray
             Either elastic matrix or modulus matrix depending on ``matrix`` value.
         """
+
+
+        if self.esType == 'ST':
+            raise KeyError(' Use dnaEY.getStretchTwistModulus for Stretching-Twisting modulus.')
 
         frames = self._validateFrames(frames)
 
@@ -476,6 +479,9 @@ class dnaEY:
             Either elastic matrix or modulus matrix depending on ``matrix`` value.
         """
 
+        if self.esType == 'BST':
+            raise KeyError(' Use dnaEY.getStretchTwistBendModulus for Bending-Stretching-Twisting modulus.')
+
         frames = self._validateFrames(frames)
 
         name = '{0}-{1}-{2}-{3}'.format(bp[0], bp[1], frames[0], frames[1])
@@ -497,7 +503,7 @@ class dnaEY:
 
         return mean, result
 
-    def getModulusByTime(self, bp, skip, masked=False, paxis='Z'):
+    def getModulusByTime(self, bp, frameGap, masked=False, paxis='Z'):
         r"""Calculate moduli as a function of time for convergence check
 
         It can be used to obtained elastic moduli as a function of time to check their convergence.
@@ -544,8 +550,9 @@ class dnaEY:
             List of two base-steps forming the DNA segment.
             For example: with ``bp=[5, 50]``, 5-50 base-step segment will be considered.
 
-        skip : int
-            How many frames to skip for next time-frame. Lower the number, slower will be the calculation.
+        frameGap : int
+            How many frames to skip for next calculation. this option will determine the
+            time-gap between each calculation. Lower the number, slower will be the calculation.
 
         masked : bool
             ``Default=False``. To skip specific frames/snapshots.
@@ -576,7 +583,7 @@ class dnaEY:
         length = len(self.dna.time[:])
 
         time, modulus = [], []
-        for i in range(skip, length, skip):
+        for i in range(frameGap, length, frameGap):
 
             props = None
             if self.esType == 'BST':
@@ -1085,7 +1092,7 @@ class dnaEY:
 
         .. math::
 
-            G = \frac{1}{2L_0}\mathbf{xKx^T}
+            G = \frac{1}{2}\mathbf{xKx^T}
 
         When ``helical='False'``
 

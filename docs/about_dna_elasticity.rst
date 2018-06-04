@@ -185,7 +185,7 @@ landscape is harmonic. Therefore, deformation energy is given as follows.
 
 .. math::
 
-    G = \frac{1}{2L_0}\mathbf{xKx^T}
+    G = \frac{1}{2}\mathbf{xKx^T}
 
 
 **In case of local base-steps parameters:**

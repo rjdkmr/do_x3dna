@@ -49,23 +49,34 @@ import dnaMD
 
 description="""DESCRIPTION
 ===========
-Parameter as a function of time
+Parameter distribution during simulation
 
-This can be used to extract the parameter of either a specific base-pair/step
-or over a DNA segment as a function of time.
+This can be used to calculate distribution of a parameter of either a specific base-pair/step
+or over a DNA segment during the simulations.
 
 """
 
 inputFileHelp=\
 """Name of input file (from do_x3dna or hdf5 file).
-This file should contain the required parameters. It can be a file either 
+This file should contain the required parameters. It can be a file either
 produced from do_x3dna or hdf5 storage file.
 
 """
 
 outputFileHelp=\
 """Name of output file.
-The extracted output will be written in output file.
+The elasticity modulus will be written in this file.
+
+"""
+
+vsTimeHelp=\
+"""Calculate moduli as a function of time.
+It can be used to obtained elastic moduli as a function of time to check their 
+convergence. If this option is used, -fgap/--frame-gap is an essential option.
+
+NOTE: Elastic properties cannot be calculated using a single frame because 
+fluctuations are required. Therefore, here time means trajectory between zero 
+time to given time.
 
 """
 
@@ -85,10 +96,14 @@ cases, use this option to start numbering of basepair from other number than
 one.
 
 """
-parameterHelp=\
-"""Parameter name.
-This parameter will be extracted from file. Ensure that parameter is present
-in the file, otherwise wrong values will be extracted from file.
+esTypeHelp=\
+"""Elastic Properties type.
+Two keywords are accepted: "BST" or "ST".
+* "BST" : Bending-Stretching-Twisting --- All motions are considered
+" "ST"  : Stretching-Twisting --- Bending motions are ignored.
+
+WARNING: For accurate calculation of bending motions, DNA structures in trajectory must 
+be superimposed on a reference structure (See Publication's Method Section).
 
 """
 
@@ -106,16 +121,41 @@ option will be extracted.
 
 """
 
-mergeMethodHelp=\
-"""Method to merge the parameter of a DNA segment from local parameters
-of all base-pairs/steps that are within the range given by '-bs' and '-be'.
+frameGapHelp=\
+"""Number of frames to skip for next calculation
+When calculating elastic modulus as a function of time, this option will determine
+the time-gap between each calculation point. Lower the time-gap, slower will be the 
+calculation.
 
-Currently accepted keywords are as follows:
-    * mean : Average of local parameters
-    * sum : Sum of local parameters
+"""
 
-When only "-bs" option is provided without "-be", then -mm/--merge-method is
-not required.
+paxisHelp=\
+"""Axis parallel to global helical-axis
+Three keywords are accepted: "X", "Y" and "Z". Only require when bending motions are
+included in the calculation.
+
+"""
+
+errorHelp=\
+""" Error of elastic modulus
+If this option is used, elastic modulus will be calculated as a function of time. Therefore,
+options such as frameGap will be essential.
+
+Error methods are as following:
+* "none" : No error calculation (Default).
+* "acf": Using autocorrelation function to determine autocoprrelation time and used as time
+         to get the independent frame.
+* "block": Block averaging error
+* "std": standard deviation
+
+In case of "acf" and "block", gromacs tool "g_analyze" or "gmx analyze" will be used. Either
+of these tools should be in path for error calculation.
+
+"""
+
+toolsHelp=\
+"""Tools to calculate autocorrelation time or bloack averaging error.
+By default it is g_analyze (Gromacs-4.5.x/4.6.x versions). For newer versions, use "gmx analyze".
 
 """
 
@@ -239,17 +279,17 @@ def main():
         dnaMD.setParametersFromFile(dna, inputFile, args.parameter, bp=bp)
 
     # Extract the input parameter for input DNA/RNA segment
-    time, value = dna.time_vs_parameter(args.parameter, bp, merge=merge, merge_method=args.merge_method, masked=masked)
+    values, density = dna.parameter_distribution(args.parameter, bp, bins=30, merge=merge, merge_method=args.merge_method, masked=masked)
 
     # Write the extracted data in a text file
     fout = open(args.outputFile, 'w')
-    fout.write('# Time \t "{0}"\n'.format(args.parameter))
-    for i in range(len(time)):
-        fout.write("{0}\t{1}\n".format(time[i], value[i]))
+    fout.write('# "{0}" \t Density\n'.format(args.parameter))
+    for i in range(len(values)):
+        fout.write("{0:.6}\t{1:.6}\n".format(values[i], density[i]))
     fout.close()
 
 def parseArguments():
-    parser = argparse.ArgumentParser(prog='dnaMD vsTime',
+    parser = argparse.ArgumentParser(prog='dnaMD histogram',
                                     description=description,
                                     formatter_class=argparse.RawTextHelpFormatter)
 
@@ -258,16 +298,21 @@ def parseArguments():
                         dest='inputFile', required=False, help=inputFileHelp)
 
     parser.add_argument('-o', '--output', action='store',
-                        type=str, metavar='output.dat',
+                        type=str, metavar='output.csv',
                         dest='outputFile', help=outputFileHelp)
+
+    parser.add_argument('-ot', '--output-time', action='store',
+                        type=str, metavar='elasicity_vs_time.dat',
+                        dest='vsTime', help=vsTimeHelp)
 
     parser.add_argument('-tbp', '--total-bp', action='store',
                         type=int, metavar='total-bp-number',
                         dest='totalBP', help=totalBpHelp)
 
-    parser.add_argument('-p', '--parameter', action='store',
-                        dest='parameter', metavar='parameter',
-                        type=str, help=parameterHelp)
+    parser.add_argument('-estype', '--elasticity-type', action='store',
+                        dest='esType', metavar='esType', default='ST',
+                        choices = ['ST', 'BST'],
+                        type=str, help=esTypeHelp)
 
     parser.add_argument('-bs', '--bp-start', action='store',
                         type=int, metavar='bp/s-start-number',
@@ -279,17 +324,30 @@ def parseArguments():
                         metavar='bp/s-end-number',
                         help=bpEndHelp)
 
-    parser.add_argument('-mm', '--merge-method', action='store',
-                        type=str, dest='merge_method',
-                        metavar='sum-or-mean',
-                        choices=['mean', 'sum'],
-                        help=mergeMethodHelp)
+    parser.add_argument('-fgap', '--frame-gap', action='store',
+                        type=int, dest='frameGap',
+                        metavar='frames-to-skip',
+                        help=frameGapHelp)
+
+    parser.add_argument('-paxis', '--principle-axis', action='store',
+                        type=str, metavar='X', default=None,
+                        choices=['X', 'Y', 'Z'],
+                        dest='paxis', help=paxisHelp)
+
+    parser.add_argument('-em', '--error-method', action='store',
+                        type=str, metavar='block', default=None,
+                        choices=['std', 'acf', 'block'],
+                        dest='err_type', help=errorHelp)
+
+    parser.add_argument('-gt', '--gromacs-tool', action='store',
+                        type=str, metavar='g_analyze', default='g_analyze',
+                        dest='tool', help=toolsHelp)
 
     parser.add_argument('-fbp', '--first-bp', action='store',
                         type=int, metavar='1', default=1,
                         dest='firstBP', help=bpFirstHelp)
 
-    idx = sys.argv.index("vsTime")+1
+    idx = sys.argv.index("histogram") + 1
     args = parser.parse_args(args=sys.argv[idx:])
 
     return parser, args

@@ -49,7 +49,10 @@ import re
 def main():
 
     options = {'vsTime':'Extract a parameter as a function of time.',
+               'histogram': 'Parameter distribution during simulation.',
                'saveAsH5' : 'Store parameters from text file to HDF5 file.',
+               'vsBPS' : 'Average parameters as a function of base-pair/step',
+               'localDeformation' : 'Deformation of local parameters in probe DNA with respect to a reference DNA',
                'axisCurv' : 'Calculate global helical-axis, curvatures and tangents'
               }
 
@@ -65,6 +68,18 @@ def main():
     if sys.argv[1] == 'vsTime':
         from .commands import vsTime
         vsTime.main()
+
+    if sys.argv[1] == 'histogram':
+        from .commands import histogram
+        histogram.main()
+
+    if sys.argv[1] == 'vsBPS':
+        from .commands import vsBPS
+        vsBPS.main()
+
+    if sys.argv[1] == 'localDeformation':
+        from .commands import localDeformation
+        localDeformation.main()
 
     if sys.argv[1] == 'saveAsH5':
         from .commands import saveAsH5

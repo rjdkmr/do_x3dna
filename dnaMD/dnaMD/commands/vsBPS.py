@@ -49,16 +49,16 @@ import dnaMD
 
 description="""DESCRIPTION
 ===========
-Parameter as a function of time
+Average parameters as a function of base-pair/step
 
-This can be used to extract the parameter of either a specific base-pair/step
-or over a DNA segment as a function of time.
+This can be used to calculate average and error of the given parameter of either a specific base-pair/step
+or over a DNA segment during the simulations.
 
 """
 
 inputFileHelp=\
 """Name of input file (from do_x3dna or hdf5 file).
-This file should contain the required parameters. It can be a file either 
+This file should contain the required parameters. It can be a file either
 produced from do_x3dna or hdf5 storage file.
 
 """
@@ -100,24 +100,46 @@ If it is not given, first basepair or base-step will be considered.
 
 bpEndHelp=\
 """Last BP/BPS of DNA upto which parameter will be extracted.
-
-If it is not given, parameter for only a single bp/s given with -bs/--bp-start
-option will be extracted.
+If it is not given, last basepair or base-step will be considered.
 
 """
 
 mergeMethodHelp=\
-"""Method to merge the parameter of a DNA segment from local parameters
-of all base-pairs/steps that are within the range given by '-bs' and '-be'.
+"""Method to merge the parameters of consecutive basepairs/steps given by -mb/--merge-bps.
 
 Currently accepted keywords are as follows:
     * mean : Average of local parameters
     * sum : Sum of local parameters
 
-When only "-bs" option is provided without "-be", then -mm/--merge-method is
-not required.
+"""
+
+errorHelp=\
+""" Error method
+It can be as following:
+* "acf": Using autocorrelation function to determine autocoprrelation time and used as time 
+         to get the independent frame.
+* "block": Block averaging error
+* "std": standard deviation
+
+In case of "acf" and "block", gromacs tool "g_analyze" or "gmx analyze" will be used. Either 
+of these tools should be in path for error calculation.
 
 """
+
+toolsHelp=\
+"""Tools to calculate autocorrelation time or bloack averaging error.
+By default it is g_analyze (Gromacs-4.5.x/4.6.x versions). For newer versions, use "gmx analyze".
+
+"""
+
+merge_bp_help=\
+"""Number of consecutive base-pairs/steps to merge for creating the small non-overlapping DNA
+segments. By default, averages and errors are calculated for each base-pair/step separately.
+However, averages  and errors can also  be calculated for small non-overlapping DNA segment
+by merging the parameters of consecutive base-pairs/steps. 
+
+"""
+
 
 def main():
     parser, args = parseArguments()
@@ -175,11 +197,14 @@ def main():
 
     # Determine start and end-bp
     startBP = args.startBP
+    endBP = None
     if startBP is None:
         startBP = firstBP
-    endBP = None
     if args.endBP is not None:
         endBP = args.endBP
+    else:
+        endBP = totalBP - toMinusBP
+    bp = [startBP, endBP]
 
     # Check consistency of start bp
     if (startBP < firstBP) or (startBP > totalBP+firstBP-toMinusBP):
@@ -196,14 +221,8 @@ def main():
             msg = 'The requested end bp {0} is out side of {1}-{2} range.'.format(endBP, firstBP, totalBP+firstBP-toMinusBP)
             showErrorAndExit(parser, msg)
 
-    # Check if merge is required
-    if endBP is None:
-        merge = False
-    else:
-        merge = True
-
     # Check if merge-method is given
-    if merge and args.merge_method is None:
+    if args.merge_method is None:
         msg = 'No merging method is provided!!!!'
         showErrorAndExit(parser, msg)
 
@@ -212,10 +231,16 @@ def main():
     if fileType == 'hdf5':
         filename = inputFile
 
-    if endBP is not None:
-        bp = [startBP, endBP]
-    else:
-        bp = [startBP]
+    # Check merge_bp
+    if args.merge_bp > totalBP:
+        msg = ' Number of bp/s to merge is larger than total number of bp.'
+        showErrorAndExit(parser, msg)
+
+    # check gromacs tools
+    if 'analyze' not in args.tool:
+        msg = '{0} might not be suitable for error calculation. \n Use Gromacs analyze tool g_analyze or "gmx analyze".'\
+            .format(args.tool)
+        showErrorAndExit(parser, msg)
 
     # initialize DNA object
     dna = dnaMD.DNA(totalBP, filename=filename, startBP=firstBP)
@@ -238,18 +263,19 @@ def main():
         # Read and load parameter from file
         dnaMD.setParametersFromFile(dna, inputFile, args.parameter, bp=bp)
 
-    # Extract the input parameter for input DNA/RNA segment
-    time, value = dna.time_vs_parameter(args.parameter, bp, merge=merge, merge_method=args.merge_method, masked=masked)
+    bp_center, avg, error = dna.get_mean_error(bp, args.parameter, err_type=args.err_type, bp_range=True,
+                                               merge_bp=args.merge_bp, merge_method=args.merge_method,
+                                               masked=masked, tool=args.tool)
 
     # Write the extracted data in a text file
     fout = open(args.outputFile, 'w')
-    fout.write('# Time \t "{0}"\n'.format(args.parameter))
-    for i in range(len(time)):
-        fout.write("{0}\t{1}\n".format(time[i], value[i]))
+    fout.write('# bp(mid) \t {0}-avg \t {0}-error\n'.format(args.parameter))
+    for i in range(len(bp_center)):
+        fout.write("{0} \t\t {1:.6} \t {2:.6}\n".format(bp_center[i], avg[i], error[i]))
     fout.close()
 
 def parseArguments():
-    parser = argparse.ArgumentParser(prog='dnaMD vsTime',
+    parser = argparse.ArgumentParser(prog='dnaMD vsBPS',
                                     description=description,
                                     formatter_class=argparse.RawTextHelpFormatter)
 
@@ -268,6 +294,19 @@ def parseArguments():
     parser.add_argument('-p', '--parameter', action='store',
                         dest='parameter', metavar='parameter',
                         type=str, help=parameterHelp)
+
+    parser.add_argument('-em', '--error-method', action='store',
+                        type=str, metavar='block', default='block',
+                        choices=['std', 'acf', 'block'],
+                        dest='err_type', help=errorHelp)
+
+    parser.add_argument('-mb', '--merge-bps', action='store',
+                        type=int, metavar='bp/s number', default=1,
+                        dest='merge_bp', help=merge_bp_help)
+
+    parser.add_argument('-gt', '--gromacs-tool', action='store',
+                        type=str, metavar='g_analyze', default='g_analyze',
+                        dest='tool', help=toolsHelp)
 
     parser.add_argument('-bs', '--bp-start', action='store',
                         type=int, metavar='bp/s-start-number',
@@ -289,7 +328,7 @@ def parseArguments():
                         type=int, metavar='1', default=1,
                         dest='firstBP', help=bpFirstHelp)
 
-    idx = sys.argv.index("vsTime")+1
+    idx = sys.argv.index("vsBPS")+1
     args = parser.parse_args(args=sys.argv[idx:])
 
     return parser, args

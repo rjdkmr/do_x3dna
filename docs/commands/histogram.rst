@@ -1,19 +1,19 @@
-vsTime
-======
+histogram
+=========
 
-**Parameter as a function of time**
+**Parameter distribution during simulation**
 
-This can be used to extract the parameter of either a specific base-pair/step
-or over a DNA segment as a function of time.
+This can be used to calculate distribution of a parameter of either a specific base-pair/step
+or over a DNA segment during the simulations.
 
 **Usage:**
 
 .. code-block:: bash
 
-    usage: dnaMD vsTime [-h] [-i L-BP_cdna.dat] [-o output.dat]
-                    [-tbp total-bp-number] [-p parameter]
-                    [-bs bp/s-start-number] [-be bp/s-end-number]
-                    [-mm sum-or-mean] [-fbp 1]
+    usage: dnaMD histogram [-h] [-i L-BP_cdna.dat] [-o output.dat]
+                           [-tbp total-bp-number] [-bins bins] [-p parameter]
+                           [-bs bp/s-start-number] [-be bp/s-end-number]
+                           [-mm sum-or-mean] [-fbp 1]
 
 
 **Optional arguments:**
@@ -33,6 +33,10 @@ or over a DNA segment as a function of time.
     -tbp total-bp-number, --total-bp total-bp-number
                         Total number of basepair in DNA/RNA.
                         It is an essential input.
+
+    -bins bins, --bins bins
+                         Number of bins in the histogram
+                        Default value is 30.
 
     -p parameter, --parameter parameter
                         Parameter name.
@@ -74,22 +78,22 @@ Example
 
 .. code-block:: bash
 
-    dnaMD vsTime -i fdna.h5 -tbp 60 -bs 10 -be 50 -p "curvature" -mm sum -o curv.dat
+    dnaMD histogram -i pdna.h5 -o histogram.dat -tbp 60 -bs 20 -be 45 -p rise -mm sum -bins 20
 
-Following output is obtained in ``curv.dat`` file.
+Following output is obtained in ``histogram.dat`` file.
 
 ::
 
-    # Time 	 "curvature"
-    0.0	0.14487306619300122
-    100.0	0.24987540226819524
-    200.0	0.19187540226819527
-    300.0	0.20787540226819526
-    400.0	0.26187540226819517
-    500.0	0.24582073103934177
-    600.0	0.23887540226819526
-    700.0	0.2478754022681953
-    800.0	0.2558754022681952
+    # "rise" 	 Density
+    84.082	0.0
+    84.278	0.00509694
+    84.474	0.0
+    84.67	0.00509694
+    84.866	0.00509694
+    85.062	0.0203878
+    85.258	0.0356786
+    85.454	0.107036
+    85.65	0.0560664
     .
     .
     .
@@ -98,9 +102,9 @@ It can be plotted by xmgrace as following:
 
 .. code-block:: bash
 
-    xmgrace curv.dat
+    xmgrace histogram.dat
 
 
-The obtained plot is similar to the curvature plot
-`shown here <../notebooks/helical_axis_tutorial.html#To-calculate-curvature-and-tangent-vectors-along-helical-axis>`_
-for 10-50 bp length.
+The obtained plot is similar to the histogram plot
+`shown here <../notebooks/base_steps_tutorial.html#Distribution-of-local-base-steps-parameters-during-MD-simulations>`_
+for 20-45 bp length bound DNA.

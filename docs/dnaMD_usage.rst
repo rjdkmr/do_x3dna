@@ -20,17 +20,31 @@ in external plotting program like xmgrace, gnuplot, excel etc to plot the result
     * - Command
       - Function
 
-    * - `vsTime <commands/vsTime.html>`_
-      - Extract a parameter as a function of time
-
     * - `saveAsH5 <commands/saveAsH5.html>`_
       - Save parameters to a HDF5 file
 
     * - `axisCurv <commands/axisCurv.html>`_
       - Calculate global helical-axis, curvatures and tangents from local helical axis.
 
+    * - `vsTime <commands/vsTime.html>`_
+      - Extract a parameter as a function of time
+
+    * - `histogram <commands/histogram.html>`_
+      - Parameter distribution during simulation
+
+    * - `vsBPS <commands/vsBPS.html>`_
+      - Average parameters as a function of base-pair/step
+
+    * - `localDeformation <commands/localDeformation.html>`_
+      - Deformation of local parameters in probe DNA with respect to a reference DNA
+
 
 .. toctree::
-    vsTime : extract a parameter as a function of time <commands/vsTime>
+    :maxdepth: 1
+
     saveAsH5 : Save parameters to a HDF5 file <commands/saveAsH5>
     axisCurv : Calculate global helical-axis, curvatures and tangents <commands/axisCurv>
+    vsTime : extract a parameter as a function of time <commands/vsTime>
+    histogram : Parameter distribution during simulation <commands/histogram>
+    vsBPS : Average parameters as a function of base-pair/step <commands/vsBPS>
+    localDeformation : Deformation of local parameters in probe DNA with respect to a reference DNA <commands/localDeformation>

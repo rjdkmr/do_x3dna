@@ -47,9 +47,10 @@ import argparse
 
 import dnaMD
 
-description=\
-"""Calculate global helical-axis, curvatures and tangents from local helical axis.
-=================================================================================
+description="""DESCRIPTION
+===========
+Calculate global helical-axis, curvatures and tangents from local helical axis.
+
 It can be used to calculate global helical-axis and further curvatures and
 tangents along it.
 

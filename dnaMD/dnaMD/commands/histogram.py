@@ -49,16 +49,16 @@ import dnaMD
 
 description="""DESCRIPTION
 ===========
-Parameter as a function of time
+Parameter distribution during simulation
 
-This can be used to extract the parameter of either a specific base-pair/step
-or over a DNA segment as a function of time.
+This can be used to calculate distribution of a parameter of either a specific base-pair/step
+or over a DNA segment during the simulations.
 
 """
 
 inputFileHelp=\
 """Name of input file (from do_x3dna or hdf5 file).
-This file should contain the required parameters. It can be a file either 
+This file should contain the required parameters. It can be a file either
 produced from do_x3dna or hdf5 storage file.
 
 """
@@ -116,6 +116,12 @@ Currently accepted keywords are as follows:
 
 When only "-bs" option is provided without "-be", then -mm/--merge-method is
 not required.
+
+"""
+
+binsHelp=\
+""" Number of bins in the histogram
+Default value is 30.
 
 """
 
@@ -239,17 +245,17 @@ def main():
         dnaMD.setParametersFromFile(dna, inputFile, args.parameter, bp=bp)
 
     # Extract the input parameter for input DNA/RNA segment
-    time, value = dna.time_vs_parameter(args.parameter, bp, merge=merge, merge_method=args.merge_method, masked=masked)
+    values, density = dna.parameter_distribution(args.parameter, bp, bins=30, merge=merge, merge_method=args.merge_method, masked=masked)
 
     # Write the extracted data in a text file
     fout = open(args.outputFile, 'w')
-    fout.write('# Time \t "{0}"\n'.format(args.parameter))
-    for i in range(len(time)):
-        fout.write("{0}\t{1}\n".format(time[i], value[i]))
+    fout.write('# "{0}" \t Density\n'.format(args.parameter))
+    for i in range(len(values)):
+        fout.write("{0:.6}\t{1:.6}\n".format(values[i], density[i]))
     fout.close()
 
 def parseArguments():
-    parser = argparse.ArgumentParser(prog='dnaMD vsTime',
+    parser = argparse.ArgumentParser(prog='dnaMD histogram',
                                     description=description,
                                     formatter_class=argparse.RawTextHelpFormatter)
 
@@ -264,6 +270,10 @@ def parseArguments():
     parser.add_argument('-tbp', '--total-bp', action='store',
                         type=int, metavar='total-bp-number',
                         dest='totalBP', help=totalBpHelp)
+
+    parser.add_argument('-bins', '--bins', action='store',
+                        type=int, metavar='bins', default=30,
+                        dest='bins', help=binsHelp);
 
     parser.add_argument('-p', '--parameter', action='store',
                         dest='parameter', metavar='parameter',
@@ -289,7 +299,7 @@ def parseArguments():
                         type=int, metavar='1', default=1,
                         dest='firstBP', help=bpFirstHelp)
 
-    idx = sys.argv.index("vsTime")+1
+    idx = sys.argv.index("histogram") + 1
     args = parser.parse_args(args=sys.argv[idx:])
 
     return parser, args

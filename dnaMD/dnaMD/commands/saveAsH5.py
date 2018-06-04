@@ -47,9 +47,10 @@ import argparse
 
 import dnaMD
 
-description=\
-"""Save parameters to a HDF5 file
-=================================
+description="""DESCRIPTION
+===========
+Save parameters to a HDF5 file.
+
 The parameters can be read from the do_x3dna output files and stored in a HDF5
 file. This step enables rapid reading and processing for subsequent analysis of
 data.
@@ -77,60 +78,22 @@ one.
 
 """
 
-lbpInFileHelp = \
-"""File containing base-pair parameters.
-This file is obtained from do_x3dna. It should contain six parameters:
-(1) shear, (2) stretch, (3) stagger, (4) buckle, (5) propeller and (6) opening.
+inputFilesHelp=\
+"""List of input files containing parameters.
+List of input files separated by comma (,) containing parameters data.
+These file should be a output file from do_x3dna.
+Following files are accepted:
+=> L-BP_*.dat
+=> L-BPS_*.dat
+=> L-BPH_*.dat
+=> HelAxis_*.dat
+=> MGroove_*.dat
+=> HelixRad_*.dat
+=> BackBoneCHiDihedrals_*.dat
 
 """
 
-lbpsInFileHelp=\
-""" File containing base-step parameters.
-This file is obtained from do_x3dna. It should contain six parameters:
-(1) shift, (2) slide, (3) rise, (4) tilt, (5) roll and (6) twist
 
-"""
-
-lbphInFileHelp=\
-""" File containing helical base-step parameters.
-This file is obtained from do_x3dna. It should contain six parameters:
-(1) x-disp, (2) y-disp, (3) h-rise, (4) inclination, (5) tip and (6) h-twist
-
-"""
-
-bbDihInFileHelp=\
-""" File containing backbone and chi dihedral angles.
-This file is obtained from do_x3dna. It should contain 14 parameters:
-(1) alpha S1, (2) beta S1, (3) gamma S1, (4) delta S1, (5) epsilon S1,
-(6) zeta S1,  (7) chi S1,  (8) alpha S2, (9) beta S2,  (10) gamma S2,
-(11) delta S2, (12) epsilon S2, (13)zeta S2, and (14) chi S2
-
-where S1 and S2 is first and second strand respectively.
-
-"""
-
-groovesInFileHelp=\
-""" File containing major and minor grooves width.
-This file is obtained from do_x3dna. It should contain four parameters:
-(1) minor groove, (2) minor groove refined,
-(3) major groove, (4) major groove refined.
-
-"""
-
-haxisInFileHelp=\
-""" File containing local helical axis coordinates.
-This file is obtained from do_x3dna. It should contain coordinates of local
-helical axis.
-
-Note that global and smooth helical axis can be calculated using same HDF5
-file as input.
-
-"""
-hradInFileHelp=\
-"""File containing helical radius.
-This file is obtained from do_x3dna. It should contain local helical radius.
-
-"""
 outputFileHelp=\
 """ Name of output file.
 It is a hdf5 format file. Therefore, use ".h5" extension with it.
@@ -148,7 +111,12 @@ def main():
     else:
         totalBP = args.totalBP
 
-    inputFilesDict = checkForInputFile(args, parser)
+    if args.inputFiles is None:
+        showErrorAndExit(parser, "No input file...\n")
+    else:
+        for f in args.inputFiles:
+            if not os.path.isfile(f):
+                showErrorAndExit(parser, "File {0} not found...\n".format(f))
 
     # Determine file-extension type
     fileType = 'hdf5'
@@ -160,22 +128,9 @@ def main():
 
     # initialize DNA object
     dna = dnaMD.DNA(totalBP, filename=args.outputFile, startBP=firstBP)
-
-    if 'bp' in inputFilesDict:
-        dnaMD.setParametersFromFile(dna, inputFilesDict['bp'], dnaMD.basePairParameters[:])
-    if 'bps' in inputFilesDict:
-        dnaMD.setParametersFromFile(dna, inputFilesDict['bps'], dnaMD.baseStepParameters[:])
-    if 'bph' in inputFilesDict:
-        dnaMD.setParametersFromFile(dna, inputFilesDict['bph'], dnaMD.helicalBaseStepParameters[:])
-    if 'bbdih' in inputFilesDict:
-        dnaMD.setParametersFromFile(dna, inputFilesDict['bbdih'], dnaMD.backboneDihedrals[:])
-    if 'grooves' in inputFilesDict:
-        dnaMD.setParametersFromFile(dna, inputFilesDict['grooves'], dnaMD.groovesParameters[:])
-    if 'haxis' in inputFilesDict:
-        dnaMD.setParametersFromFile(dna, inputFilesDict['haxis'], dnaMD.helicalAxisParameters[:])
-    if 'hrad' in inputFilesDict:
-        dnaMD.setParametersFromFile(dna, inputFilesDict['hrad'], dnaMD.helicalRadiusParameters[:])
-
+    for f in args.inputFiles:
+        dnaMD.setParametersFromFile(dna, f)
+    del dna
 
 def parseArguments():
     parser = argparse.ArgumentParser(prog='dnaMD saveAsH5',
@@ -190,33 +145,10 @@ def parseArguments():
                         type=int, metavar='1', default=1,
                         dest='firstBP', help=bpFirstHelp)
 
-    parser.add_argument('-lbp', '--local-base-pair', action='store',
-                        type=argparse.FileType('r'), metavar='L-BP_g.dat',
-                        dest='lbpInFile', help=lbpInFileHelp)
-
-    parser.add_argument('-lbps', '--local-base-step', action='store',
-                        type=argparse.FileType('r'), metavar='L-BPS_g.dat',
-                        dest='lbpsInFile', help=lbpsInFileHelp)
-
-    parser.add_argument('-lbph', '--local-base-helical-step', action='store',
-                        type=argparse.FileType('r'), metavar='L-BPH_g.dat',
-                        dest='lbphInFile', help=lbphInFileHelp)
-
-    parser.add_argument('-bbd', '--backbone-dihedrals', action='store',
-                        type=argparse.FileType('r'), metavar='BackBoneCHiDihedrals_g.dat',
-                        dest='bbDihInFile', help=bbDihInFileHelp)
-
-    parser.add_argument('-mg', '--major-minor-grooves', action='store',
-                        type=argparse.FileType('r'), metavar='MGroove_g.dat',
-                        dest='groovesInFile', help=groovesInFileHelp)
-
-    parser.add_argument('-ha', '--helical-axis', action='store',
-                        type=argparse.FileType('r'), metavar='HelAxis_g.dat',
-                        dest='haxisInFile', help=haxisInFileHelp)
-
-    parser.add_argument('-hr', '--helical-radius', action='store',
-                        type=argparse.FileType('r'), metavar='HelixRad_g.dat',
-                        dest='hradInFile', help=hradInFileHelp)
+    parser.add_argument('-i', '--input-files', action='store',
+                        type=lambda s: [item for item in s.split(',')],
+                        metavar='input1.dat,input2.dat,input3.dat',
+                        dest='inputFiles', help=inputFilesHelp)
 
     parser.add_argument('-o', '--output', action='store',
                         type=str, metavar='output.h5',
@@ -226,28 +158,6 @@ def parseArguments():
     args = parser.parse_args(args=sys.argv[idx:])
 
     return parser, args
-
-def checkForInputFile(args, parser):
-
-    allInputFilesDict = { 'bp': args.lbpInFile,
-                          'bps' : args.lbpsInFile,
-                          'bph' : args.lbphInFile,
-                          'bbdih' : args.bbDihInFile,
-                          'grooves' : args.groovesInFile,
-                          'haxis' : args.haxisInFile,
-                          'hrad' : args.hradInFile }
-
-    inputFilesDict = dict()
-    for f in allInputFilesDict:
-        if allInputFilesDict[f] is not None:
-            inputFilesDict[f] = allInputFilesDict[f].name
-            allInputFilesDict[f].close()
-
-    if not inputFilesDict:
-        msg = 'No input file provided. At least one input file is required for processing.'
-        showErrorAndExit(parser, msg)
-
-    return inputFilesDict
 
 def showErrorAndExit(parser, message):
     parser.print_help()

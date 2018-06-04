@@ -40,7 +40,7 @@ dnaMD module
     dnaMD.read_param_file
     dnaMD.get_error
     dnaMD.dev_parameters_vs_axis
-    dnaMD.dev_bps_vs_parameter
+    dnaMD.localDeformationVsBPS
     dnaMD.vector_angle
 
 

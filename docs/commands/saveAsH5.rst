@@ -83,3 +83,21 @@ tangents data will be stored in this HDF5 file.
     -o output.h5, --output output.h5
                            Name of output file.
                           It is a hdf5 format file. Therefore, use ".h5" extension with it.
+
+
+Example
+-------
+
+`saveAsH5` accepts list of input files separated by comma (,) as following:
+
+.. code-block:: bash
+
+    dnaMD saveAsH5  -tbp 60 \
+                    -i tutorial_data/L-BP_cdna.dat,tutorial_data/L-BPS_cdna.dat,tutorial_data/L-BPH_cdna.dat,\
+                    tutorial_data/BackBoneCHiDihedrals_cdna.dat,tutorial_data/MGroove_cdna.dat,\
+                    tutorial_data/HelAxis_cdna.dat,tutorial_data/HelixRad_cdna.dat \
+                    -o pdna.h5
+
+
+
+Above command load all the parameters from these files and store in the output HDF5 file.

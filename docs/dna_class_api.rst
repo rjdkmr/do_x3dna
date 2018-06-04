@@ -21,6 +21,7 @@ Summary
     DNA.generate_smooth_axis
     DNA.calculate_curvature_tangent
     DNA.calculate_angle_bw_tangents
+    DNA.calculate_2D_angles_bw_tangents
     DNA.write_haxis_pdb
 
 Documentation

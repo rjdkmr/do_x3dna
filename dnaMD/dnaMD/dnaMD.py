@@ -80,6 +80,8 @@ groovesParameters = [ 'major groove', 'major groove refined',
 bendingParameters = [ 'curvature',  'tangent']
 
 
+# Parameters affected by masked
+maskedParameters = helicalAxisSmoothParameters + bendingParameters
 
 # Combine pasepair type parameters
 basePairTypeParameters = basePairParameters + backboneDihedrals
@@ -252,7 +254,6 @@ class DNA:
             if 'mask' in self.h5:
                 self.h5.pop('mask')
             self.h5.create_dataset('mask', mask.shape, dtype=self.mask.dtype, data=mask, compression="gzip", shuffle=True)
-
 
     def _set_data(self, data, bp_type, bp_num, parameter, scaleoffset=3):
         if self.h5 is None:
@@ -579,7 +580,7 @@ class DNA:
 
         return np.array(values), density
 
-    def set_base_pair_parameters(self, filename, bp, parameters=['shear', 'stretch', 'stagger', 'buckle', 'propeller', 'opening'], bp_range=True):
+    def set_base_pair_parameters(self, filename, bp, parameters='all', bp_range=True):
         """To read and store basepairs parameters (shear, stretch, stagger, buckle, propeller and opening) from an input file.
 
         parameters
@@ -616,9 +617,12 @@ class DNA:
         if not (isinstance(bp, list) or isinstance(bp, np.ndarray)):
             raise AssertionError(
                 "type %s is not list or np.ndarray" % type(bp))
+
         if not (isinstance(parameters, list) or isinstance(parameters, np.ndarray)):
-            raise AssertionError(
-                "type %s is not list or np.ndarray" % type(parameters))
+            if parameters == 'all':
+                parameters = ['shear', 'stretch', 'stagger', 'buckle', 'propeller', 'opening']
+            else:
+                raise ValueError("ERROR: {0} is not accepted parameters!!! It should be either \"all\" or list of parameter names.".format(parameters))
 
         targetParameters = { 1:'shear', 2:'stretch', 3:'stagger', 4:'buckle', 5:'propeller', 6:'opening' }
         targetParametersReverse = dict((v,k) for k,v in targetParameters.items())
@@ -652,7 +656,7 @@ class DNA:
                 param = targetParameters[OutParamIndex[j]+1]
                 self._set_data(data[i][j], 'bp', bp_num, param, scaleoffset=2)
 
-    def set_major_minor_groove(self, filename, bp_step, parameters=[  'minor groove', 'minor groove refined', 'major groove', 'major groove refined'], step_range=True):
+    def set_major_minor_groove(self, filename, bp_step, parameters='all', step_range=True):
         """To read and store Major and Minor grooves from an input file.
 
         * Minor groove : direct P-P distance
@@ -698,8 +702,10 @@ class DNA:
                 "type %s is not list or np.ndarray" % type(bp_step))
 
         if not (isinstance(parameters, list) or isinstance(parameters, np.ndarray)):
-            raise AssertionError(
-                "type %s is not list or np.ndarray" % type(parameters))
+            if parameters == 'all':
+                parameters = ['minor groove', 'minor groove refined', 'major groove', 'major groove refined']
+            else:
+                raise ValueError("ERROR: {0} is not accepted parameters!!! It should be either \"all\" or list of parameter names.".format(parameters))
 
         targetParameters = { 1:'minor groove', 2:'minor groove refined', 3:'major groove', 4:'major groove refined' }
         targetParametersReverse = dict((v,k) for k,v in targetParameters.items())
@@ -732,7 +738,7 @@ class DNA:
                     param = targetParameters[OutParamIndex[j]+1]
                     self._set_data(np.asarray(data[i][j], dtype=np.float), 'bps', bp_num, param, scaleoffset=1)
 
-    def set_backbone_dihedrals(self, filename, bp, parameters='All', bp_range=True):
+    def set_backbone_dihedrals(self, filename, bp, parameters='all', bp_range=True):
         """To read and store backbone dihedrals (alpha, beta, gamma, delta, epsilon and zeta) and chi dihedral of both strands from an input file.
 
         .. note::
@@ -789,11 +795,11 @@ class DNA:
                 "type %s is not list or np.ndarray" % type(bp))
 
         if not (isinstance(parameters, list) or isinstance(parameters, np.ndarray)):
-            if parameters == 'All':
+            if parameters == 'all':
                 parameters = [ 'alpha S1', 'beta S1', 'gamma S1', 'delta S1', 'epsilon S1', 'zeta S1', 'chi S1',
                                'alpha S2', 'beta S2', 'gamma S2', 'delta S2', 'epsilon S2', 'zeta S2', 'chi S2'  ]
             else:
-                raise ValueError(" ERROR: {0} is not accepted parameters!!! It should be either \"All\" or list of parameter names.".format(parameters) )
+                raise ValueError(" ERROR: {0} is not accepted parameters!!! It should be either \"all\" or list of parameter names.".format(parameters) )
 
         targetParameters = { 1:'alpha S1', 2:'beta S1',  3:'gamma S1',  4:'delta S1',  5:'epsilon S1',  6:'zeta S1',  7:'chi S1',
                              8:'alpha S2', 9:'beta S2', 10:'gamma S2', 11:'delta S2', 12:'epsilon S2', 13:'zeta S2', 14:'chi S2'  }
@@ -910,8 +916,9 @@ class DNA:
                 self._set_data(data[i][2], 'bps', bp_num, 'radius s-1', scaleoffset=1)
                 self._set_data(data[i][5], 'bps', bp_num, 'radius s-2', scaleoffset=1)
 
-    def set_base_step_parameters(self, filename, bp_step, parameters='All', step_range=True, helical=False):
-        """To read and store base-step (Shift, Slide, Rise, Tilt, Roll and Twist) and helical base-step (X-disp, Y-disp, h-Rise, Inclination, Tip and h-Twist) parameters from an input file
+    def set_base_step_parameters(self, filename, bp_step, parameters='all', step_range=True, helical=False):
+        """To read and store base-step (Shift, Slide, Rise, Tilt, Roll and Twist) and
+        helical base-step (X-disp, Y-disp, h-Rise, Inclination, Tip and h-Twist) parameters from an input file
 
         Parameters
         ----------
@@ -963,12 +970,12 @@ class DNA:
                 "type %s is not list or np.ndarray" % type(bp_step))
 
         if not (isinstance(parameters, list) or isinstance(parameters, np.ndarray)):
-            if parameters == 'All' and not helical:
+            if parameters == 'all' and not helical:
                 parameters = ['shift', 'slide', 'rise', 'tilt', 'roll', 'twist']
-            elif parameters == 'All' and helical:
+            elif parameters == 'all' and helical:
                 parameters = ['x-disp', 'y-disp', 'h-rise', 'inclination', 'tip', 'h-twist']
             else:
-                raise ValueError(" ERROR: {0} is not accepted parameters!!! It should be either \"All\" or list of parameter names.".format(parameters) )
+                raise ValueError(" ERROR: {0} is not accepted parameters!!! It should be either \"all\" or list of parameter names.".format(parameters) )
 
         targetParameters = None
         targetParametersReverse = None
@@ -1007,7 +1014,7 @@ class DNA:
                 param = targetParameters[OutParamIndex[j]+1]
                 self._set_data(data[i][j], 'bps', bp_num, param, scaleoffset=2)
 
-    def get_mean_error(self, bp, parameter, err_type='std', bp_range=True, merge_bp=1, merge_method='mean', masked=False, tool='g_analyze'):
+    def get_mean_error(self, bp, parameter, err_type='std', bp_range=True, merge_bp=1, merge_method='mean', masked=False, tool='gmx analyze'):
         """To calculate average and error of the given parameter for the given set of base-pairs/steps
 
         .. warning::
@@ -1705,6 +1712,8 @@ class DNA:
         if base_step[0] > base_step[1]:
             raise ValueError("See, documentation for step usage!!!")
 
+        axisDict = {'X': 0, 'Y': 1, 'Z': 2 }
+
         if paxis == 'Z':
             planes = [0, 1]
         elif paxis == 'X':
@@ -1716,6 +1725,7 @@ class DNA:
 
         tangent1, idx1 = self.get_parameters('tangent', bp=[base_step[0]], bp_range=False, masked=masked)
         tangent2, idx2 = self.get_parameters('tangent', bp=[base_step[1]], bp_range=False, masked=masked)
+
 
         angles = []
         for plane in planes:
@@ -1738,44 +1748,48 @@ class DNA:
             tangent2[0].T[plane]  = temp2
 
             angles.append(angle)
+        '''
+        angles = []
+        shape = (tangent1[0].shape[0], 2)
+        for plane in planes:
+            if plane == 0:
+                norm = [1, 0, 0]
+            elif plane == 1:
+                norm = [0, 1, 0]
+            else:
+                norm = [0, 0, 1]
+
+            temp1 = np.zeros(shape)
+            temp2 = np.zeros(shape)
+
+            print(tangent1[0].T.shape, temp1.T.shape)
+
+            temp1[:, 0] = tangent1[0].T[plane][:]
+            temp1[:, 1] = tangent1[0].T[axisDict[paxis]][:]
+            temp2[:, 0] = tangent2[0].T[plane][:]
+            temp2[:, 1] = tangent2[0].T[axisDict[paxis]][:]
+
+
+            #tangent1[0].T[plane] = np.zeros(tangent1[0].T[plane].shape)
+            #tangent2[0].T[plane] = np.zeros(tangent2[0].T[plane].shape)
+
+            #angle = vector_angle(temp1, temp2)
+            angle = []
+            #print(np.linalg.det([temp1.T,temp2.T]).shape)
+            for i in range(temp1.shape[0]):
+                a = np.math.atan2(np.linalg.det([temp1[i],temp2[1]]), np.dot(temp1[i],temp2[1]))
+                angle.append(a)
+            angle = np.asarray(angle)
+
+            #tangent1[0].T[plane]  = temp1
+            #tangent2[0].T[plane]  = temp2
+
+            angles.append(angle)
+        '''
+
+
 
         return np.asarray(angles[0]), np.asarray(angles[1])
-
-    def calculate_contour_length(self, step_range=False, step=None, masked=True):
-        if not self.smooth_axis:
-            raise ValueError(
-                "The helical axis is not smooth. At first, smooth the axis using generate_smooth_axis() method as described in http://rjdkmr.github.io/do_x3dna/apidoc.html#dnaMD.DNA.generate_smooth_axis.")
-
-        if (step_range) and (step == None):
-            raise ValueError(
-                "See, documentation for step  and step_range usage!!!")
-
-        if step_range:
-            if (len(step) != 2):
-                raise ValueError("See, documentation for step usage!!!")
-
-            if step[0] > step[1]:
-                raise ValueError("See, documentation for step usage!!!")
-
-            smoothX, bp_idx = self.get_parameters('helical x-axis smooth', step, bp_range=True, masked=masked)
-            smoothY, bp_idx = self.get_parameters('helical y-axis smooth', step, bp_range=True, masked=masked)
-            smoothZ, bp_idx = self.get_parameters('helical z-axis smooth', step, bp_range=True, masked=masked)
-        else:
-            smoothX, bp_idx = self.get_parameters('helical x-axis smooth', [2, self.num_step-1], bp_range=True, masked=masked)
-            smoothY, bp_idx = self.get_parameters('helical y-axis smooth', [2, self.num_step-1], bp_range=True, masked=masked)
-            smoothZ, bp_idx = self.get_parameters('helical z-axis smooth', [2, self.num_step-1], bp_range=True, masked=masked)
-
-        smoothX = np.asarray(smoothX)
-        smoothY = np.asarray(smoothY)
-        smoothZ = np.asarray(smoothZ)
-
-        distances = []
-        for frame in range(len(smoothX[0])):
-            pos = np.asarray( [smoothX[:, frame], smoothY[:, frame], smoothZ[:,frame]] )
-            distance = np.diagonal( sp_dist.cdist(pos.T, pos.T), offset=1)
-            distances.append( distance.sum() )
-
-        return np.asarray(distances)
 
 
 def checkParametersInputFile(filename):
@@ -1811,7 +1825,7 @@ def checkParametersInputFile(filename):
         return backboneDihedrals
 
 
-def setParametersFromFile(dna, filename, parameter, bp=None):
+def setParametersFromFile(dna, filename, parameters=None, bp=None):
     """Read a specific parameter from the do_x3dna output file.
     It automatically load the input parameter from a file to dna object or HDF5 file.
     It automatically decides from input parameter, what will be format of input file.
@@ -1822,9 +1836,10 @@ def setParametersFromFile(dna, filename, parameter, bp=None):
         Input :class:`DNA` instance.
     filename : str
         Input filename. This file should be output from do_x3dna.
-    parameter : str
+    parameter : str, list, None
         Name of parameter. For details about accepted keywords, see ``parameter`` in the method :meth:`DNA.get_parameters`.
         Note that parameter that are calculated from do_x3dna cannot be used here.
+        In case of `Ǹone`, parameters name will be automatically determine from the input file.
     bp : list
         List containing lower and higher limit of base-pair/step range.
             * This list should not contain more than two number.
@@ -1839,12 +1854,19 @@ def setParametersFromFile(dna, filename, parameter, bp=None):
 
     gotParameterList = False
     param_type = None
-    if isinstance(parameter, list) or isinstance(parameter, np.ndarray):
+
+    # In case of none try to determine from file
+    if parameters is None:
+        parameters = checkParametersInputFile(filename)
+        if parameters is None:
+            raise AssertionError(" Cannot determine the parameters name from file {0}.".format(filename))
+
+    if isinstance(parameters, list) or isinstance(parameters, np.ndarray):
         gotParameterList = True
-        parameter = list(parameter)
+        parameter = list(parameters)
         param_type = getParameterType(parameter[0])
     else:
-        param_type = getParameterType(parameter)
+        param_type = getParameterType(parameters)
 
     if bp is None:
         if param_type == 'bps':
@@ -1858,11 +1880,13 @@ def setParametersFromFile(dna, filename, parameter, bp=None):
         bp_range = True
 
     if not gotParameterList:
-        tempParamName = parameter
-        inputParameter = [ parameter ]
+        tempParamName = parameters
+        inputParameter = [ parameters ]
     else:
-        tempParamName = parameter[0]
+        tempParamName = parameters[0]
         inputParameter = parameter
+
+    sys.stdout.write('\nLoading parameters: {0}'.format(inputParameter))
 
     success = False
     if tempParamName in basePairParameters:
@@ -1896,15 +1920,16 @@ def setParametersFromFile(dna, filename, parameter, bp=None):
         success = True
 
     if not success:
-        raise ValueError ('Not able to set these parameters: {0}... '.format(parameter))
+        raise ValueError ('Not able to load these parameters: {0}... '.format(parameter))
 
 
-def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='std', bp_range=True, merge_bp=1, merge_method='mean', tool='g_analyze'):
-    """To calculate deviation in the given parameters of a Subject DNA with respect to a Reference DNA along the base-pairs/steps.
+def localDeformationVsBPS(dnaRef, bpRef, dnaProbe, bpProbe, parameter, err_type='std', bp_range=True, merge_bp=1,
+                          merge_method='mean', masked=False, tool='gmx analyze'):
+    """To calculate deformation of local parameters in probe DNA with respect to a reference DNA as a function of the bp/s.
 
-    .. note:: Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)
+    .. note:: Deformation = Reference_DNA(parameter) - Probe_DNA(parameter)
 
-    .. warning:: Number of base-pairs/steps should be similar in reference and subject DNA.
+    .. warning:: Number of segments/bp/bps should match between probe and reference DNA.
 
     .. warning::
             To calculate errors by using ``error = 'acf'`` or ``error = 'block'``,
@@ -1925,10 +1950,10 @@ def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='st
             bp = np.arange(4,15)                    # bp_range = False
 
 
-    dnaSubj : :class:`DNA`
-        Subject DNA. Number of base-pairs in Reference and Subject DNA **should be** same.
+    dnaProbe : :class:`DNA`
+        probe DNA. Number of base-pairs in Reference and probe DNA **should be** same.
 
-    bpSubj : 1D list or array
+    bpProbe : 1D list or array
         base-pairs or base-steps to consider from Reference DNA. Foe more, see above example of ``bpSubj``.
 
     parameter : str
@@ -1958,6 +1983,15 @@ def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='st
             * ``merge_method = mean``: Average of local parameters
             * ``merge_method = sum``: Sum of local parameters
 
+    masked : bool
+        ``Default=False``. To skip specific frames/snapshots.
+        ``DNA.mask`` array should be set to use this functionality.
+        This array contains boolean (either ``True`` or ``False``) value
+        for each frame to mask the frames. Presently, mask array is
+        automatically generated during :meth:`DNA.generate_smooth_axis` to
+        skip those frames where 3D fitting curve was not successful within
+        the given criteria
+
     tool : str
         Gromacs tool ``g_analyze`` or ``gmx analyze`` or ``gmx_mpi analyze`` etc.
         It will be used to calculate autocorrelation time or  block averaging error.
@@ -1967,33 +2001,34 @@ def dev_bps_vs_parameter(dnaRef, bpRef, dnaSubj, bpSubj, parameter, err_type='st
     -------
     bpRef  : 1D array)
         base-pair/step numbers of reference DNA. If ``merge_bp>1``, middle number will is returned.`
-    bpSubj : 1D array
-        base-pair/step numbers of subject DNA. If ``merge_bp>1``, middle number will is returned.`
+    bpProbe : 1D array
+        base-pair/step numbers of probe DNA. If ``merge_bp>1``, middle number will is returned.`
     deviation  : 1D array
-        Deviation in the parameter of subject DNA with respect to reference DNA.
+        Deviation in the parameter of probe DNA with respect to reference DNA.
     error  : 1D array
         Standard error of respective deviation
 
     """
 
-    bpRef, RefAvgValue, RefError = dnaRef.get_mean_error(
-        bpRef, parameter, err_type=err_type, bp_range=True, merge_bp=merge_bp, merge_method=merge_method, tool=tool)
+    bpRef, RefAvgValue, RefError = dnaRef.get_mean_error(bpRef, parameter, err_type=err_type, bp_range=bp_range,
+                                                         merge_bp=merge_bp, merge_method=merge_method, tool=tool,
+                                                         masked=masked)
 
-    bpSubj, SubjAvgValue, SubjError = dnaSubj.get_mean_error(
-        bpSubj, parameter, err_type=err_type, bp_range=True, merge_bp=merge_bp, merge_method=merge_method, tool=tool)
+    bpProbe, ProbeAvgValue, ProbeError = dnaProbe.get_mean_error(bpProbe, parameter, err_type=err_type, bp_range=bp_range,
+                                                             merge_bp=merge_bp, merge_method=merge_method, tool=tool,
+                                                             masked=masked)
 
-    if len(bpRef) != len(bpSubj):
+    if len(bpRef) != len(bpProbe):
         raise ValueError(
-            "Number (%d) of bp/bps/segments in reference DNA does not match with the number (%d) of subject DNA." % (len(bpRef), len(bpSubj)))
-        exit(1)
+            "Number (%d) of bp/bps/segments in reference DNA does not match with the number (%d) of probe DNA." % (len(bpRef), len(bpProbe)))
 
-    deviation = RefAvgValue - SubjAvgValue
-    error = np.sqrt((RefError**2) + (SubjError**2))
+    deviation = RefAvgValue - ProbeAvgValue
+    error = np.sqrt((RefError**2) + (ProbeError**2))
 
-    return bpRef, bpSubj, deviation, error
+    return bpRef, bpProbe, deviation, error
 
 
-def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis='Z', bp_range=True, windows=10, err_type='block', tool='g_analyze'):
+def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis='Z', bp_range=True, windows=10, err_type='block', tool='gmx analyze'):
     """To calculate deviation in the given parameters of a Subject DNA to Reference DNA along the given axis.
 
     .. note:: Deviation = Reference_DNA(parameter) - Subject_DNA(parameter)
@@ -2118,7 +2153,7 @@ def dev_parameters_vs_axis(dnaRef, dnaSubj, parameter, bp, axis='Z', bp_range=Tr
     return deviation, error, final_axis, final_ref_axis_error
 
 
-def get_error(time, x, sets, err_type='block', tool='g_analyze'):
+def get_error(time, x, sets, err_type='block', tool='gmx analyze'):
     """To estimate error using block averaging method
 
     .. warning::
@@ -2173,8 +2208,13 @@ def get_error(time, x, sets, err_type='block', tool='g_analyze'):
 
     command = '{0} -f {1} -ee {2} -ac {3} -fitfn exp' .format(tool, filename, eefile, acfile)
 
-    p = sub.Popen(command.split(), stdout=sub.PIPE, stderr=sub.PIPE, universal_newlines=True)
-    out, outputerror = p.communicate()
+    try:
+        p = sub.Popen(command.split(), stdout=sub.PIPE, stderr=sub.PIPE, universal_newlines=True)
+        out, outputerror = p.communicate()
+    except Exception as e:
+        os.remove(filename)
+        raise e
+
     lines = out.split('\n')
 
     if (err_type == 'block'):
@@ -2186,7 +2226,7 @@ def get_error(time, x, sets, err_type='block', tool='g_analyze'):
     if (err_type == 'acf'):
         acf_time = []
         for line in lines:
-            if(re.match('COR: Correlation time', line)):
+            if re.match('COR: Correlation time', line) is not None:
                 temp = line.split('=')
                 acf_time.append(abs(float(temp[1].split()[0])))
 
@@ -2205,6 +2245,7 @@ def get_error(time, x, sets, err_type='block', tool='g_analyze'):
     os.remove(acfile)
     if os.path.isfile('fitlog.log'):
         os.remove('fitlog.log')
+
     return np.array(error)
 
 
@@ -2574,8 +2615,7 @@ def fit_axis(bp_idx, nframe, RawX, RawY, RawZ, smooth, spline, fill_point, cut_o
         points = fill_point * len(orig_x)
 
         nest = -1
-        tckp, u = splprep(
-            [orig_x, orig_y, orig_z], s=smooth, k=spline, nest=nest)
+        tckp, u = splprep([orig_x, orig_y, orig_z], s=smooth, k=spline, nest=nest)
 
         xnew, ynew, znew = splev(np.linspace(0, 1, points), tckp)
 
