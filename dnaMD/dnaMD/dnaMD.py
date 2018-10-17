@@ -2173,6 +2173,9 @@ def get_error(time, x, sets, err_type='block', tool='gmx analyze'):
     err_type : str
         Error estimation by autocorrelation method ``err_type='acf'`` or
         block averaging method ``err_type='block'``
+    tool : str
+        GROMACS tool to calculate error. In older versions it is `g_analyze` while in
+        newer versions (above 2016) it is `gmx analyze`.
 
     Returns
     -------
@@ -2202,7 +2205,7 @@ def get_error(time, x, sets, err_type='block', tool='gmx analyze'):
     for i in range(len(time)):
         fout.write('{0}' .format(time[i]))
         for j in range(sets):
-            fout.write('\t{0}' .format(x[j][i]))
+            fout.write('    {0}' .format(x[j][i]))
         fout.write("\n")
     fout.close()
 

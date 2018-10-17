@@ -1,5 +1,5 @@
-How to calculate DNA elasticity?
-================================
+DNA elasticity?
+===============
 
 DNA elasticity governs the DNA conformational fluctations. Therefore, its study gives insight into the DNA dynamics and
 stiffness. There are two level at which elastic properties can be determined.
@@ -28,22 +28,34 @@ covariance matrix.
 .. graphviz::
 
    digraph {
-        a -> b-> c -> d -> e
-        g -> h -> d -> f
+        size = "8,12"
+        node [shape=box style=filled]
 
-        a [label = "Free DNA Simulation Trajectories"];
-        b [label = "Bending angles, Contour length and Twist angle"];
-        c [label = "Averages and Covariance matrix"];
-        d [label = "Elastic Constant Matrix"];
-        e [label = "Modulus Matrix"];
-        f [label = "Deformation free energy of bound DNA"];
+        a -> b-> c -> d -> e -> f -> g -> h
+        i -> j -> c -> k -> l -> m
+        e -> m [label = "Averages"]
+        g -> m
 
-        g [label = "Bound DNA Simulation Trajectories"]
-        h [label = "Bending angles, Contour length and Twist angle"];
+        a [ fillcolor=cyan label = "Free DNA simulation trajectory"];
+        b [ fillcolor=cyan label = "Extract DNA trajectory"];
+        c [ fillcolor=none        label = "Superimposition on a Reference DNA Structure"];
+        d [ fillcolor=cyan label = "Superimposed Free DNA trajectory"];
+        e [ fillcolor=cyan label = "Free DNA \n Bending Angles, Contour Length and Twist Angle"];
+        f [ fillcolor=cyan label = "Covariance Matrix"];
+        g [ fillcolor=cyan label = "Elastic constant matrix"]
+        h [ fillcolor=cyan label = "Elastic modulus matrix"];
+
+        i [ fillcolor=greenyellow label = "Bound DNA simulation trajectory"];
+        j [ fillcolor=greenyellow label = "Extract Bound DNA trajectory"];
+        k [ fillcolor=greenyellow label = "Superimposed Bound DNA trajectory"];
+        l [ fillcolor=greenyellow label = "Bound DNA \n Bending Angles, Contour Length and Twist Angle"];
+        m [ fillcolor=greenyellow label = "Deformation free energy"];
+
    }
 
 
-**Covariance matrix**
+Covariance matrix
+~~~~~~~~~~~~~~~~~
 
 .. math::
     \mathbf{C} = \begin{bmatrix}
@@ -76,7 +88,9 @@ where:
     * :math:`\phi_i` - Twist angle (sum of helical-twist) at :math:`i` th frame
     * :math:`\phi_0` - Average twist angle from all frames
 
-**Elastic Constant Matrix:**
+
+Elastic Constant Matrix
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. math::
     \text{Elastic matrix} = \mathbf{K} = k_BT\mathbf{C^{-1}} = \begin{bmatrix}
@@ -95,7 +109,9 @@ where:
     * :math:`S` - Stretching motion
     * :math:`T` - Twisting motion
 
-**Modulus Matrix**
+
+Elastic Modulus Matrix
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. math::
     \text{modulus matrix} =

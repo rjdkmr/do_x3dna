@@ -119,9 +119,8 @@ def main():
                 showErrorAndExit(parser, "File {0} not found...\n".format(f))
 
     # Determine file-extension type
-    fileType = 'hdf5'
     outputFileExtension = os.path.splitext(args.outputFile)[1]
-    if outputFileExtension not in ['.h5', '.hdf5', 'hdf']:
+    if outputFileExtension not in ['.h5', '.hdf5', '.hdf']:
         showErrorAndExit(parser, "File extension {0} is not recognized as an \
         acceptable HDF5 extension.\n Use '.h5', '.hdf5' \
         or '.hdf'.".format(outputFileExtension))

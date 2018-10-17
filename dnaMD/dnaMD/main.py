@@ -53,7 +53,11 @@ def main():
                'saveAsH5' : 'Store parameters from text file to HDF5 file.',
                'vsBPS' : 'Average parameters as a function of base-pair/step',
                'localDeformation' : 'Deformation of local parameters in probe DNA with respect to a reference DNA',
-               'axisCurv' : 'Calculate global helical-axis, curvatures and tangents'
+               'axisCurv' : 'Calculate global helical-axis, curvatures and tangents',
+               'globalElasticity' : 'Calculate global elastic properties of the DNA',
+               'globalEnergy' : 'Calculate deformation free energy of the DNA',
+               'localElasticity': 'Calculate local elastic properties of the DNA',
+               'localEnergy': 'Calculate local deformation energy of the DNA',
               }
 
     if len(sys.argv)<=1:
@@ -88,6 +92,22 @@ def main():
     if sys.argv[1] == 'axisCurv':
         from .commands import axisCurv
         axisCurv.main()
+
+    if sys.argv[1] == 'globalElasticity':
+        from .commands import globalElasticity
+        globalElasticity.main()
+
+    if sys.argv[1] == 'globalEnergy':
+        from .commands import globalEnergy
+        globalEnergy.main()
+
+    if sys.argv[1] == 'localElasticity':
+        from .commands import localElasticity
+        localElasticity.main()
+
+    if sys.argv[1] == 'localEnergy':
+        from .commands import localEnergy
+        localEnergy.main()
 
 
 def show_help(options):

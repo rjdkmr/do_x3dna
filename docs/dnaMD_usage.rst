@@ -38,13 +38,30 @@ in external plotting program like xmgrace, gnuplot, excel etc to plot the result
     * - `localDeformation <commands/localDeformation.html>`_
       - Deformation of local parameters in probe DNA with respect to a reference DNA
 
+    * - `globalElasticity <commands/globalElasticity.html>`_
+      - Calculate global elastic properties of the DNA
+
+    * - `globalEnergy  <commands/globalEnergy.html>`_
+      - Calculate deformation free energy of the DNA
+
+    * - `localElasticity  <commands/localElasticity.html>`_
+      - Calculate local elastic properties of the DNA
+
+    * - `localEnergy  <commands/localEnergy.html>`_
+      - Calculate local deformation energy of the DNA
+
+
 
 .. toctree::
     :maxdepth: 1
 
-    saveAsH5 : Save parameters to a HDF5 file <commands/saveAsH5>
-    axisCurv : Calculate global helical-axis, curvatures and tangents <commands/axisCurv>
-    vsTime : extract a parameter as a function of time <commands/vsTime>
-    histogram : Parameter distribution during simulation <commands/histogram>
-    vsBPS : Average parameters as a function of base-pair/step <commands/vsBPS>
-    localDeformation : Deformation of local parameters in probe DNA with respect to a reference DNA <commands/localDeformation>
+        saveAsH5 : Save parameters to a HDF5 file <commands/saveAsH5>
+        axisCurv : Calculate global helical-axis, curvatures and tangents <commands/axisCurv>
+        vsTime : extract a parameter as a function of time <commands/vsTime>
+        histogram : Parameter distribution during simulation <commands/histogram>
+        vsBPS : Average parameters as a function of base-pair/step <commands/vsBPS>
+        localDeformation : Deformation of local parameters in probe DNA with respect to a reference DNA <commands/localDeformation>
+        globalElasticity : Calculate global elastic properties of the DNA <commands/globalElasticity>
+        globalEnergy : Calculate deformation free energy of the DNA <commands/globalEnergy>
+        localElasticity : Calculate local elastic properties of the DNA <commands/localElasticity>
+        localEnergy : Calculate local deformation energy of the DNA <commands/localEnergy>

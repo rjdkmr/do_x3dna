@@ -53,7 +53,7 @@ def read(fname):
 
 setup(
     name = 'dnaMD',
-    version = '2.0.11',
+    version = '2.1.0',
 
     # Required packages
     install_requires = [ 'numpy>=1.6',  'scipy>=0.9', 'h5py>=2.2.1' ],

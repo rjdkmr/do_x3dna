@@ -42,41 +42,70 @@
 
 import os
 import sys
-import re
 import argparse
+import numpy as np
 
 import dnaMD
 
 description="""DESCRIPTION
 ===========
-Global Elastic Properties of the DNA
+Global Deformation Energy of the DNA
 
-This can be used to Global Elastic Properties of the DNA from the simulations.
+This can be used to Global Deformation Energy of the DNA from the simulations. At first, elastic matrix from reference
+DNA (most often free or unbound DNA) is calculated and subsequently this matrix is used to calculate deformation free 
+energy of probe DNA (most often bound DNA).
 
 """
 
-inputFileHelp=\
-"""Name of input file (hdf5 file).
+inputRefFileHelp=\
+"""Name of input reference file (hdf5 file).
+File containing parameters of reference DNA for which global elastic properties will
+be calculated. Most often it is free or unbound DNA.
+
+This file should contain the required parameters. It should be hdf5 storage file.
+
+"""
+
+inputProbeFileHelp=\
+"""Name of input probe file (hdf5 file).
+File containing parameters of probe DNA for which global deformation energy will
+be calculated. Most often it is bound DNA.
+
 This file should contain the required parameters. It should be hdf5 storage file.
 
 """
 
 outputFileHelp=\
-"""Name of output file with csv extension.
-This file will contain the elasticity modulus matrix where values will be separated 
-by comma. Since modulus matrix is also shown as screen output, this option is not 
-necessary.
+"""Name of output file in csv format.
+This file will contain the energy values as a function of time.
 
 """
 
-vsTimeHelp=\
-"""Calculate elasticity as a function of time and save in this csv format file.
-It can be used to obtained elastic moduli as a function of time to check their 
-convergence. If this option is used, -fgap/--frame-gap is an essential option.
+energyTermHelp=\
+"""Energy terms to be calculated.
+For which motions, energy should be calculated.
 
-NOTE: Elastic properties cannot be calculated using a single frame because 
-fluctuations are required. Therefore, here time means trajectory between zero 
-time to given time.
+Following keywords are available:
+* all         : (Default) All below listed energy terms will be calculated
+* full        : Use entire elastic matrix -- all motions with their coupling
+* diag        : Use diagonal of elastic matrix -- all motions but no coupling
+* b1          : Only bending-1 motion
+* b2          : Only bending-2 motion
+* stretch     : Only stretching motion
+* twist       : Only Twisting motions
+* st_coupling : Only stretch-twist coupling motion
+* bs_coupling : Only Bending and stretching coupling
+* bt_coupling : Only Bending and Twisting coupling
+* bb_coupling : Only bending-1 and bending-2 coupling
+* bend        : Both bending motions with their coupling
+* st          : Stretching and twisting motions with their coupling
+* bs          : Bending (b1, b2) and stretching motions with their coupling
+* bt          : Bending (b1, b2) and twisting motions with their coupling
+
+In case of elasticity type "ST", only following four energy terms are available "all", "diag", "stretch", "twist" and
+"st_coupling".
+
+The terms should provided as comma separated values. e.g. -et "full,diag,b1,b2,stretch,twist".
 
 """
 
@@ -100,7 +129,7 @@ esTypeHelp=\
 """Elastic Properties type.
 Two keywords are accepted: "BST" or "ST".
 * "BST" : Bending-Stretching-Twisting --- All motions are considered
-* "ST"  : Stretching-Twisting --- Bending motions are ignored.
+" "ST"  : Stretching-Twisting --- Bending motions are ignored.
 
 WARNING: For accurate calculation of bending motions, DNA structures in trajectory must 
 be superimposed on a reference structure (See Publication's Method Section).
@@ -120,12 +149,6 @@ If it is not given, last basepair or base-step will be considered.
 
 """
 
-frameGapHelp=\
-    """Number of frames to skip for next calculation
-When calculating elastic modulus as a function of time, this option will determine
-the time-gap between each calculation point. Lower the time-gap, slower will be the 
-calculation.
-"""
 
 paxisHelp=\
 """Principal axis parallel to global helical-axis
@@ -157,22 +180,36 @@ By default it is g_analyze (Gromacs-4.5.x/4.6.x versions). For newer versions, u
 
 """
 
+enGlobalTypes = ['full', 'diag',  'stretch', 'twist', 'st_coupling', 'b1', 'b2',
+                      'bend', 'bs_coupling', 'bt_coupling', 'bb_coupling', 'st', 'bs', 'bt' ]
+
+
 def main():
     parser, args = parseArguments()
 
     # Input file
-    inputFile = None
-    if args.inputFile is not None:
-        inputFile = args.inputFile.name
-        args.inputFile.close()
+    inputRefFile = None
+    if args.inputRefFile is not None:
+        inputRefFile = args.inputRefFile.name
+        args.inputRefFile.close()
     else:
-        showErrorAndExit(parser, "No Input File!!!\n")
+        showErrorAndExit(parser, "No Input File for Reference DNA!!!\n")
+
+    # Input file
+    inputProbeFile = None
+    if args.inputProbeFile is not None:
+        inputProbeFile = args.inputProbeFile.name
+        args.inputProbeFile.close()
+    else:
+        showErrorAndExit(parser, "No Input File for Probe DNA!!!\n")
 
     # Determine file-extension type
-    inputFileExtension = os.path.splitext(inputFile)[1]
+    inputFileExtension = os.path.splitext(inputRefFile)[1]
     if inputFileExtension not in ['.h5', '.hdf5', '.hdf']:
-        showErrorAndExit(parser, "File should be in HDF5 (h5, hdf5 or hdf file extension) format...\n")
-
+        showErrorAndExit(parser, "Input file for Reference DNA should be in HDF5 (h5, hdf5 or hdf extension) format.\n")
+    inputFileExtension = os.path.splitext(inputProbeFile)[1]
+    if inputFileExtension not in ['.h5', '.hdf5', '.hdf']:
+        showErrorAndExit(parser, "Input file for probe DNA should be in HDF5 (h5, hdf5 or hdf extension) format.\n")
 
     # Total number of base-pair
     firstBP = args.firstBP
@@ -212,14 +249,12 @@ def main():
     if args.esType == 'BST' and args.paxis is None:
         showErrorAndExit(parser, 'To calculate bending, principal axis parallel to helical axis is required.')
 
-    if args.vsTime is not None and args.frameGap is None:
-        showErrorAndExit(parser, 'Frame-gap is required when elasticity as a function of time is calculated.')
-
-    if args.err_type is not None and args.frameGap is None:
-        showErrorAndExit(parser, 'Frame-gap is required when error is calculated.')
+    # Check energy terms and make a list
+    outEnergyTerms = checkEnergyTerms(args)
 
     # initialize DNA object
-    dna = dnaMD.dnaEY(totalBP, esType=args.esType, filename=inputFile, startBP=firstBP)
+    dna = dnaMD.dnaEY(totalBP, esType=args.esType, filename=inputRefFile, startBP=firstBP)
+    complexDna = dnaMD.DNA(totalBP, filename=inputProbeFile, startBP=firstBP)
 
     # Check if mask is in object
     if dna.dna.mask is not None:
@@ -227,97 +262,59 @@ def main():
     else:
         masked = False
 
-    if args.vsTime is None:
-        out = ''
-        towrite = ''
-        mean_out = output_props(args.esType)
-        if args.esType == 'BST':
-            mean, result = dna.getStretchTwistBendModulus(bp, paxis=args.paxis, masked=True, matrix=False)
-            for i in range(4):
-                for j in range(4):
-                    if j != 3:
-                        out += '{0:>10.3f}  '.format(result[i][j])
-                        towrite += '{0:.3f},'.format(result[i][j])
-                    else:
-                        out += '{0:>10.3f}\n'.format(result[i][j])
-                        towrite += '{0:.3f}\n'.format(result[i][j])
+    time, energy = dna.getGlobalDeformationEnergy(bp, complexDna, paxis=args.paxis, which=outEnergyTerms, masked=masked,
+                                                  outFile = args.outputFile)
 
-                mean_out += '{0:>15.3f}  '.format(mean[i])
-            mean_out += '\n'
+    if args.err_type is not None:
+        error = dnaMD.get_error(time, list(energy.values()), len(outEnergyTerms), err_type=args.err_type, tool=args.tool)
 
-        if args.esType == 'ST':
-            mean, result = dna.getStretchTwistModulus(bp, masked=masked, matrix=False)
-            for i in range(2):
-                for j in range(2):
-                    if j != 1:
-                        out += '{0:.3f}  '.format(result[i][j])
-                        towrite += '{0:.3f},'.format(result[i][j])
-                    else:
-                        out += '{0:.3f}\n'.format(result[i][j])
-                        towrite += '{0:.3f}\n'.format(result[i][j])
+        sys.stdout.write("==============================================\n")
+        sys.stdout.write('{0:<16}{1:>14}{2:>14}\n'.format('Energy(kJ/mol)', 'Average', 'Error'))
+        sys.stdout.write("----------------------------------------------\n")
+        for i in range(len(outEnergyTerms)):
+            sys.stdout.write('{0:<16}{1:>14.3f}{2:>14.3f}\n'.format(outEnergyTerms[i], np.mean(energy[outEnergyTerms[i]]),
+                                                                    error[i]))
+        sys.stdout.write("==============================================\n\n")
 
-                mean_out += '{0:>12.3f}  '.format(mean[i])
-            mean_out += '\n'
 
-        print('=========== Elastic Modulus Matrix ===========\n')
-        print(out)
-        print('=========== ====================== ===========\n')
-
-        print('=========================  Average Values  ==========================\n')
-        print(mean_out)
-        print('=========== ====================== ====================== ===========')
-
-        if args.outputFile is not None:
-            with open(args.outputFile, 'w') as fout:
-                fout.write(towrite)
-
+def checkEnergyTerms(args):
+    if args.esType == 'BST':
+        energyTerms = enGlobalTypes
     else:
-        time, modulus = dna.getModulusByTime(bp, args.frameGap, masked=masked, paxis=args.paxis, outFile=args.vsTime)
+        energyTerms = enGlobalTypes[:5]
 
-        props_name = list(modulus.keys())
-        if args.err_type is not None:
-            error = dnaMD.get_error(time, list(modulus.values()), len(props_name), err_type=args.err_type, tool=args.tool)
-            sys.stdout.write("==============================================\n")
-            sys.stdout.write('{0:<16}{1:>14}{2:>14}\n'.format('Elasticity', 'Value', 'Error'))
-            sys.stdout.write("----------------------------------------------\n")
-            for i in range(len(props_name)):
-                sys.stdout.write('{0:<16}{1:>14.3f}{2:>14.3f}\n'.format(props_name[i], modulus[props_name[i]][-1], error[i]))
-            sys.stdout.write("==============================================\n\n")
+    outEnergyTerms = args.energyTerms
+    if 'all' in outEnergyTerms:
+        outEnergyTerms = energyTerms
+    else:
+        for key in outEnergyTerms:
+            if key not in energyTerms:
+                raise ValueError('{0} is not a supported keyword.\n Use from the following list: \n{1}'.format(
+                    outEnergyTerms, energyTerms))
 
-
-def output_props(key):
-    out = ''
-    if key == 'BST':
-        props = ['Bending-1 Angle', 'Bending-2 Angle', 'Contour Length', 'Sum. Twist']
-        for i in range(4):
-            out += props[i] + '    '
-        out += '\n'
-
-    if key == 'ST':
-        props = ['Contour Length', 'Sum. Twist']
-        for i in range(2):
-            out += props[i] + '   '
-        out += '\n'
-
-    return out
-
+    return outEnergyTerms
 
 def parseArguments():
-    parser = argparse.ArgumentParser(prog='dnaMD globalElasticity',
+    parser = argparse.ArgumentParser(prog='dnaMD globalEnergy',
                                      description=description,
                                      formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument('-i', '--input', action='store',
-                        type=argparse.FileType('rb'), metavar='parameter.h5',
-                        dest='inputFile', required=False, help=inputFileHelp)
+    parser.add_argument('-ir', '--input-ref', action='store',
+                        type=argparse.FileType('rb'), metavar='ref_dna.h5',
+                        dest='inputRefFile', required=False, help=inputRefFileHelp)
+
+    parser.add_argument('-ip', '--input-probe', action='store',
+                        type=argparse.FileType('rb'), metavar='probe_dna.h5',
+                        dest='inputProbeFile', required=False, help=inputProbeFileHelp)
 
     parser.add_argument('-o', '--output', action='store',
-                        type=str, metavar='output.csv',
+                        type=str, metavar='output.dat',
                         dest='outputFile', help=outputFileHelp)
 
-    parser.add_argument('-ot', '--output-time', action='store',
-                        type=str, metavar='elasicity_vs_time.csv',
-                        dest='vsTime', help=vsTimeHelp)
+    parser.add_argument('-et', '--energy-terms', action='store',
+                        type=lambda s: [item.rstrip().lstrip() for item in s.split(',')],
+                        metavar='"full,diag,strecth,twist"', default='all',
+                        dest='energyTerms', help=energyTermHelp)
 
     parser.add_argument('-tbp', '--total-bp', action='store',
                         type=int, metavar='total-bp-number',
@@ -338,18 +335,13 @@ def parseArguments():
                         metavar='bp/s-end-number',
                         help=bpEndHelp)
 
-    parser.add_argument('-fgap', '--frame-gap', action='store',
-                        type=int, dest='frameGap',
-                        metavar='frames-to-skip',
-                        help=frameGapHelp)
-
     parser.add_argument('-paxis', '--principal-axis', action='store',
                         type=str, metavar='X', default=None,
                         choices=['X', 'Y', 'Z'],
                         dest='paxis', help=paxisHelp)
 
     parser.add_argument('-em', '--error-method', action='store',
-                        type=str, metavar='block', default=None,
+                        type=str, metavar='block', default='block',
                         choices=['std', 'acf', 'block'],
                         dest='err_type', help=errorHelp)
 
@@ -361,7 +353,7 @@ def parseArguments():
                         type=int, metavar='1', default=1,
                         dest='firstBP', help=bpFirstHelp)
 
-    idx = sys.argv.index("globalElasticity") + 1
+    idx = sys.argv.index("globalEnergy") + 1
     args = parser.parse_args(args=sys.argv[idx:])
 
     return parser, args

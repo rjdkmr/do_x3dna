@@ -49,9 +49,18 @@ import dnaMD
 
 description="""DESCRIPTION
 ===========
-Global Elastic Properties of the DNA
+Local Elastic Properties of the DNA
 
-This can be used to Global Elastic Properties of the DNA from the simulations.
+This can be used to calculate local elastic properties of the DNA from the simulations. Here 
+local DNA segment referred to less than 5 base-pair (4 basepair-step)long.
+
+WARNING: The option "-o/--output" and "-ot/--output-time" cannot be used with "-os/--output-segments" 
+         simultaneously due to incompatible usage of "-bs/--bps-start" and "-be/--bps-end". Both 
+         "-o/--output" and "-ot/--output-time" options can be used simultaneously.
+         
+WARNING: In case of "-o/--output" and "-ot/--output-time" difference between "-bs/--bps-start" 
+         and "-be/--bps-end" should be less than 4 while "--span" should be less than 4 in 
+         case of "-os/--output-segments".
 
 """
 
@@ -63,15 +72,23 @@ This file should contain the required parameters. It should be hdf5 storage file
 
 outputFileHelp=\
 """Name of output file with csv extension.
-This file will contain the elasticity modulus matrix where values will be separated 
-by comma. Since modulus matrix is also shown as screen output, this option is not 
-necessary.
+This file will contain the local elasticity matrix where values will be separated by comma. 
+This is also shown as screen output.
+
+"""
+
+outputFileSegmentsHelp=\
+"""Calculate local elasticity of consecutive overlapped DNA segments and save in this csv format file.
+It enables the calculation of local elastic properties of small overlapped DNA segments with 
+error. This file will contain the local elastic properties of small overlapped DNA segments of 
+length given by "-s/--span". As error will be calculated for each segment, '-fgap/--frame-gap' 
+is required.
 
 """
 
 vsTimeHelp=\
 """Calculate elasticity as a function of time and save in this csv format file.
-It can be used to obtained elastic moduli as a function of time to check their 
+It can be used to obtained local elasticity as a function of time to check their 
 convergence. If this option is used, -fgap/--frame-gap is an essential option.
 
 NOTE: Elastic properties cannot be calculated using a single frame because 
@@ -96,27 +113,38 @@ cases, use this option to start numbering of basepair from other number than
 one.
 
 """
-esTypeHelp=\
-"""Elastic Properties type.
-Two keywords are accepted: "BST" or "ST".
-* "BST" : Bending-Stretching-Twisting --- All motions are considered
-* "ST"  : Stretching-Twisting --- Bending motions are ignored.
 
-WARNING: For accurate calculation of bending motions, DNA structures in trajectory must 
-be superimposed on a reference structure (See Publication's Method Section).
-
-"""
-
-bpStartHelp=\
-"""First BP/BPS of DNA after which parameter will be extracted.
-If it is not given, first basepair or base-step will be considered.
+helicalHelp=\
+"""Enable helical base-step parameters
+By default, elasticity for base step-parameters (shift, slide, rise, 
+tilt, roll, twist) are calculated. If this option is used, helical
+base-step parameters (x-disp, y-disp, h-rise, inclination, tip, h-twist)
+will be used for elasticity.
 
 """
 
-bpEndHelp=\
-"""Last BP/BPS of DNA upto which parameter will be extracted.
+bpsStartHelp=\
+"""First basepair-step (bp-s) of DNA after which parameter will be extracted.
+If it is not given, first bp-s will be considered.
 
-If it is not given, last basepair or base-step will be considered.
+In case of "-o/--output" and "-ot/--output-time" this is firs bp-s of
+the segment while for "-os/--output-segments", it is first bp-s of
+first overlapped segments.
+
+"""
+
+bpsEndHelp=\
+"""Last basepair-step (bp-s) of DNA upto which parameter will be extracted.
+
+In case of "-o/--output" and "-ot/--output-time" this is last bp-s of
+the segment while for "-os/--output-segments", it is last bp-s of
+last overlapped segments.
+
+"""
+
+spanHelp=\
+"""Length of overlapping (local) DNA segments. 
+It is essential when "-os/--output-segments" is used. It should not be larger than four.
 
 """
 
@@ -125,13 +153,6 @@ frameGapHelp=\
 When calculating elastic modulus as a function of time, this option will determine
 the time-gap between each calculation point. Lower the time-gap, slower will be the 
 calculation.
-"""
-
-paxisHelp=\
-"""Principal axis parallel to global helical-axis
-Three keywords are accepted: "X", "Y" and "Z". Only require when bending motions are
-included in the calculation.
-
 """
 
 errorHelp=\
@@ -173,6 +194,12 @@ def main():
     if inputFileExtension not in ['.h5', '.hdf5', '.hdf']:
         showErrorAndExit(parser, "File should be in HDF5 (h5, hdf5 or hdf file extension) format...\n")
 
+    if args.outputFileSegments is not None:
+        if args.vsTime is not None:
+            showErrorAndExit(parser, "Both -ot/--output-time and -os/--output-segments cannot used simultaneously. \n")
+        if args.outputFile is not None:
+            showErrorAndExit(parser, "Both -o/--output and -os/--output-segments cannot used simultaneously. \n")
+
 
     # Total number of base-pair
     firstBP = args.firstBP
@@ -184,126 +211,77 @@ def main():
 
     # Determine start and end-bp
     toMinusBP = 2
-    startBP = args.startBP
-    if startBP is None:
-        startBP = firstBP
-    endBP = args.endBP
-    if endBP is None:
-        endBP = firstBP + totalBP - toMinusBP
+    startBPS = args.startBPS
+    if startBPS is None:
+        showErrorAndExit(parser, "-bs/--bps-start is missing... \n")
+    endBPS = args.endBPS
+    if endBPS is None:
+        showErrorAndExit(parser, "-be/--bps-end is missing... \n")
 
     # Check consistency of start bp
-    if (startBP < firstBP) or (startBP > totalBP+firstBP-toMinusBP):
-        msg = 'The requested start bp {0} is out side of {1}-{2} range.'.format(startBP, firstBP, totalBP+firstBP-toMinusBP)
+    if (startBPS < firstBP) or (startBPS > totalBP+firstBP-toMinusBP):
+        msg = 'The requested start bp-s {0} is out side of {1}-{2} range.'.format(startBPS, firstBP, totalBP+firstBP-toMinusBP)
         showErrorAndExit(parser, msg)
 
     # Check consistency of end-bp
-    if endBP is not None:
-        if startBP > endBP:
-            msg = 'The requested end bp {0} is larger than requested start bp {1}!!!'.format(endBP, startBP)
-            showErrorAndExit(parser, msg)
+    if startBPS > endBPS:
+        msg = 'The requested end bp-s {0} is larger than requested start bp-s {1}!!!'.format(endBPS, startBPS)
+        showErrorAndExit(parser, msg)
 
-        if (endBP > totalBP+firstBP-toMinusBP) or (endBP < firstBP):
-            msg = 'The requested end bp {0} is out side of {1}-{2} range.'.format(endBP, firstBP, totalBP+firstBP-toMinusBP)
-            showErrorAndExit(parser, msg)
+    if (endBPS > totalBP+firstBP-toMinusBP) or (endBPS < firstBP):
+        msg = 'The requested end bp-s {0} is out side of {1}-{2} range.'.format(endBPS, firstBP, totalBP+firstBP-toMinusBP)
+        showErrorAndExit(parser, msg)
+
+    if (args.vsTime is not None) or (args.outputFile is not None):
+        if endBPS - startBPS > 4:
+            showErrorAndExit(parser,
+                             "Difference between '-bs/--bps-start' and '-be/--bps-end' should be less than 4. \n")
 
     # Define DNA segement here
-    bp = [startBP, endBP]
-
-    if args.esType == 'BST' and args.paxis is None:
-        showErrorAndExit(parser, 'To calculate bending, principal axis parallel to helical axis is required.')
+    bp = [startBPS, endBPS]
 
     if args.vsTime is not None and args.frameGap is None:
-        showErrorAndExit(parser, 'Frame-gap is required when elasticity as a function of time is calculated.')
-
-    if args.err_type is not None and args.frameGap is None:
-        showErrorAndExit(parser, 'Frame-gap is required when error is calculated.')
+        showErrorAndExit(parser, 'Frame-gap is required when elasticity as a function of time is calculated.\n')
+    if args.outputFileSegments is not None and args.frameGap is None:
+        showErrorAndExit(parser, 'Frame-gap is required when elasticities of consecutive DNA segments are calculated.\n')
+    if args.outputFileSegments is not None and args.err_type is None:
+        showErrorAndExit(parser, '-em/--error-method cannot be none when elasticities of consecutive DNA '
+                                 'segments are calculated.\n')
 
     # initialize DNA object
-    dna = dnaMD.dnaEY(totalBP, esType=args.esType, filename=inputFile, startBP=firstBP)
+    dna = dnaMD.dnaEY(totalBP, filename=inputFile, startBP=firstBP)
 
-    # Check if mask is in object
-    if dna.dna.mask is not None:
-        masked = True
-    else:
-        masked = False
-
-    if args.vsTime is None:
-        out = ''
+    if args.outputFile is not None:
         towrite = ''
-        mean_out = output_props(args.esType)
-        if args.esType == 'BST':
-            mean, result = dna.getStretchTwistBendModulus(bp, paxis=args.paxis, masked=True, matrix=False)
-            for i in range(4):
-                for j in range(4):
-                    if j != 3:
-                        out += '{0:>10.3f}  '.format(result[i][j])
-                        towrite += '{0:.3f},'.format(result[i][j])
-                    else:
-                        out += '{0:>10.3f}\n'.format(result[i][j])
-                        towrite += '{0:.3f}\n'.format(result[i][j])
+        out = ''
+        mean, result = dna.calculateLocalElasticity(bp, helical=args.helical, unit='kT')
+        for i in range(result.shape[0]):
+            for j in range(result.shape[0]):
+                if j != result.shape[0]-1:
+                    out += '{0:>10.5f}  '.format(result[i][j])
+                    towrite += '{0:.5f},'.format(result[i][j])
+                else:
+                    out += '{0:>10.5f}\n'.format(result[i][j])
+                    towrite += '{0:.5f}\n'.format(result[i][j])
 
-                mean_out += '{0:>15.3f}  '.format(mean[i])
-            mean_out += '\n'
+        with open(args.outputFile, 'w') as fout:
+            fout.write(towrite)
 
-        if args.esType == 'ST':
-            mean, result = dna.getStretchTwistModulus(bp, masked=masked, matrix=False)
-            for i in range(2):
-                for j in range(2):
-                    if j != 1:
-                        out += '{0:.3f}  '.format(result[i][j])
-                        towrite += '{0:.3f},'.format(result[i][j])
-                    else:
-                        out += '{0:.3f}\n'.format(result[i][j])
-                        towrite += '{0:.3f}\n'.format(result[i][j])
-
-                mean_out += '{0:>12.3f}  '.format(mean[i])
-            mean_out += '\n'
-
-        print('=========== Elastic Modulus Matrix ===========\n')
+        print('=========== ============== Elastic Matrix =============== ===========\n')
         print(out)
-        print('=========== ====================== ===========\n')
+        print('=========== ====================== ====================== ===========\n')
 
-        print('=========================  Average Values  ==========================\n')
-        print(mean_out)
-        print('=========== ====================== ====================== ===========')
+    if args.vsTime is not None:
+        dna.getLocalElasticityByTime(bp, args.frameGap, helical=args.helical, unit='kT', outFile=args.vsTime)
 
-        if args.outputFile is not None:
-            with open(args.outputFile, 'w') as fout:
-                fout.write(towrite)
-
-    else:
-        time, modulus = dna.getModulusByTime(bp, args.frameGap, masked=masked, paxis=args.paxis, outFile=args.vsTime)
-
-        props_name = list(modulus.keys())
-        if args.err_type is not None:
-            error = dnaMD.get_error(time, list(modulus.values()), len(props_name), err_type=args.err_type, tool=args.tool)
-            sys.stdout.write("==============================================\n")
-            sys.stdout.write('{0:<16}{1:>14}{2:>14}\n'.format('Elasticity', 'Value', 'Error'))
-            sys.stdout.write("----------------------------------------------\n")
-            for i in range(len(props_name)):
-                sys.stdout.write('{0:<16}{1:>14.3f}{2:>14.3f}\n'.format(props_name[i], modulus[props_name[i]][-1], error[i]))
-            sys.stdout.write("==============================================\n\n")
-
-
-def output_props(key):
-    out = ''
-    if key == 'BST':
-        props = ['Bending-1 Angle', 'Bending-2 Angle', 'Contour Length', 'Sum. Twist']
-        for i in range(4):
-            out += props[i] + '    '
-        out += '\n'
-
-    if key == 'ST':
-        props = ['Contour Length', 'Sum. Twist']
-        for i in range(2):
-            out += props[i] + '   '
-        out += '\n'
-
-    return out
+    if args.outputFileSegments is not None:
+        dna.calculateLocalElasticitySegments(bp, span=args.span, frameGap=args.frameGap, helical=args.helical,
+                                             unit='kT', err_type=args.err_type, tool=args.tool,
+                                             outFile=args.outputFileSegments)
 
 
 def parseArguments():
-    parser = argparse.ArgumentParser(prog='dnaMD globalElasticity',
+    parser = argparse.ArgumentParser(prog='dnaMD localElasticity',
                                      description=description,
                                      formatter_class=argparse.RawTextHelpFormatter)
 
@@ -319,34 +297,37 @@ def parseArguments():
                         type=str, metavar='elasicity_vs_time.csv',
                         dest='vsTime', help=vsTimeHelp)
 
+    parser.add_argument('-os', '--output-segments', action='store',
+                        type=str, metavar='segments_elasticity.csv',
+                        dest='outputFileSegments',
+                        help=outputFileSegmentsHelp)
+
     parser.add_argument('-tbp', '--total-bp', action='store',
                         type=int, metavar='total-bp-number',
                         dest='totalBP', help=totalBpHelp)
 
-    parser.add_argument('-estype', '--elasticity-type', action='store',
-                        dest='esType', metavar='esType', default='ST',
-                        choices = ['ST', 'BST'],
-                        type=str, help=esTypeHelp)
+    parser.add_argument('-helical', '--helical', action='store_true',
+                        dest='helical', default=False,
+                        help=helicalHelp)
 
-    parser.add_argument('-bs', '--bp-start', action='store',
-                        type=int, metavar='bp/s-start-number',
+    parser.add_argument('-bs', '--bps-start', action='store',
+                        type=int, metavar='basepair-step-start-number',
                         default=1,
-                        dest='startBP', help=bpStartHelp)
+                        dest='startBPS', help=bpsStartHelp)
 
-    parser.add_argument('-be', '--bp-end', action='store',
-                        type=int, dest='endBP',
-                        metavar='bp/s-end-number',
-                        help=bpEndHelp)
+    parser.add_argument('-be', '--bps-end', action='store',
+                        type=int, dest='endBPS',
+                        metavar='basepair-step-end-number',
+                        help=bpsEndHelp)
+
+    parser.add_argument('-span', '--span', action='store',
+                        type=int, metavar='segment-span', default=2,
+                        dest='span', help=spanHelp)
 
     parser.add_argument('-fgap', '--frame-gap', action='store',
                         type=int, dest='frameGap',
                         metavar='frames-to-skip',
                         help=frameGapHelp)
-
-    parser.add_argument('-paxis', '--principal-axis', action='store',
-                        type=str, metavar='X', default=None,
-                        choices=['X', 'Y', 'Z'],
-                        dest='paxis', help=paxisHelp)
 
     parser.add_argument('-em', '--error-method', action='store',
                         type=str, metavar='block', default=None,
@@ -361,7 +342,7 @@ def parseArguments():
                         type=int, metavar='1', default=1,
                         dest='firstBP', help=bpFirstHelp)
 
-    idx = sys.argv.index("globalElasticity") + 1
+    idx = sys.argv.index("localElasticity") + 1
     args = parser.parse_args(args=sys.argv[idx:])
 
     return parser, args

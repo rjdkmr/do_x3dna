@@ -33,11 +33,22 @@ It consists of three main components:
       **users with programming experiences**.
 
 
-**Last Update: Jan. 2018**
+**Last Update: Oct. 2018**
 
 **For detailed documentation about the do_x3dna, please visit:** |do_x3dna homepage|.
 
 **For Questions and Discussions, please visit:** `do_x3dna forum <https://groups.google.com/forum/#!forum/do_x3dna>`_.
+
+Release Note 2018
+-----------------
+
+   * `Added new dnaMD tools <http://do-x3dna.readthedocs.io/en/latest/dnaMD_usage.html#commands-table>`_
+
+   * Added support to calculate both `global and local Elastic properties <http://do-x3dna.readthedocs.io/en/latest/about_dna_elasticity.html>`_
+
+   * Added tutorials to calculate elastic properties and deformation energy
+     using `dnaMD tool <http://do-x3dna.readthedocs.io/en/latest/global_elasticity.html>`_
+     and `dnaMD Python module <http://do-x3dna.readthedocs.io/en/latest/notebooks/calculate_elasticity_tutorial.html>`_.
 
 Release Note 2017
 -----------------

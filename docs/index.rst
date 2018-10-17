@@ -34,9 +34,22 @@ It consists of three main components:
       **users with programming experiences**.
 
 
-**Last Update: Jan. 2018**
+**Last Update: Oct. 2018**
 
 **For Questions and Discussions, please visit:** `do_x3dna forum <https://groups.google.com/forum/#!forum/do_x3dna>`_.
+
+
+Release Note 2018
+-----------------
+
+   * `Added new dnaMD tools <dnaMD_usage.html#commands-table>`_
+
+   * Added support to calculate both `global and local Elastic properties <about_dna_elasticity.html>`_
+
+   * Added tutorials to calculate elastic properties and deformation energy
+     using `dnaMD tool <global_elasticity.html>`_ and
+     `dnaMD Python module <notebooks/calculate_elasticity_tutorial.html>`_.
+
 
 Release Note 2017
 -----------------
@@ -151,16 +164,17 @@ Contents
 .. toctree::
    :maxdepth: 1
 
-   do_x3dna for GROMACS <install_do_x3dna>
-   How to use GROMACS do_x3dna? <do_x3dna_usage>
-   do_x3dna plugin for VMD  <vmd_plugin>
-   Install dnaMD <install_dnaMD>
-   How to use dnaMD? <dnaMD_usage>
-   Speed up dnaMD with HDF5 file <using_hdf5>
-   How to calculate DNA elasticity? <about_dna_elasticity>
-   dnaMD Python module <api_summary>
-   dnaMD Python module Tutorial <tutorial>
-   View on GitHub <https://github.com/rjdkmr/do_x3dna>
+      do_x3dna for GROMACS <install_do_x3dna>
+      How to use GROMACS do_x3dna? <do_x3dna_usage>
+      do_x3dna plugin for VMD  <vmd_plugin>
+      Install dnaMD <install_dnaMD>
+      How to use dnaMD? <dnaMD_usage>
+      Speed up dnaMD with HDF5 file <using_hdf5>
+      DNA elasticity - Theory <about_dna_elasticity>
+      DNA elasticity - Tutorial <global_elasticity>
+      dnaMD Python module Tutorial <tutorial>
+      dnaMD Python module <api_summary>
+      View on GitHub <https://github.com/rjdkmr/do_x3dna>
 
 
 Indices and tables

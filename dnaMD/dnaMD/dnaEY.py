@@ -41,8 +41,49 @@
 #============================================================================
 
 import numpy as np
+from collections import OrderedDict
 
 from . import dnaMD
+
+
+def matrixToVector(matrix):
+    matrix = np.asarray(matrix)
+    length = matrix.shape[0]
+    vector = np.diagonal(matrix, offset=0)
+    for i in range(1, length):
+        vector = np.hstack((vector, np.diagonal(matrix, offset=i)))
+    return vector
+
+
+local_props_matrix = [
+    ['shift',       'shift-slide', 'shift-rise', 'shift-tilt', 'shift-roll', 'shift-twist'],
+    ['shift-slide', 'slide',       'slide-rise', 'slide-tilt', 'slide-roll', 'slide-twist'],
+    ['shift-rise',  'slide-rise',  'rise',       'rise-tilt',  'rise-roll',  'rise-twist' ],
+    ['shift-tilt',  'slide-tilt',  'rise-tilt',  'tilt',       'tilt-roll',  'tilt-twist' ],
+    ['shift-roll',  'slide-roll',  'rise-roll',  'tilt-roll',  'roll',       'roll-twist' ],
+    ['shift-twist', 'slide-twist', 'rise-twist', 'tilt-twist', 'roll-twist', 'twist'      ]
+]
+
+helical_local_props_matrix = [
+    ['x-disp',         'x-disp-y-disp',  'x-disp-h-rise',  'x-disp-incl',  'x-disp-tip',  'x-disp-h-twist'],
+    ['x-disp-y-disp',  'y-disp',         'y-disp-h-rise',  'y-disp-incl',  'y-disp-tip',  'y-disp-h-twist'],
+    ['x-disp-h-rise',  'y-disp-h-rise',  'h-rise',         'h-rise-incl',  'h-rise-tip',  'h-rise-h-twist'],
+    ['x-disp-incl',    'y-disp-incl',    'h-rise-incl',    'incl',         'incl-tip',    'incl-h-twist'  ],
+    ['x-disp-tip',     'y-disp-tip',     'h-rise-tip',     'incl-tip',     'tip',         'tip-h-twist'   ],
+    ['x-disp-h-twist', 'y-disp-h-twist', 'h-rise-h-twist', 'incl-h-twist', 'tip-h-twist', 'h-twist'       ]
+]
+
+
+local_props_vector = matrixToVector(local_props_matrix)
+helical_local_props_vector = matrixToVector(helical_local_props_matrix)
+
+def matrixToVector(matrix):
+    matrix = np.asarray(matrix)
+    length = matrix.shape[0]
+    vector = np.diagonal(matrix, offset=0)
+    for i in range(1, length):
+        vector = np.hstack((vector, np.diagonal(matrix, offset=i)))
+    return vector
 
 
 class dnaEY:
@@ -126,10 +167,10 @@ class dnaEY:
         self.esMatrix = dict()             # bp[0]-bp[1]-frame[0]-frame[1]
         self.minimumPoint = dict()         # bp[0]-bp[1]-frame[0]-frame[1]
 
-        self.enGlobalTypes = ['all', 'diag', 'b1', 'b2', 'stretch', 'twist', 'st_coupling',
-                        'bend', 'bs_coupling', 'bt_coupling', 'bb_coupling', 'st', 'bb', 'bs', 'bt', ]
+        self.enGlobalTypes = ['full', 'diag', 'stretch', 'twist', 'st_coupling', 'b1', 'b2',
+                        'bend', 'bs_coupling', 'bt_coupling', 'bb_coupling', 'st', 'bs', 'bt', ]
 
-        self.enLocalTypes = ['all', 'diag', 'shift', 'slide', 'rise', 'tilt', 'roll', 'twist',
+        self.enLocalTypes = ['full', 'diag', 'shift', 'slide', 'rise', 'tilt', 'roll', 'twist',
                              'x-disp', 'y-disp', 'h-rise', 'inclination', 'tip', 'h-twist' ]
 
 
@@ -158,9 +199,12 @@ class dnaEY:
             if frames[1] != -1 and frames[0] > frames[1]:
                 raise ValueError("frames should be a list containing lower and higher limit. See, documentation!!!")
 
+            if frames[1] != -1:
+                frames = [frames[0], frames[1]+1]
+
         return frames
 
-    def _extractGlobalParameters(self, dna, bp, frames=None, paxis='Z', masked=False):
+    def extractGlobalParameters(self, dna, bp, frames=None, paxis='Z', masked=False):
         """Extract the parameters for calculations
 
 
@@ -203,6 +247,8 @@ class dnaEY:
         """
 
         frames = self._validateFrames(frames)
+        if frames[1] == -1:
+            frames[1] = None
 
         if (len(bp) != 2):
             raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
@@ -226,27 +272,17 @@ class dnaEY:
             notNan = ~(nanInOne + nanInTwo)
             notNanIdx = np.nonzero(notNan)
 
-            if frames[1] == -1:
-                array = np.array([angleOne[frames[0]:][notNanIdx], angleTwo[frames[0]:][notNanIdx],
-                                  clen[frames[0]:][notNanIdx], htwist[frames[0]:][notNanIdx]])
-                time = (time[frames[0]:])[notNanIdx]
-            else:
-
-                array = np.array([angleOne[frames[0]:frames[1]][notNanIdx], angleTwo[frames[0]:frames[1]][notNanIdx],
-                                  clen[frames[0]:frames[1]][notNanIdx], htwist[frames[0]:frames[1]][notNanIdx]])
-                time = (time[frames[0]:frames[1]])[notNanIdx]
+            array = np.array([angleOne[frames[0]:frames[1]][notNanIdx], angleTwo[frames[0]:frames[1]][notNanIdx],
+                              clen[frames[0]:frames[1]][notNanIdx], htwist[frames[0]:frames[1]][notNanIdx]])
+            time = (time[frames[0]:frames[1]])[notNanIdx]
 
         else:
-            if frames[1] == -1:
-                array = np.array([clen[frames[0]:], htwist[frames[0]:]])
-                time = time[frames[0]:]
-            else:
-                array = np.array([clen[frames[0]:frames[1]], htwist[frames[0]:frames[1]]])
-                time = time[frames[0]:frames[1]]
+            array = np.array([clen[frames[0]:frames[1]], htwist[frames[0]:frames[1]]])
+            time = time[frames[0]:frames[1]]
 
         return time, array
 
-    def _extractLocalParameters(self, dna, bp, helical=False, frames=None):
+    def extractLocalParameters(self, dna, bp, helical=False, frames=None):
         """Extract the local parameters for calculations
 
 
@@ -279,6 +315,8 @@ class dnaEY:
         """
 
         frames = self._validateFrames(frames)
+        if frames[1] == -1:
+            frames[1] = None
 
         if (len(bp) != 2):
             raise ValueError("bp should be a list containing first and last bp of a segment. See, documentation!!!")
@@ -305,14 +343,9 @@ class dnaEY:
 
             time, twist = dna.time_vs_parameter('twist', bp=bp, merge=True, merge_method='sum')
 
-            if frames[1] == -1:
-                array = np.array([shift[frames[0]:], slide[frames[0]:], rise[frames[0]:],
-                                  tilt[frames[0]:], roll[frames[0]:], twist[frames[0]:]])
-                time = time[frames[0]:]
-            else:
-                array = np.array([shift[frames[0]:frames[1]], slide[frames[0]:frames[1]], rise[frames[0]:frames[1]],
-                                  tilt[frames[0]:frames[1]], roll[frames[0]:frames[1]], twist[frames[0]:frames[1]]])
-                time = time[frames[0]:frames[1]]
+            array = np.array([shift[frames[0]:frames[1]], slide[frames[0]:frames[1]], rise[frames[0]:frames[1]],
+                              tilt[frames[0]:frames[1]], roll[frames[0]:frames[1]], twist[frames[0]:frames[1]]])
+            time = time[frames[0]:frames[1]]
 
         else:
             time, x_disp = dna.time_vs_parameter('x-disp', bp=bp, merge=True, merge_method='sum')
@@ -330,14 +363,9 @@ class dnaEY:
 
             time, h_twist = dna.time_vs_parameter('h-twist', bp=bp, merge=True, merge_method='sum')
 
-            if frames[1] == -1:
-                array = np.array([x_disp[frames[0]:], y_disp[frames[0]:], h_rise[frames[0]:],
-                                  inclination[frames[0]:], tip[frames[0]:], h_twist[frames[0]:]])
-                time = time[frames[0]:]
-            else:
-                array = np.array([x_disp[frames[0]:frames[1]], y_disp[frames[0]:frames[1]], h_rise[frames[0]:frames[1]],
-                                  inclination[frames[0]:frames[1]], tip[frames[0]:frames[1]], h_twist[frames[0]:frames[1]]])
-                time = time[frames[0]:frames[1]]
+            array = np.array([x_disp[frames[0]:frames[1]], y_disp[frames[0]:frames[1]], h_rise[frames[0]:frames[1]],
+                              inclination[frames[0]:frames[1]], tip[frames[0]:frames[1]], h_twist[frames[0]:frames[1]]])
+            time = time[frames[0]:frames[1]]
 
         return time, array
 
@@ -410,7 +438,7 @@ class dnaEY:
         name = '{0}-{1}-{2}-{3}'.format(bp[0], bp[1], frames[0], frames[1])
 
         if name not in self.esMatrix:
-            time, array = self._extractGlobalParameters(self.dna, bp, frames=frames, paxis=paxis, masked=masked)
+            time, array = self.extractGlobalParameters(self.dna, bp, frames=frames, paxis=paxis, masked=masked)
             mean = np.mean(array, axis=1)
             esMatrix = np.asarray(self.getElasticMatrix(array))
             self.esMatrix[name] = esMatrix
@@ -487,7 +515,7 @@ class dnaEY:
         name = '{0}-{1}-{2}-{3}'.format(bp[0], bp[1], frames[0], frames[1])
 
         if name not in self.esMatrix:
-            time, array = self._extractGlobalParameters(self.dna, bp, frames=frames, masked=masked)
+            time, array = self.extractGlobalParameters(self.dna, bp, frames=frames, masked=masked)
             mean = np.mean(array, axis = 1)
             esMatrix = self.getElasticMatrix(array)
             self.esMatrix[name] = esMatrix
@@ -503,7 +531,7 @@ class dnaEY:
 
         return mean, result
 
-    def getModulusByTime(self, bp, frameGap, masked=False, paxis='Z'):
+    def getModulusByTime(self, bp, frameGap, masked=False, paxis='Z', outFile=None):
         r"""Calculate moduli as a function of time for convergence check
 
         It can be used to obtained elastic moduli as a function of time to check their convergence.
@@ -513,34 +541,34 @@ class dnaEY:
 
         When ``esType='BST'``, following is obtained:
 
-            1) bending-1
+            1) bend-1
 
-            2) bending-2
+            2) bend-2
 
-            3) Stretching
+            3) stretch
 
-            4) Twisting
+            4) twist
 
-            5) bending-1-bending-2
+            5) bend-1-bend-2
 
-            6) bending-2-stretching
+            6) bend-2-stretch
 
-            7) Stretching-Twisting
+            7) stretch-twist
 
-            8) bending-1-stretching
+            8) bend-1-stretch
 
-            9) bending-2-Twisting
+            9) bend-2-twist
 
-            10) bending-1-twisting
+            10) bend-1-twist
 
 
         When ``esType='ST'``, following is obtained:
 
-            1) Stretching
+            1) stretch
 
-            2) Twisting
+            2) twist
 
-            3) Stretching-Twisting
+            3) stretch-twist
 
         .. currentmodule:: dnaMD
 
@@ -567,47 +595,63 @@ class dnaEY:
             Axis parallel to global helical-axis(``'X'``, or ``'Y'`` or ``'Z'``). Only require when bending motions are
             included in the calculation.
 
+        outFile : str
+            Output file in csv format.
 
         Returns
         -------
         time : numpy.ndarray
-            1D array containing time values.
+            1D array containing time values of shape (nframes).
 
-        modulus : numpy.ndarray
-            2D array of shape (10, nframes) or (3, nframes) depending on the ``esType``. Order of modulus in this array
-            is same as to the above listed order.
+        Elasticities : OrderedDict
+            A ordered dictionary of 1D arrays of shape (nframes). The keys in dictionary are name of the elasticity in
+            the same order as listed above.
+            e.g. ``Elasticities['stretch']`` will give elasticity along stretching as a function of time.
 
         """
 
+        if self.esType == 'BST':
+            props_name = [ 'bend-1', 'bend-2', 'stretch', 'twist', 'bend-1-bend-2',
+                           'bend-2-stretch', 'stretch-twist', 'bend-1-stretch',
+                           'bend-2-twist', 'bend-1-twist']
+        else:
+            props_name = ['stretch', 'twist', 'stretch-twist']
+
+        time, elasticity = [], OrderedDict()
+        for name in props_name:
+            elasticity[name] = []
 
         length = len(self.dna.time[:])
-
-        time, modulus = [], []
         for i in range(frameGap, length, frameGap):
 
             props = None
             if self.esType == 'BST':
                 mean, modulus_t = self.getStretchTwistBendModulus(bp, frames=[0, i], paxis=paxis, masked=True)
-
-                props = np.diagonal(modulus_t, offset=0)
-                props = np.hstack((props, np.diagonal(modulus_t, offset=1)))
-                props = np.hstack((props, np.diagonal(modulus_t, offset=2)))
-                props = np.hstack((props, np.diagonal(modulus_t, offset=3)))
-
-            if self.esType == 'ST':
+            else:
                 mean, modulus_t = self.getStretchTwistModulus(bp, frames=[0, i], masked=masked)
 
-                props = np.diagonal(modulus_t, offset=0)
-                props = np.hstack((props, np.diagonal(modulus_t, offset=1)))
-
+            modulus_t = matrixToVector(modulus_t)
+            for p in range(len(props_name)):
+                elasticity[props_name[p]].append(modulus_t[p])
             time.append(self.dna.time[i])
-            modulus.append(props)
 
-        modulus = np.asarray(modulus)
+        # Write output file
+        if outFile is not None:
+            with open(outFile, 'w') as fout:
+                fout.write('#Time')
+                for name in props_name:
+                    fout.write(', {0}'.format(name))
+                fout.write('\n')
+                for t in range(len(time)):
+                    fout.write('{0:.3f}'.format(time[t]))
+                    for name in props_name:
+                        fout.write(', {0:.5f}'.format(elasticity[name][t]))
+                    fout.write('\n')
 
-        return time, modulus.T
+        return time, elasticity
 
-    def getGlobalDeformationEnergy(self, bp, complexDna, freeDnaFrames=None, boundDnaFrames=None, paxis='Z', which='all', masked=False):
+    def getGlobalDeformationEnergy(self, bp, complexDna, freeDnaFrames=None, boundDnaFrames=None, paxis='Z',
+                                   which='all', masked=False, outFile=None):
         r"""Deformation energy of the input DNA using Global elastic properties
 
         It can be used to calculated deformation energy of a input DNA with reference to the DNA present in the current
@@ -649,11 +693,12 @@ class dnaEY:
         paxis : str
             Axis parallel to global helical-axis(``'X'``, or ``'Y'`` or ``'Z'``). Only require when bending motions are
             included in the calculation.
-        which : all
-            For which motions, energy should be calculated.
+        which : str or list
+            For which motions, energy should be calculated. It should be either a list containing terms listed below or
+            "all" for all energy terms.
 
             Following keywords are available:
-                * ``'all'`` : Use entire elastic matrix -- all motions with their coupling
+                * ``'full'`` : Use entire elastic matrix -- all motions with their coupling
                 * ``'diag'`` : Use diagonal of elastic matrix -- all motions but no coupling
                 * ``'b1'`` : Only bending-1 motion
                 * ``'b2'`` : Only bending-2 motion
@@ -676,42 +721,78 @@ class dnaEY:
             skip those frames where 3D fitting curve was not successful within
             the given criteria.
 
+        outFile : str
+            Output file in csv format.
 
         Returns
         -------
         time : numpy.ndarray
             1D array containing time values.
 
-        energy : numpy.ndarray
-            1D array of shape (nframes) containing energy value for query DNA.
+        energy : OrderedDict of numpy.ndarray
+            Dictionary of 1D array of shape (nframes) containing energy terms requested for DNA.
 
         """
-        if which not in self.enGlobalTypes:
-            raise ValueError('{0} is not a supported energy keywords.\n Use any of the following: \n {1}'.format(
-                which, self.enGlobalTypes))
+        if self.esType == 'BST':
+            energyTerms = self.enGlobalTypes
+        else:
+            energyTerms = self.enGlobalTypes[:5]
+
+        if isinstance(which, str):
+            if which != 'all':
+                raise ValueError('Either use "all" or use list of terms from this {0} list \n.'.format(energyTerms))
+            else:
+                which = energyTerms
+        elif isinstance(which, list):
+            for key in which:
+                if key not in energyTerms:
+                    raise ValueError('{0} is not a supported keyword.\n Use from the following list: \n{1}'.format(
+                        which, energyTerms))
+        else:
+            raise ValueError('Either use "all" or use list of terms from this {0} list \n.'.format(
+                energyTerms))
 
         if self.esType == 'BST':
-            means, esMatrix = self.getStretchTwistBendModulus(bp, frames=freeDnaFrames, masked=masked, matrix=True, paxis=paxis)
+            means, esMatrix = self.getStretchTwistBendModulus(bp, frames=freeDnaFrames, masked=masked,
+                                                              matrix=True, paxis=paxis)
         else:
             means, esMatrix = self.getStretchTwistModulus(bp, frames=freeDnaFrames, masked=masked, matrix=True)
 
         esMatrix = 2.5 * esMatrix          # Convert kT to kJ/mol
-        time, array = self._extractGlobalParameters(complexDna, bp, frames=boundDnaFrames, paxis=paxis, masked=masked)
+        time, array = self.extractGlobalParameters(complexDna, bp, frames=boundDnaFrames, paxis=paxis, masked=masked)
 
-        energy = []
-        diffs = []
+        # Initialize energy dictionary
+        energyOut = OrderedDict()
+        for key in which:
+            energyOut[key] = []
+
         for i in range(array[0].shape[0]):
             vec = array[:, i]
             diff = vec - means
-            diffs.append(diff)
-            if self.esType == 'BST':
-                t_energy = self._calcEnergyBendStretchTwist(diff, esMatrix, which)
-            else:
-                t_energy = self._calcEnergyStretchTwist(diff, esMatrix, which)
+            for key in which:
+                if self.esType == 'BST':
+                    t_energy = self._calcEnergyBendStretchTwist(diff, esMatrix, key)
+                else:
+                    t_energy = self._calcEnergyStretchTwist(diff, esMatrix, key)
+                energyOut[key].append(t_energy)
 
-            energy.append(t_energy)
+        for key in which:
+            energyOut[key] = np.asarray(energyOut[key])
 
-        return time, np.asarray(energy)
+        # Write output file
+        if outFile is not None:
+            with open(outFile, 'w') as fout:
+                fout.write('#Time')
+                for name in which:
+                    fout.write(', {0}'.format(name))
+                fout.write('\n')
+                for t in range(len(time)):
+                    fout.write('{0:.3f}'.format(time[t]))
+                    for name in which:
+                        fout.write(', {0:.5f}'.format(energyOut[name][t]))
+                    fout.write('\n')
+
+        return time, energyOut
 
     def _calcEnergyStretchTwist(self, diff, es, which):
         r"""Calculate energy for ``estype='ST'`` using a difference vector.
@@ -745,11 +826,11 @@ class dnaEY:
 
         if which not in self.enGlobalTypes[:5]:
             raise ValueError('{0} is not a supported energy keywords.\n Use any of the following: \n {1}'.format(
-                which, self.enGlobalTypes))
+                which, self.enGlobalTypes[:5]))
 
         energy = None
 
-        if which == 'all':
+        if which == 'full':
             temp = np.matrix(diff)
             energy = 0.5 * ((temp * es) * temp.T)
             energy = energy[0,0]
@@ -805,7 +886,7 @@ class dnaEY:
 
         energy = None
 
-        if which == 'all':
+        if which == 'full':
             temp = np.matrix(diff)
             energy = 0.5 * ((temp * es) * temp.T)
             energy = energy[0,0]
@@ -871,7 +952,9 @@ class dnaEY:
         return energy
 
     def calculateLocalElasticity(self, bp, frames=None, helical=False, unit='kT'):
-        r"""Calculate local elastic matrix or stiffness matrix
+        r"""Calculate local elastic matrix or stiffness matrix for local DNA segment
+
+        .. note:: Here local DNA segment referred to less than 5 base-pair long.
 
         In case of :ref:`base-step-image`: Shift (:math:`Dx`), Slide (:math:`Dy`), Rise (:math:`Dz`),
         Tilt (:math:`\tau`), Roll (:math:`\rho`) and Twist (:math:`\omega`), following elastic matrix is calculated.
@@ -953,9 +1036,11 @@ class dnaEY:
 
         name = '{0}-{1}-{2}-{3}-local-{4}'.format(bp[0], bp[1], frames[0], frames[1], int(helical))
 
+        if bp[1]-bp[0]+1 > 4:
+            raise ValueError("Selected span {0} is larger than 4, and therefore, not recommended for local elasticity".format(bp[1]-bp[0]+1))
 
         if name not in self.esMatrix:
-            time, array = self._extractLocalParameters(self.dna, bp, helical=helical, frames=frames)
+            time, array = self.extractLocalParameters(self.dna, bp, helical=helical, frames=frames)
             mean = np.mean(array, axis = 1)
             esMatrix = self.getElasticMatrix(array)
             self.esMatrix[name] = esMatrix
@@ -973,7 +1058,7 @@ class dnaEY:
 
         return mean, result
 
-    def getLocalElasticityByTime(self, bp, skip, helical=False, unit='kT'):
+    def getLocalElasticityByTime(self, bp, frameGap, helical=False, unit='kT', outFile=None):
         r"""Calculate local elastic properties as a function of time for convergence check
 
         It can be used to obtained elastic properties as a function of time.
@@ -1038,7 +1123,7 @@ class dnaEY:
             List of two base-steps forming the DNA segment.
             For example: with ``bp=[5, 50]``, 5-50 base-step segment will be considered.
 
-        skip : int
+        frameGap : int
             How many frames to skip for next time-frame. Lower the number, slower will be the calculation.
 
         helical : bool
@@ -1048,44 +1133,144 @@ class dnaEY:
         unit : str
             Unit of energy. Allowed units are: ``'kT', 'kJ/mol' and 'kcal/mol'``.
 
+        outFile : str
+            Output file in csv format.
+
 
         Returns
         -------
         time : numpy.ndarray
-            1D array containing time values.
+            1D array containing time values of shape (nframes).
 
-        modulus : numpy.ndarray
-            2D array of shape (21, nframes). Order of elasticity in this array is same as to the above listed order.
+        Elasticities : OrderedDict
+            A ordered dictionary of 1D arrays of shape (nframes). The keys in dictionary are name of the elasticity in
+            the same order as listed above.
+            e.g. ``Elasticities['shift']`` will give elasticity along shift parameters as a function of time.
 
         """
+        if helical:
+            props_name = helical_local_props_vector
+        else:
+            props_name = local_props_vector
+
+        time, elasticity = [], OrderedDict()
+        for name in props_name:
+            elasticity[name] = []
 
         length = len(self.dna.time[:])
-
-        time, elasticity = [], []
-        for i in range(skip, length, skip):
-
-            props = None
-
-            mean, esy_t = self.calculateLocalElasticity(bp, helical=helical, unit=unit)
-
-            props = np.diagonal(esy_t, offset=0)
-            props = np.hstack((props, np.diagonal(esy_t, offset=1)))
-            props = np.hstack((props, np.diagonal(esy_t, offset=2)))
-            props = np.hstack((props, np.diagonal(esy_t, offset=3)))
-            props = np.hstack((props, np.diagonal(esy_t, offset=4)))
-            props = np.hstack((props, np.diagonal(esy_t, offset=5)))
-
+        for i in range(frameGap, length, frameGap):
+            mean, esy_t = self.calculateLocalElasticity(bp, frames=[0, i], helical=helical, unit=unit)
+            esy_t = matrixToVector(esy_t)
+            for p in range(len(props_name)):
+                elasticity[props_name[p]].append(esy_t[p])
             time.append(self.dna.time[i])
-            elasticity.append(props)
 
-        elasticity = np.asarray(elasticity)
+        # Write output file
+        if outFile is not None:
+            with open(outFile, 'w') as fout:
+                fout.write('#Time')
+                for name in props_name:
+                    fout.write(', {0}'.format(name))
+                fout.write('\n')
+                for t in range(len(time)):
+                    fout.write('{0:.3f}'.format(time[t]))
+                    for name in props_name:
+                        fout.write(', {0:.5f}'.format(elasticity[name][t]))
+                    fout.write('\n')
 
-        return time, elasticity.T
+        return time, elasticity
 
-    def getLocalDeformationEnergy(self, bp, complexDna, freeDnaFrames=None, boundDnaFrames=None, helical=False, unit='kT', which='all'):
+    def calculateLocalElasticitySegments(self, bp, span=2, frameGap=None, helical=False, unit='kT',
+                                         err_type='block', tool='gmx analyze', outFile=None):
+        """Calculate local elastic properties of consecutive overlapped DNA segments
+
+        Calculate local elastic properties of consecutive overlapped DNA segments of length given by `span`.
+
+        Parameters
+        ----------
+        bp : list
+            List of two base-steps forming the global DNA segment.
+            For example: with ``bp=[5, 50]``, 5-50 base-step segment will be considered.
+
+        span : int
+            Length of overlapping (local) DNA segments. It should be less than four.
+
+        frameGap : int
+            How many frames to skip for next time-frame. Lower the number, slower will be the calculation.
+
+        helical : bool
+            If ``helical=True``, elastic matrix for **helical base-step** parameters are calculated. Otherwise,
+            by default, elastic matrix for **base-step** parameters are calculated.
+
+        unit : str
+            Unit of energy. Allowed units are: ``'kT', 'kJ/mol' and 'kcal/mol'``.
+
+        err_type : str
+            Error estimation by autocorrelation method ``err_type='acf'`` or
+            block averaging method ``err_type='block'``
+
+        tool : str
+            GROMACS tool to calculate error. In older versions it is `g_analyze` while in
+            newer versions (above 2016) it is `gmx analyze`.
+
+        outFile : str
+            Output file in csv format.
+
+        Returns
+        -------
+        segments : list
+            list of DNA segments for which local elastic properties was calculated.
+
+        elasticities : OrderedDict
+            A ordered dictionary of 1D arrays of shape (segments). The keys in dictionary are name of the elasticity in
+            the same order as listed above.
+
+        error : OrderedDict
+            A ordered dictionary of 1D arrays of shape (segments). The keys in dictionary are name of the elasticity in
+            the same order as listed above..
+
+        """
+        if helical:
+            props_name = helical_local_props_vector
+        else:
+            props_name = local_props_vector
+
+        segments, errors, elasticities = [], OrderedDict(), OrderedDict()
+        for name in props_name:
+            elasticities[name] = []
+            errors[name] = []
+
+        for s in range(bp[0], bp[1]):
+            if s+span-1 > bp[1]:
+                break
+            time, elasticity_t = self.getLocalElasticityByTime([s, s+span-1], frameGap=frameGap, helical=helical, unit=unit)
+            error_t = dnaMD.get_error(time, list(elasticity_t.values()), len(props_name), err_type=err_type, tool=tool)
+            for i in range(len(props_name)):
+                esy_t = elasticity_t[props_name[i]][-1]           # only take last entry
+                elasticities[props_name[i]].append(esy_t)
+                errors[props_name[i]].append(error_t[i])
+            segments.append('{0}-{1}'.format(s, s+span-1))
+
+        # Write output file
+        if outFile is not None:
+            with open(outFile, 'w') as fout:
+                fout.write('#bps')
+                for name in props_name:
+                    fout.write(', {0}, {0}-error'.format(name))
+                fout.write('\n')
+                for s in range(len(segments)):
+                    fout.write('{0}'.format(segments[s]))
+                    for name in props_name:
+                        fout.write(', {0:.5f}, {1:.5f}'.format(elasticities[name][s], errors[name][s]))
+                    fout.write('\n')
+
+        return segments, elasticities, errors
+
+    def getLocalDeformationEnergy(self, bp, complexDna, freeDnaFrames=None, boundDnaFrames=None, helical=False,
+                                  unit='kT', which='all', outFile=None):
         r"""Deformation energy of the input DNA using local elastic properties
 
-        It can be used to calculate deformation energy of a base-step/s from input DNA object with reference to
+        The deformation energy of a base-step/s for probe DNA object with reference to
         the same base-step/s DNA present in the current DNA object.
 
         The deformation free energy is calculated using elastic matrix as follows
@@ -1126,28 +1311,35 @@ class dnaEY:
         bp : list
             List of two base-steps forming the DNA segment.
             For example: with ``bp=[5, 50]``, 5-50 base-step segment will be considered.
+
         complexDna : :class:`dnaMD.DNA`
             Input :class:`dnaMD.DNA` instance for which deformation energy will be calculated.
+
         freeDnaFrames : list
             To select a trajectory segment of current (free) DNA data.
             List of two trajectory frames between which parameters will be extracted. It can be used to select portions
             of the trajectory. For example, with ``frames=[100, 1000]``, 100th to 1000th frame of the trajectory will be
             considered.
+
         boundDnaFrames : list
             To select a trajectory segment of input (bound) DNA data.
             List of two trajectory frames between which parameters will be extracted. It can be used to select portions
             of the trajectory. For example, with ``frames=[100, 1000]``, 100th to 1000th frame of the trajectory will be
             considered.
+
         helical : bool
             If ``helical=True``, elastic matrix for **helical base-step** parameters are calculated. Otherwise,
             by default, elastic matrix for **base-step** parameters are calculated.
+
         unit : str
             Unit of energy. Allowed units are: ``'kT', 'kJ/mol' and 'kcal/mol'``.
-        which : all
-            For which motions, energy should be calculated.
+
+        which : str or list
+            For which motions (degrees of freedom), energy should be calculated. It should be either a list containing
+            terms listed below or"all" for all energy terms.
 
             Following keywords are available:
-                * ``'all'`` : Use entire elastic matrix -- all parameters with their coupling
+                * ``'full'`` : Use entire elastic matrix -- all parameters with their coupling
                 * ``'diag'`` : Use diagonal of elastic matrix -- all motions but no coupling
                 * ``'shift'`` or ``'x-disp'``
                 * ``'slide'`` or ``'y-idsp'``
@@ -1156,39 +1348,199 @@ class dnaEY:
                 * ``'roll'`` or ``'tip'``
                 * ``'twist'`` or ``'h-twist'``
 
+        outFile : str
+            Output file in csv format.
+
         Returns
         -------
         time : numpy.ndarray
             1D array containing time values.
 
-        energy : numpy.ndarray
-            1D array of shape (nframes) containing energy value for query DNA.
+        energy : dict of numpy.ndarray
+            Dictionary of 1D array of shape (nframes) containing energy terms requested for DNA.
 
         """
-        if which not in self.enLocalTypes:
-            raise ValueError('{0} is not a supported energy keywords.\n Use any of the following: \n {1}'.format(
-                which, self.enLocalTypes))
+        if helical:
+            energyTerms =  ['full', 'diag', 'x-disp', 'y-disp', 'h-rise', 'inclination', 'tip', 'h-twist']
+        else:
+            energyTerms = ['full', 'diag', 'shift', 'slide', 'rise', 'tilt', 'roll', 'twist']
 
-        if helical and which not in ['all', 'diag', 'x-disp', 'y-disp', 'h-rise', 'inclination', 'tip', 'h-twist']:
-            raise ValueError (' {0} is not a helical base-step parameters'.format(which))
-
-        if not helical and which not in ['all', 'diag', 'shift', 'slide', 'rise', 'tilt', 'roll', 'twist']:
-            raise ValueError (' {0} is not a base-step parameters'.format(which))
+        if isinstance(which, str):
+            if which != 'all':
+                raise ValueError('Either use "all" or use list of terms from this {0} list \n.'.format(energyTerms))
+            else:
+                which = energyTerms
+        elif isinstance(which, list):
+            for key in which:
+                if key not in energyTerms:
+                    raise ValueError('{0} is not a supported keyword.\n Use from the following list: \n{1}'.format(
+                        which, energyTerms))
+        else:
+            raise ValueError('Either use "all" or use list of terms from this {0} list \n.'.format(energyTerms))
 
         means, esMatrix = self.calculateLocalElasticity(bp, frames=freeDnaFrames, helical=helical, unit=unit)
+        time, array = self.extractLocalParameters(complexDna, bp, frames=boundDnaFrames, helical=helical)
 
-        time, array = self._extractLocalParameters(complexDna, bp, frames=boundDnaFrames, helical=helical)
+        # Initialize energy dictionary
+        energyOut = OrderedDict()
+        for key in which:
+            energyOut[key] = []
 
-        energy = []
-        diffs = []
         for i in range(array[0].shape[0]):
             vec = array[:, i]
             diff = vec - means
-            diffs.append(diff)
-            t_energy = self._calcLocalEnergy(diff, esMatrix, which)
-            energy.append(t_energy)
+            for key in which:
+                t_energy = self._calcLocalEnergy(diff, esMatrix, key)
+                energyOut[key].append(t_energy)
 
-        return time, np.asarray(energy)
+        for key in which:
+            energyOut[key] = np.asarray(energyOut[key])
+
+        # Write output file
+        if outFile is not None:
+            with open(outFile, 'w') as fout:
+                fout.write('#Time')
+                for name in which:
+                    fout.write(', {0}'.format(name))
+                fout.write('\n')
+                for t in range(len(time)):
+                    fout.write('{0:.3f}'.format(time[t]))
+                    for name in which:
+                        fout.write(', {0:.5f}'.format(energyOut[name][t]))
+                    fout.write('\n')
+
+        return time, energyOut
+
+    def getLocalDeformationEnergySegments(self, bp, complexDna, span=2,  freeDnaFrames=None, boundDnaFrames=None,
+                                          helical=False, unit='kT', which='all', err_type='block', tool='gmx analyze',
+                                          outFile=None):
+        r"""Deformation energy of the consecutive overlapped DNA segments
+
+        It can be used to calculate deformation energy of several base-step/s from input DNA object with
+        reference to the same base-step/s DNA present in the current DNA object.
+
+        For local deformation energy calculation see :meth:`dnaEY.getLocalDeformationEnergy`.
+
+        Parameters
+        ----------
+        bp : list
+            List of two base-steps forming the DNA segment.
+            For example: with ``bp=[5, 50]``, 5-50 base-step segment will be considered.
+
+        span : int
+            Length of overlapping (local) DNA segments. It should be less than four.
+
+        complexDna : :class:`dnaMD.DNA`
+            Input :class:`dnaMD.DNA` instance for which deformation energy will be calculated.
+
+        freeDnaFrames : list
+            To select a trajectory segment of current (free) DNA data.
+            List of two trajectory frames between which parameters will be extracted. It can be used to select portions
+            of the trajectory. For example, with ``frames=[100, 1000]``, 100th to 1000th frame of the trajectory will be
+            considered.
+
+        boundDnaFrames : list
+            To select a trajectory segment of input (bound) DNA data.
+            List of two trajectory frames between which parameters will be extracted. It can be used to select portions
+            of the trajectory. For example, with ``frames=[100, 1000]``, 100th to 1000th frame of the trajectory will be
+            considered.
+
+        helical : bool
+            If ``helical=True``, elastic matrix for **helical base-step** parameters are calculated. Otherwise,
+            by default, elastic matrix for **base-step** parameters are calculated.
+
+        unit : str
+            Unit of energy. Allowed units are: ``'kT', 'kJ/mol' and 'kcal/mol'``.
+
+        which : str or list
+            For which motions (degrees of freedom), energy should be calculated. It should be either a list containing
+            terms listed below or "all" for all energy terms.
+
+            Following keywords are available:
+                * ``'full'`` : Use entire elastic matrix -- all parameters with their coupling
+                * ``'diag'`` : Use diagonal of elastic matrix -- all motions but no coupling
+                * ``'shift'`` or ``'x-disp'``
+                * ``'slide'`` or ``'y-idsp'``
+                * ``'rise'`` or ``'h-rise'``
+                * ``'tilt'`` or ``'inclination'``
+                * ``'roll'`` or ``'tip'``
+                * ``'twist'`` or ``'h-twist'``
+
+        err_type : str
+            Error estimation by autocorrelation method ``err_type='acf'`` or
+            block averaging method ``err_type='block'``
+
+        tool : str
+            GROMACS tool to calculate error. In older versions it is `g_analyze` while in
+            newer versions (above 2016) it is `gmx analyze`.
+
+        outFile : str
+            Output file in csv format.
+
+        Returns
+        -------
+        segments : list
+            list of DNA segments for which local deformation energy was calculated.
+
+        energies : dict of numpy.ndarray
+            Dictionary of 1D array of shape (segments) containing energy terms requested for DNA.
+
+        error : OrderedDict
+            A ordered dictionary of 1D arrays of shape (segments). The keys in dictionary are energy-terms in
+            the same order as listed above..
+
+        """
+
+        if helical:
+            energyTerms =  ['full', 'diag', 'x-disp', 'y-disp', 'h-rise', 'inclination', 'tip', 'h-twist']
+        else:
+            energyTerms = ['full', 'diag', 'shift', 'slide', 'rise', 'tilt', 'roll', 'twist']
+
+        if isinstance(which, str):
+            if which != 'all':
+                raise ValueError('Either use "all" or use list of terms from this {0} list \n.'.format(energyTerms))
+            else:
+                which = energyTerms
+        elif isinstance(which, list):
+            for key in which:
+                if key not in energyTerms:
+                    raise ValueError('{0} is not a supported keyword.\n Use from the following list: \n{1}'.format(
+                        which, energyTerms))
+        else:
+            raise ValueError('Either use "all" or use list of terms from this {0} list \n.'.format(energyTerms))
+
+        segments, errors, energies = [], OrderedDict(), OrderedDict()
+        for name in which:
+            energies[name] = []
+            errors[name] = []
+
+        for s in range(bp[0], bp[1]):
+            if s+span-1 > bp[1]:
+                break
+            time, energy_t = self.getLocalDeformationEnergy([s, s+span-1], complexDna, freeDnaFrames=freeDnaFrames,
+                                                            boundDnaFrames=boundDnaFrames, helical=helical,
+                                                            unit=unit, which=which)
+            error_t = dnaMD.get_error(time, list(energy_t.values()), len(which), err_type=err_type, tool=tool)
+            for i in range(len(which)):
+                en_t = np.mean(energy_t[which[i]])           # Calculate average
+                energies[which[i]].append(en_t)
+                errors[which[i]].append(error_t[i])
+            segments.append('{0}-{1}'.format(s, s+span-1))
+
+        # Write output file
+        if outFile is not None:
+            with open(outFile, 'w') as fout:
+                fout.write('#bps')
+                for name in which:
+                    fout.write(', {0}, {0}-error'.format(name))
+                fout.write('\n')
+                for s in range(len(segments)):
+                    fout.write('{0}'.format(segments[s]))
+                    for name in which:
+                        fout.write(', {0:.5f}, {1:.5f}'.format(energies[name][s], errors[name][s]))
+                    fout.write('\n')
+
+        return segments, energies, errors
 
     def _calcLocalEnergy(self, diff, es, which):
         r"""Calculate local deformation energy using a difference vector.
@@ -1216,11 +1568,11 @@ class dnaEY:
 
         if which not in self.enLocalTypes:
             raise ValueError('{0} is not a supported energy keywords.\n Use any of the following: \n {1}'.format(
-                which, self.enLocalTypess))
+                which, self.enLocalTypes))
 
         energy = None
 
-        if which == 'all':
+        if which == 'full':
             temp = np.matrix(diff)
             energy = 0.5 * ((temp * es) * temp.T)
             energy = energy[0,0]
