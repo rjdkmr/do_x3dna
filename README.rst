@@ -33,7 +33,7 @@ It consists of three main components:
       **users with programming experiences**.
 
 
-**Last Update: Oct. 2018**
+**Last Update: Dec. 2018**
 
 **For detailed documentation about the do_x3dna, please visit:** |do_x3dna homepage|.
 
@@ -41,6 +41,8 @@ It consists of three main components:
 
 Release Note 2018
 -----------------
+
+   * `do_x3dna <http://do-x3dna.readthedocs.io/en/latest/do_x3dna_usage.html>`_ can be compiled and used with **GROMACS-2018.x** versions.
 
    * `Added new dnaMD tools <http://do-x3dna.readthedocs.io/en/latest/dnaMD_usage.html#commands-table>`_
 
@@ -53,16 +55,16 @@ Release Note 2018
 Release Note 2017
 -----------------
 
-  * `do_x3dna <do_x3dna_usage.html>`_ can be compiled and used with **GROMACS**
+  * `do_x3dna <http://do-x3dna.readthedocs.io/en/latest/do_x3dna_usage.html>`_ can be compiled and used with **GROMACS**
     **4.5.x**, **4.6.x**, **5.0.x**, **5.1.x**, **2016.x** and **2018.x** versions.
 
   * `do_x3dna VMD plugin <http://do-x3dna.readthedocs.io/en/latest/vmd_plugin.html>`_
 
-  * More user friendly --- `dnaMD <dnaMD_usage.html>`_ tools to analyze
-    `do_x3dna data <do_x3dna_usage.html#output-files-table>`_ --- No
+  * More user friendly --- `dnaMD <http://do-x3dna.readthedocs.io/en/latest/dnaMD_usage.html>`_ tools to analyze
+    `do_x3dna data <http://do-x3dna.readthedocs.io/en/latest/do_x3dna_usage.html#output-files-table>`_ --- No
     programming experiences needed now to analyze do_x3dna data.
 
-  * `Speed up dnaMD analysis with HDF5 file <using_hdf5.html>`_
+  * `Speed up dnaMD analysis with HDF5 file <http://do-x3dna.readthedocs.io/en/latest/using_hdf5.html>`_
 
 
 Citations
