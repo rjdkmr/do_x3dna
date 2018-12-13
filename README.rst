@@ -54,7 +54,7 @@ Release Note 2017
 -----------------
 
   * `do_x3dna <do_x3dna_usage.html>`_ can be compiled and used with **GROMACS**
-    **4.5.x**, **4.6.x**, **5.0.x**, **5.1.x**, and **2016.x** versions.
+    **4.5.x**, **4.6.x**, **5.0.x**, **5.1.x**, **2016.x** and **2018.x** versions.
 
   * `do_x3dna VMD plugin <http://do-x3dna.readthedocs.io/en/latest/vmd_plugin.html>`_
 

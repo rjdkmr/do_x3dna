@@ -25,11 +25,12 @@ do_x3dna requires one of the following versions of Gromacs:
     * Gromacs-5.0.x
     * Gromacs-5.1.x
     * Gromacs-2016.x
+    * Gromacs-2018.x
 
 For Gromacs **4.5.x** and **4.6.x** versions libraries such as ``libmd.a/.so``,
 ``libgmx.a/.so`` and ``libgmxana.a/.so`` are required.
 
-For Gromacs **5.0.x**, **5.1.x**, and **2016.x** version ``libgromacs.a/.so`` is
+For Gromacs **5.0.x**, **5.1.x**, **2016.x** and **2018.x** version ``libgromacs.a/.so`` is
 required.
 
 
