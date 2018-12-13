@@ -2,7 +2,7 @@
  * This file is part of do_x3dna
  *
  * Author: Rajendra Kumar
- * Copyright (C) 2014-2018  Rajendra Kumar
+ * Copyright (C) 2014-2019  Rajendra Kumar
  *
  * do_x3dna uses 3DNA package (http://x3dna.org).
  * Please cite the original publication of the 3DNA package:
@@ -76,7 +76,7 @@ void CopyRightMsg() {
             "                                                                        ",
             "               Author: Rajendra Kumar                                   ",
             "                                                                        ",
-            "         Copyright (C) 2014-2017  Rajendra Kumar                        ",
+            "         Copyright (C) 2014-2019  Rajendra Kumar                        ",
             "                                                                        ",
             "do_x3dna uses 3DNA package (http://x3dna.org).                          ",
             "Please cite the original publication of the 3DNA package:               ",
@@ -735,7 +735,12 @@ void hbond_process(int nframe, int **max_bp, int max_num_bp, char *fn_inp_base_p
 	matrix.ny=max_num_bp;
 	sprintf(matrix.title,"Base Pairs with respect to Time");
 	matrix.legend[0] =0;
-	sprintf(matrix.label_x, "%s",output_env_get_time_label(oenv));
+    
+#ifdef HAVE_GROMACS2018
+	sprintf(matrix.label_x, "%s",output_env_get_time_label(oenv).c_str());
+#else
+    sprintf(matrix.label_x, "%s",output_env_get_time_label(oenv));
+#endif
 	sprintf(matrix.label_y,"Base Pair Index");
 	matrix.bDiscrete=TRUE;
 
@@ -1536,9 +1541,10 @@ int gmx_3dna(int argc,char *argv[])
   gpbc = gmx_rmpbc_init(&top.idef,ePBC,natoms);
   if(bRef)		{
 	  gmx_rmpbc(gpbc,natoms,box,x);
-	  tapein=gmx_ffopen(pdbfile,"w");
-	  write_pdbfile_indexed(tapein,NULL,&top.atoms,xref,-1,box,' ',-1,gnx,index,NULL,TRUE);
-	  gmx_ffclose(tapein);
+	  //tapein=gmx_ffopen(pdbfile,"w");
+	  // write_pdbfile_indexed(tapein,NULL,&top.atoms,xref,-1,box,' ',-1,gnx,index,NULL,TRUE);
+      write_sto_conf_indexed(pdbfile, nullptr, &top.atoms, xref, nullptr, ePBC, box, gnx, index);
+	  //gmx_ffclose(tapein);
 
 	  if(0 != system(find_pair_cmd))
 		  gmx_fatal(FARGS,"Failed to execute command: %s",find_pair_cmd);
@@ -1561,9 +1567,10 @@ int gmx_3dna(int argc,char *argv[])
            rvec_inc(x[i], x_shift);
 	  }
 
-	  tapein=gmx_ffopen(pdbfile,"w");
-	  write_pdbfile_indexed(tapein,NULL,atoms,x,ePBC,box,' ',-1,gnx,index,NULL,TRUE);
-	  gmx_ffclose(tapein);
+	  //tapein=gmx_ffopen(pdbfile,"w");
+	  //write_pdbfile_indexed(tapein,NULL,atoms,x,ePBC,box,' ',-1,gnx,index,NULL,TRUE);
+      write_sto_conf_indexed(pdbfile, nullptr, &top.atoms, x, nullptr, ePBC, box, gnx, index);
+	  //gmx_ffclose(tapein);
 
 	  //Executing program $X3DNA/bin/find_pair
 	  if(!bRef)
