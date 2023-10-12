@@ -1,7 +1,6 @@
 
 .localhistory
 .idea/
-.vscode/
 
 # Ignore test folder
 test/
