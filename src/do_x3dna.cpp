@@ -48,7 +48,7 @@
 #include "gromacs/commandline/cmdlineinit.h"
 #include "gromacs/utility/futil.h"
 #include "gromacs/fileio/oenv.h"
-#include "gromacs/utility/arrayref.h"
+#include "gromacs/utility/arraysize.h"
 #include "gromacs/utility/exceptions.h"
 #include "gromacs/utility/fatalerror.h"
 #include "gromacs/fileio/xvgr.h"
@@ -64,14 +64,14 @@
 #include "gromacs/utility/smalloc.h"
 #include "gromacs/math/do_fit.h"
 #include "gromacs/math/vec.h"
-
+#include "gromacs/utility/stringutil.h"
 
 #include "ExtractData.h"
 #include "do_x3dna.h"
 
 void CopyRightMsg() {
 
-    const char *copyright[] = {
+    std::vector<std::string> copyright = {
             "                                                                        ",
             "                  :-)  do_x3dna (-:                                     ",
             "                                                                        ",
@@ -115,11 +115,8 @@ void CopyRightMsg() {
             "                                                                        ",
             "                                                                        "
     };
-    int i = 0;
-    char *str;
-    for(i=0; i<42; i++) {
-        str = strdup(copyright[i]);
-        fprintf(stderr,"%s\n", str);
+    for(int i=0; i<copyright.size(); i++) {;
+        fprintf(stderr,"%s\n", copyright[i].c_str());
     }
 }
 
@@ -1323,7 +1320,7 @@ int gmx_3dna(int argc,char *argv[])
   //GROMACS stuffs
   t_trxstatus *status;
   t_topology top;
-  int        ePBC;
+  PbcType        ePBC;
   t_atoms    *atoms;
   int    *index, *ifit;
   matrix     box;
@@ -1331,7 +1328,7 @@ int gmx_3dna(int argc,char *argv[])
   int        nres,nr0;
   real       t, *w_rls=NULL;
   int        gnx, nfit;
-  int 		*nres_index;
+  std::vector<int> nres_index;
   char       *grpnm, *fitname;
   rvec       *xref,*x, x_shift;
   int        i,natoms, nframe=0, num_bp=0;
@@ -1340,9 +1337,10 @@ int gmx_3dna(int argc,char *argv[])
   FILE       *tapein;
   FILE       *fnum_bp,*tmpf;
   const char *fnBP_Count;
-  char       suffix_name[32], pdbfile[32],inpfile[32],x3dna_out_file[32], title[256];
+  char       suffix_name[32], pdbfile[36],inpfile[36],x3dna_out_file[36], title[256];
   char       find_pair_cmd[256], analyze_cmd[256];
-  const char *dptr, *leg[1] = {"No. of BP"};
+  const char *dptr;
+  std::vector<std::string>  leg =  {"No. of BP"};
   char		  fn_cum_data[10][32];
   FILE		  *f_cum_data[10];
 
@@ -1384,12 +1382,10 @@ int gmx_3dna(int argc,char *argv[])
   //To get number and array of residues in selected group......
   nres=0;
   nr0=-1;
-  snew(nres_index,1);
   for(i=0; (i<gnx); i++) 	{
 	  if (atoms->atom[index[i]].resind != nr0) 		{
 		  nr0=atoms->atom[index[i]].resind;
-		  srenew(nres_index,nres+1);
-		  nres_index[nres]=atoms->resinfo[nr0].nr;
+		  nres_index.push_back(atoms->resinfo[nr0].nr);
 		  //printf("%d %d\n",nres,nres_index[nres]);
 		  nres++;
 	  }
@@ -1422,7 +1418,7 @@ int gmx_3dna(int argc,char *argv[])
   //Creating variable for executing command of find_pair from X3DNA
   dptr=getenv("X3DNA");
   if (!gmx_fexist(dptr))
-	  gmx_fatal(FARGS,"$X3DNA environment not found", dptr);
+	  gmx_fatal(FARGS, "$X3DNA environment %s not found", dptr);
   sprintf(find_pair_cmd,"$X3DNA/bin/find_pair %s %s %s",pdbfile, inpfile, bVerbose?"":"2> /dev/null");
   if (bVerbose)
 	  fprintf(stderr,"find_pair command='%s'\n",find_pair_cmd);
@@ -1461,7 +1457,7 @@ int gmx_3dna(int argc,char *argv[])
 
   //OUTPUT FILES HANDLING
   fnum_bp = xvgropen(fnBP_Count,"Number of base Pairs",output_env_get_time_label(oenv),"No. of BP",oenv);
-  xvgrLegend(fnum_bp,1,leg,oenv);
+  xvgrLegend(fnum_bp,leg,oenv);
 
   //Cumulative Data Files Opening
   	sprintf(fn_cum_data[eBasePairs],"base_pairs_%s.dat",ComName[0]);
