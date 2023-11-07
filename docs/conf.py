@@ -66,7 +66,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'do_x3dna'
-copyright = '2014-2018, Rajendra Kumar'
+copyright = '2014-2023, Rajendra Kumar'
 author = 'Rajendra Kumar'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -33,11 +33,21 @@ It consists of three main components:
       --- To extract and analyze the data obtained from do_x3dna for
       **users with programming experiences**.
 
+.. warning::
+   DSSR-X3DNA is incompatible with do_x3dna. Please use original 3DNA packacge. 
+   This could be dowloaded from by `3DNA forum <http://forum.x3dna.org/site-announcements/download-instructions/>`_.
 
-**Last Update: Oct. 2018**
+**Last Update: Nov. 2023**
 
 **For Questions and Discussions, please visit:** `do_x3dna forum <https://groups.google.com/forum/#!forum/do_x3dna>`_.
 
+Release Note 2023
+-----------------
+* `do_x3dna <http://do-x3dna.readthedocs.io/en/latest/do_x3dna_usage.html>`_ can be compiled and used with **GROMACS-2023.x** versions.
+
+* Support for older GROMACS (**4.5.x**, **4.6.x**, **5.0.x**, **5.1.x**, **2016.x** and **2018.x**) is **removed**.
+
+* For above listed GROMACS version, the code is available in `2018` git branch. Please use `git checkout 2018` to use this version.
 
 Release Note 2018
 -----------------

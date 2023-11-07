@@ -1,6 +1,9 @@
 Download and Installation of do_x3dna for GROMACS
 =================================================
 
+.. warning:: DSSR-X3DNA is incompatible with do_x3dna. Please use original 3DNA packacge.
+          This could be dowloaded from by `3DNA forum <http://forum.x3dna.org/site-announcements/download-instructions/>`_**
+
 Download
 --------
 
@@ -17,8 +20,47 @@ Download
 
 Installation
 ------------
+do_x3dna requires GROMACS-2023.
 
-do_x3dna requires one of the following versions of Gromacs:
+Steps
++++++
+Follow these steps to install do_x3dna
+
+.. code-block:: bash
+
+    cd do_x3dna
+    mkdir build
+    cd build
+    cmake ..  -DGMX_PATH=/opt/gromacs -DGMX_SRC=/path/to/gromacs-2023.x -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
+    make
+    sudo make install
+
+
+Directory ``/opt/gromacs`` should contains ``include`` and ``lib`` directories.
+Gromacs version will be automatically detected and accordingly processed during
+compilations.
+
+  * ``-DGMX_PATH`` : path to GROMACS installation directory.
+
+  * ``-DGMX_SRC`` : path to GROMACS source code directory downloaded from GROMACS download page.
+
+  * ``-DCMAKE_INSTALL_PREFIX``: path to a directory where do_x3dna will be installed.
+    If this option is not provided, do_x3dna will install either in ``/usr/local/bin``
+    or in ``$HOME/bin`` directory.
+
+  * Instead of ``GMX_PATH``, ``CMAKE_PREFIX_PATH`` can be used before running cmake as follows:
+
+      * ``export CMAKE_PREFIX_PATH=/opt/gromacs``
+      * ``export CMAKE_PREFIX_PATH=/opt/gromacs:/path/to/fftw``
+
+  * In case of **ERROR**: **FFTW library file libfftw3f.so or libfftw3f.a not found...**
+    use ``-DFFTW_LIB=/path/to/fftw/lib/`` to give a path for the directory containing either of the two files.
+
+
+Installation for older GROMACS versions
+---------------------------------------
+
+do_x3dna requires one of the following older GROMACS:
 
     * Gromacs-4.5.x
     * Gromacs-4.6.x
@@ -35,12 +77,13 @@ required.
 
 
 Steps
------
++++++
 Follow these steps to install do_x3dna
 
 .. code-block:: bash
 
     cd do_x3dna
+    git checkout 2018 # Checkout 2018 branch for older gromacs version
     mkdir build
     cd build
     cmake ..  -DGMX_PATH=/opt/gromacs -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna

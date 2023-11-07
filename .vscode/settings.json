@@ -73,5 +73,6 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp"
-    }
+    },
+    "esbonio.sphinx.confDir": ""
 }
