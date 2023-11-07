@@ -32,7 +32,7 @@ It consists of three main components:
       --- To extract and analyze the data obtained from do_x3dna for
       **users with programming experiences**.
 
-**DSSR-X3DNA is incompatible with do_x3dna. Please use original 3DNA packacge. This could be dowloaded from by `3DNA forum <http://forum.x3dna.org/site-announcements/download-instructions/>`_**
+**DSSR-X3DNA is incompatible with do_x3dna. Please use original 3DNA packacge.** This could be dowloaded from by `3DNA forum <http://forum.x3dna.org/site-announcements/download-instructions/>`_.
 
 **Last Update: Nov. 2023**
 
