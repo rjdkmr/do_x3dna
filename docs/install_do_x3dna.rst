@@ -2,7 +2,7 @@ Download and Installation of do_x3dna for GROMACS
 =================================================
 
 .. warning:: DSSR-X3DNA is incompatible with do_x3dna. Please use original 3DNA packacge.
-          This could be dowloaded from by `3DNA forum <http://forum.x3dna.org/site-announcements/download-instructions/>`_**
+          This could be dowloaded from by `3DNA forum <http://forum.x3dna.org/site-announcements/download-instructions/>`_.
 
 Download
 --------

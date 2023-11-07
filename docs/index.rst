@@ -47,7 +47,7 @@ Release Note 2023
 
 * Support for older GROMACS (**4.5.x**, **4.6.x**, **5.0.x**, **5.1.x**, **2016.x** and **2018.x**) is **removed**.
 
-* For above listed GROMACS version, the code is available in `2018` git branch. Please use `git checkout 2018` to use this version.
+* For above listed GROMACS version, the code is available in `2018` git branch. Please use ``git checkout 2018`` to use this version.
 
 Release Note 2018
 -----------------
