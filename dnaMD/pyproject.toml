@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dnaMD"
+version = "2.1.1"
+description = "To analyze fluctuations in DNA or RNA structures in molecular dynamics trajectories"
+authors = [
+    { name = "Rajendra Kumar", email = "rjdkmr@gmail.com" }
+]
+license = { text = "GNU General Public License v3 (GPLv3)" }
+readme = "README.rst"
+keywords = ["DNA", "MD Simulation", "Elastic Properties", "DNA Analysis MD Simulations"]
+dependencies = [
+  "h5py==3.13.0",
+  "numpy==2.2.3",
+  "scipy==1.5.2",
+  "matplotlib==3.10.0"
+]
+classifiers = [
+    'Environment :: Console',
+    'Intended Audience :: Developers',
+    'Intended Audience :: End Users/Desktop',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+    'Natural Language :: English',
+    'Operating System :: MacOS',
+    'Operating System :: POSIX :: Linux',
+    'Topic :: Scientific/Engineering :: Bio-Informatics',
+]
+
+[project.urls]
+homepage = "https://github.com/rjdkmr/do_x3dna"
+repository = "https://github.com/rjdkmr/do_x3dna"
+
+

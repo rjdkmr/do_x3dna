@@ -4,7 +4,7 @@
 # This file is part of do_x3dna
 #
 # Author: Rajendra Kumar
-# Copyright (C) 2014-2023  Rajendra Kumar
+# Copyright (C) 2014-2025  Rajendra Kumar
 #
 # do_x3dna uses 3DNA package (http://x3dna.org).
 # Please cite the original publication of the 3DNA package:
@@ -193,7 +193,7 @@ class DNA:
         This methad is called during the initialization of this class.
         """
         if self.filename is not None:
-            self.h5 = h5py.File(self.filename)
+            self.h5 = h5py.File(self.filename, 'a')
         else:
             return
 
@@ -212,7 +212,7 @@ class DNA:
 
                 # Sync data if old file is opened
                 for parameters in self.h5[bp_type][bp_num]:
-                    self.data[bp_type][bp_num][parameters] = self.h5[bp_type][bp_num][parameters]
+                    self.data[bp_type][bp_num][parameters] = self.h5[bp_type][bp_num][parameters][:]
 
         if 'mask' in self.h5:
             self.mask = self.h5['mask'][:]
@@ -736,7 +736,7 @@ class DNA:
                 if data[i][j][0] != None:
                     bp_num = str( bpIndex[i]+self.startBP )
                     param = targetParameters[OutParamIndex[j]+1]
-                    self._set_data(np.asarray(data[i][j], dtype=np.float), 'bps', bp_num, param, scaleoffset=1)
+                    self._set_data(np.asarray(data[i][j], dtype=float), 'bps', bp_num, param, scaleoffset=1)
 
     def set_backbone_dihedrals(self, filename, bp, parameters='all', bp_range=True):
         """To read and store backbone dihedrals (alpha, beta, gamma, delta, epsilon and zeta) and chi dihedral of both strands from an input file.
@@ -833,7 +833,7 @@ class DNA:
             for j in range(len(data[i])):
                 if data[i][j][0] != None:
                     param = targetParameters[OutParamIndex[j]+1]
-                    self._set_data(np.asarray(data[i][j], dtype=np.float), 'bp', bp_num, param, scaleoffset=1)
+                    self._set_data(np.asarray(data[i][j], dtype=float), 'bp', bp_num, param, scaleoffset=1)
 
     def set_helical_radius(self, filename, bp, atomname='P', full=False, bp_range=True):
         """To read and set local helical radius of both strand
