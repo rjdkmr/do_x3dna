@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dnaMD"
-version = "2.1.1"
+version = "2.1.2"
 description = "To analyze fluctuations in DNA or RNA structures in molecular dynamics trajectories"
 authors = [
     { name = "Rajendra Kumar", email = "rjdkmr@gmail.com" }
@@ -15,7 +15,7 @@ keywords = ["DNA", "MD Simulation", "Elastic Properties", "DNA Analysis MD Simul
 dependencies = [
   "h5py==3.13.0",
   "numpy==2.2.3",
-  "scipy==1.5.2",
+  "scipy==1.15.2",
   "matplotlib==3.10.0"
 ]
 classifiers = [

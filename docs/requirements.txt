@@ -4,4 +4,4 @@ h5py>=3.13.0
 nbsphinx>=0.9.6
 sphinx-rtd-theme>=3.0.1
 jupyterlab>=4.3.5
-dnaMD>=2.1.1
+dnaMD>=2.1.2
