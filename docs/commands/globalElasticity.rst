@@ -52,7 +52,7 @@ This can be used to Global Elastic Properties of the DNA from the simulations.
                         * "ST"  : Stretching-Twisting --- Bending motions are ignored.
 
                         WARNING: For accurate calculation of bending motions, DNA structures in trajectory must
-                        be superimposed on a reference structure (See Publication's Method Section).
+                        be superimposed on a reference structure (See Publication\'s Method Section).
 
     -bs bp/s-start-number, --bp-start bp/s-start-number
                         First BP/BPS of DNA after which parameter will be extracted.

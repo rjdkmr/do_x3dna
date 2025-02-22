@@ -53,8 +53,7 @@ source_parsers = {'.md': 'recommonmark.parser.CommonMarkParser',}
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-# source_suffix = ['.rst', '.md']
-source_suffix = ['.rst', '.md', '.ipynb']
+source_suffix = {'.rst': 'restructuredtext', '.md': 'markdown'}
 
 nbsphinx_execute = 'never'
 

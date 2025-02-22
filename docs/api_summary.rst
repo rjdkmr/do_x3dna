@@ -36,12 +36,12 @@ dnaMD module
 ~~~~~~~~~~~~
 .. currentmodule:: dnaMD
 .. autosummary::
-    dnaMD.setParametersFromFile
-    dnaMD.read_param_file
-    dnaMD.get_error
-    dnaMD.dev_parameters_vs_axis
-    dnaMD.localDeformationVsBPS
-    dnaMD.vector_angle
+    setParametersFromFile
+    read_param_file
+    get_error
+    dev_parameters_vs_axis
+    localDeformationVsBPS
+    vector_angle
 
 
 dnaMD.dnaEY class
