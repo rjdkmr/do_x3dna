@@ -2,6 +2,7 @@ numpy>=2.2.3
 scipy>=1.15.2
 h5py>=3.13.0
 nbsphinx>=0.9.6
+sphinx==8.1.3
 sphinx-rtd-theme>=3.0.1
 jupyterlab>=4.3.5
 dnaMD>=2.1.2
