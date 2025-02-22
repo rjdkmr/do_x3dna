@@ -1,7 +1,3 @@
-ENABLE_LANGUAGE(CXX)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 ##############################################################
 ################### CHECKING GROMACS PATH ####################
 ##############################################################
@@ -40,14 +36,14 @@ else()
 endif()
 ##############################################################
 
-
+# Add include directories
+include_directories( ${GROMACS_INCLUDE_DIRS} )
+include_directories( ${GROMACS_SRC} )
 FILE(GLOB INCLUDE_DIRS RELATIVE ${GROMACS_SRC} ${GROMACS_SRC}/gromacs/*/include)
 FOREACH(INC_DIR ${INCLUDE_DIRS})
   include_directories(${GROMACS_SRC}${INC_DIR})
 ENDFOREACH()
 
-include_directories( ${GROMACS_SRC} )
-include_directories( ${GROMACS_INCLUDE_DIRS} )
 add_definitions( ${GROMACS_DEFINITIONS} )
 add_executable(do_x3dna do_x3dna.cpp ExtractData.h ExtractData.cpp)
 target_link_libraries(do_x3dna ${GROMACS_LIBRARIES} )

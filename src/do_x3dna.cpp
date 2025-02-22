@@ -1417,8 +1417,12 @@ int gmx_3dna(int argc,char *argv[])
 
   //Creating variable for executing command of find_pair from X3DNA
   dptr=getenv("X3DNA");
+  if (dptr == NULL)
+	  gmx_fatal(FARGS, "Environment variable $X3DNA not found");
+
   if (!gmx_fexist(dptr))
 	  gmx_fatal(FARGS, "$X3DNA environment %s not found", dptr);
+	  
   sprintf(find_pair_cmd,"$X3DNA/bin/find_pair %s %s %s",pdbfile, inpfile, bVerbose?"":"2> /dev/null");
   if (bVerbose)
 	  fprintf(stderr,"find_pair command='%s'\n",find_pair_cmd);
@@ -1510,7 +1514,7 @@ int gmx_3dna(int argc,char *argv[])
   //=======================================================================================
   gpbc = gmx_rmpbc_init(&top.idef,ePBC,natoms);
   if(bRef)		{
-	  gmx_rmpbc(gpbc,natoms,box,x);
+	  gmx_rmpbc_apply(gpbc,natoms,box,x);
 	  //tapein=gmx_ffopen(pdbfile,"w");
 	  // write_pdbfile_indexed(tapein,NULL,&top.atoms,xref,-1,box,' ',-1,gnx,index,NULL,TRUE);
       write_sto_conf_indexed(pdbfile, nullptr, &top.atoms, xref, nullptr, ePBC, box, gnx, index);
@@ -1525,7 +1529,7 @@ int gmx_3dna(int argc,char *argv[])
   //START of Trajectory loop
   //***************************************************************************************
   do 	{
-	  gmx_rmpbc(gpbc,natoms,box,x);
+	  gmx_rmpbc_apply(gpbc,natoms,box,x);
 
 	  //Fitting the frame to reference structure
 	  if (bFit)	{
