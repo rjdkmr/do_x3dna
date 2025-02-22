@@ -1,13 +1,32 @@
-Download and Installation of do_x3dna for GROMACS
-=================================================
+Download and Installation of do_x3dna
+=====================================
 
 .. warning:: DSSR-X3DNA is incompatible with do_x3dna. Please use original 3DNA packacge.
           This could be dowloaded from by `3DNA forum <http://forum.x3dna.org/site-announcements/download-instructions/>`_.
 
-Download
---------
+Binary executable download and installation
+-------------------------------------------
 
-**do_x3dna package can be downloaded by either of following two steps.**
+Direct use of binary executable is recomended. The binary executable of do_x3dna is available for 
+direct `download here <http://rjdkmr.github.io/do_x3dna/binary/do_x3dna.tar.gz>`_.
+
+It can be installed as follows:
+::
+  
+    tar -xvzf do_x3dna.tar.gz
+    sudo cp -r do_x3dna/do_x3dna /usr/local/bin/.
+
+
+
+Installation from source code
+-----------------------------
+
+.. warning:: Installation from source requires GROMACS to be built with additional `cmake` flag `-DGMX_INSTALL_LEGACY_API=on`.
+
+Download
+________
+
+**do_x3dna source-code can be downloaded by either of following two steps.**
 
 1. Use ``git``:
 
@@ -19,7 +38,7 @@ Download
 2. Download either `zipball <https://github.com/rjdkmr/do_x3dna/archive/master.zip>`_ or `tarball <https://github.com/rjdkmr/do_x3dna/archive/master.tar.gz>`_.
 
 Installation
-------------
+____________
 do_x3dna requires GROMACS-2023.
 
 Steps
@@ -31,7 +50,7 @@ Follow these steps to install do_x3dna
     cd do_x3dna
     mkdir build
     cd build
-    cmake ..  -DGMX_PATH=/opt/gromacs -DGMX_SRC=/path/to/gromacs-2023.x -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
+    cmake ..  -DGMX_PATH=/opt/gromacs -DGMX_SRC=/path/to/gromacs-2025.x -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
     make
     sudo make install
 
@@ -43,59 +62,6 @@ compilations.
   * ``-DGMX_PATH`` : path to GROMACS installation directory.
 
   * ``-DGMX_SRC`` : path to GROMACS source code directory downloaded from GROMACS download page.
-
-  * ``-DCMAKE_INSTALL_PREFIX``: path to a directory where do_x3dna will be installed.
-    If this option is not provided, do_x3dna will install either in ``/usr/local/bin``
-    or in ``$HOME/bin`` directory.
-
-  * Instead of ``GMX_PATH``, ``CMAKE_PREFIX_PATH`` can be used before running cmake as follows:
-
-      * ``export CMAKE_PREFIX_PATH=/opt/gromacs``
-      * ``export CMAKE_PREFIX_PATH=/opt/gromacs:/path/to/fftw``
-
-  * In case of **ERROR**: **FFTW library file libfftw3f.so or libfftw3f.a not found...**
-    use ``-DFFTW_LIB=/path/to/fftw/lib/`` to give a path for the directory containing either of the two files.
-
-
-Installation for older GROMACS versions
----------------------------------------
-
-do_x3dna requires one of the following older GROMACS:
-
-    * Gromacs-4.5.x
-    * Gromacs-4.6.x
-    * Gromacs-5.0.x
-    * Gromacs-5.1.x
-    * Gromacs-2016.x
-    * Gromacs-2018.x
-
-For Gromacs **4.5.x** and **4.6.x** versions libraries such as ``libmd.a/.so``,
-``libgmx.a/.so`` and ``libgmxana.a/.so`` are required.
-
-For Gromacs **5.0.x**, **5.1.x**, **2016.x** and **2018.x** version ``libgromacs.a/.so`` is
-required.
-
-
-Steps
-+++++
-Follow these steps to install do_x3dna
-
-.. code-block:: bash
-
-    cd do_x3dna
-    git checkout 2018 # Checkout 2018 branch for older gromacs version
-    mkdir build
-    cd build
-    cmake ..  -DGMX_PATH=/opt/gromacs -DCMAKE_INSTALL_PREFIX=/opt/do_x3dna
-    make
-    sudo make install
-
-
-Directory ``/opt/gromacs`` should contains ``include`` and ``lib`` directories.
-Gromacs version will be automatically detected and accordingly processed during
-compilations.
-
-  * ``-DGMX_PATH`` : path to GROMACS installation directory.
 
   * ``-DCMAKE_INSTALL_PREFIX``: path to a directory where do_x3dna will be installed.
     If this option is not provided, do_x3dna will install either in ``/usr/local/bin``
