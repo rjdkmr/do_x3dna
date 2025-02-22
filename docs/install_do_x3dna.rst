@@ -8,7 +8,7 @@ Binary executable download and installation
 -------------------------------------------
 
 Direct use of binary executable is recomended. The binary executable of do_x3dna is available for 
-direct `download here <http://rjdkmr.github.io/do_x3dna/binary/do_x3dna.tar.gz>`_.
+direct `download here <https://rjdkmr.github.io/do_x3dna/binary/do_x3dna.tar.gz>`_.
 
 It can be installed as follows:
 ::
