@@ -14,10 +14,7 @@ RUN mkdir /build/external
 WORKDIR /build/external
 RUN curl -L -O https://ftp.gromacs.org/gromacs/gromacs-2025.0.tar.gz && tar -zxf gromacs-2025.0.tar.gz
 
-RUN mkdir gmx_installed
 WORKDIR /build/external/gromacs-2025.0
-
-
 ENV GMX_SRC=/build/external/gromacs-2025.0
 ENV GMX_PATH=/build/external/gmx_installed
 RUN mkdir /build/external/gmx_installed
