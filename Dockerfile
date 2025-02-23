@@ -26,6 +26,6 @@ RUN make -j4
 RUN make install
 
 WORKDIR /build
-RUN cmake -DGMX_PATH=${GMX_PATH} -DGMX_SRC=${GMX_SRC} .. && make && sudo make install
+RUN cmake -DGMX_PATH=${GMX_PATH} -DGMX_SRC=${GMX_SRC} .. && make && make install
 
 CMD ["do_x3dna", "-h"]
