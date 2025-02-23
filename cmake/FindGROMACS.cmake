@@ -91,9 +91,11 @@ endif()
 
 if(BUILD_STATIC)
   # Static build is required
-  # Unfortunatelly, GROMACS does not install static libraries by default
+  # Unfortunately, GROMACS does not install static libraries by default
   # So we need to find it in the source directory where GROMACS was originally built
-  if(EXISTS ${GMX_SRC}/build/lib) # Assumed that GROMACS was built in ${GMX_SRC}/build. TODO: make this more flexible
+  # Assumed that GROMACS was built in ${GMX_SRC}/build.
+  # TODO: make this more flexible
+  if(EXISTS ${GMX_SRC}/build/lib)  
     find_library(GROMACS_LIBRARY NAMES ${GROMACS_LIBRARY_NAME} HINTS ${GMX_SRC}/build/lib)
     find_library(MUPARSER_LIBRARY NAMES muparser HINTS ${GMX_SRC}/build/lib)
   else()

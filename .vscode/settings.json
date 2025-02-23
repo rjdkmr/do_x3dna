@@ -1,7 +1,11 @@
 {
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.buildEnvironment": {
+        "envFile": "${workspaceFolder}/.env",
+    },
     "cmake.configureSettings": {
-        "GMX_PATH": "/build/external/gromacs-2023.2/installed",
-        "GMX_SRC": "/build/external/gromacs-2023.2"
+        "GMX_PATH": "${GMX_PATH}",
+        "GMX_SRC": "${GMX_SRC}"
     },
     "files.associations": {
         "any": "cpp",

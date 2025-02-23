@@ -24,11 +24,11 @@ RUN mkdir /build/external/gmx_installed
 WORKDIR /build/external/gromacs-2025.0
 RUN mkdir build
 WORKDIR /build/external/gromacs-2025.0/build
-RUN cmake .. -DGMX_SIMD=SSE2 -DGMX_GPU=off -DGMXAPI=OFF -DGMX_INSTALL_LEGACY_API=on -DGMX_FFT_LIBRARY=fftpack -DCMAKE_INSTALL_PREFIX=${GMX_PATH}
+RUN cmake .. -DGMX_SIMD=SSE2 -DGMX_GPU=off -DGMXAPI=OFF -DGMX_INSTALL_LEGACY_API=on -DGMX_FFT_LIBRARY=fftpack -DCMAKE_INSTALL_PREFIX=${GMX_PATH} -DGMX_PREFER_STATIC_LIBS=ON -DGMX_OPENMP=OFF -DBUILD_SHARED_LIBS=OFF
 RUN make -j4
 RUN make install
 
 WORKDIR /build
-RUN cmake -DGMX_PATH=${GMX_PATH} -DGMX_SRC=${GMX_SRC} .. && make && sudo make install
+RUN cmake -DGMX_PATH=${GMX_PATH} -DGMX_SRC=${GMX_SRC} -DBUILD_STATIC=ON .. && make && sudo make install
 
 CMD ["do_x3dna", "-h"]
