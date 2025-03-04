@@ -14,7 +14,7 @@ RUN cmake .. -DGMX_SIMD=SSE2 -DGMX_GPU=off -DGMXAPI=OFF -DGMX_INSTALL_LEGACY_API
 RUN make -j10
 RUN make install
 
-WORKDIR /build
+WORKDIR /io/build
 RUN cmake -DGMX_PATH=${GMX_PATH} -DGMX_SRC=${GMX_SRC} -DBUILD_STATIC=ON .. && make && make install
 
 RUN mkdir do_x3dna
