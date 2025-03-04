@@ -1,8 +1,4 @@
-FROM ubuntu:24.04
-
-RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive TZ=Europe/London apt-get -y install tzdata
-RUN apt-get install -y cmake gcc g++ curl libssl-dev build-essential pkg-config
+FROM quay.io/pypa/manylinux_2_28_x86_64
 
 COPY scripts /scripts
 COPY cmake /cmake
@@ -22,7 +18,7 @@ WORKDIR /build/external/gromacs-2025.0
 RUN mkdir build
 WORKDIR /build/external/gromacs-2025.0/build
 RUN cmake .. -DGMX_SIMD=SSE2 -DGMX_GPU=off -DGMXAPI=OFF -DGMX_INSTALL_LEGACY_API=on -DGMX_FFT_LIBRARY=fftpack -DCMAKE_INSTALL_PREFIX=${GMX_PATH} -DGMX_PREFER_STATIC_LIBS=ON -DGMX_OPENMP=OFF -DBUILD_SHARED_LIBS=OFF
-RUN make -j4
+RUN make -j1
 RUN make install
 
 WORKDIR /build
