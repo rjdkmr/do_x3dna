@@ -47,6 +47,5 @@ ENDFOREACH()
 add_definitions( ${GROMACS_DEFINITIONS} )
 add_executable(do_x3dna do_x3dna.cpp ExtractData.h ExtractData.cpp)
 target_link_libraries(do_x3dna ${GROMACS_LIBRARIES} )
-SET_TARGET_PROPERTIES(do_x3dna PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS do_x3dna DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
 

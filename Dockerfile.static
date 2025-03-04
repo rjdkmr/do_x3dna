@@ -1,24 +1,17 @@
 FROM quay.io/pypa/manylinux_2_28_x86_64
 
-COPY scripts /scripts
-COPY cmake /cmake
-COPY src /src
-COPY CMakeLists.txt /CMakeLists.txt
+RUN dnf install -y glibc-static
 
-RUN mkdir /build
-RUN mkdir /build/external
-WORKDIR /build/external
+WORKDIR /io/external
+RUN mkdir /io/external/gromacs_installed
+ENV GMX_SRC=/io/external/gromacs-2025.0
+ENV GMX_PATH=/io/external/gromacs_installed
+
 RUN curl -L -O https://ftp.gromacs.org/gromacs/gromacs-2025.0.tar.gz && tar -zxf gromacs-2025.0.tar.gz
-
-WORKDIR /build/external/gromacs-2025.0
-ENV GMX_SRC=/build/external/gromacs-2025.0
-ENV GMX_PATH=/build/external/gmx_installed
-RUN mkdir /build/external/gmx_installed
-WORKDIR /build/external/gromacs-2025.0
-RUN mkdir build
-WORKDIR /build/external/gromacs-2025.0/build
-RUN cmake .. -DGMX_SIMD=SSE2 -DGMX_GPU=off -DGMXAPI=OFF -DGMX_INSTALL_LEGACY_API=on -DGMX_FFT_LIBRARY=fftpack -DCMAKE_INSTALL_PREFIX=${GMX_PATH} -DGMX_PREFER_STATIC_LIBS=ON -DGMX_OPENMP=OFF -DBUILD_SHARED_LIBS=OFF
-RUN make -j1
+WORKDIR /io/external/gromacs-2025.0/build
+RUN cmake .. -DGMX_SIMD=SSE2 -DGMX_GPU=off -DGMXAPI=OFF -DGMX_INSTALL_LEGACY_API=on -DGMX_FFT_LIBRARY=fftpack \
+             -DCMAKE_INSTALL_PREFIX=${GMX_PATH} -DGMX_PREFER_STATIC_LIBS=ON -DGMX_OPENMP=OFF -DBUILD_SHARED_LIBS=OFF
+RUN make -j10
 RUN make install
 
 WORKDIR /build

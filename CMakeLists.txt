@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.20)
 project(do_x3dna VERSION 2.0.0 LANGUAGES CXX)
+# set(CMAKE_VERBOSE_MAKEFILE True)
 
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
