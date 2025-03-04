@@ -17,4 +17,7 @@ RUN make install
 WORKDIR /build
 RUN cmake -DGMX_PATH=${GMX_PATH} -DGMX_SRC=${GMX_SRC} -DBUILD_STATIC=ON .. && make && make install
 
+RUN mkdir do_x3dna
+RUN cp src/do_x3dna do_x3dna/.
+
 CMD ["do_x3dna", "-h"]
