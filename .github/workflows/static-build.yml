@@ -1,0 +1,21 @@
+name: Build Static Binary Executable
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile.static -v `pwd`:io --tag my-image-name:$(date +%s)
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.ref_name }}
+          path: build/src/do_X3dna
