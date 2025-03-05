@@ -19,5 +19,6 @@ RUN cmake -DGMX_PATH=${GMX_PATH} -DGMX_SRC=${GMX_SRC} -DBUILD_STATIC=ON .. && ma
 
 RUN mkdir do_x3dna
 RUN cp src/do_x3dna do_x3dna/.
+RUN tar -czvf do_x3dna_x86_64.tar.gz do_x3dna
 
 CMD ["do_x3dna", "-h"]

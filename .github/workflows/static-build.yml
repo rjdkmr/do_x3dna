@@ -19,4 +19,4 @@ jobs:
       - name: Release the binary
         uses: softprops/action-gh-release@v2
         with:
-          files: build/do_x3dna/do_x3dna
+          files: build/do_x3dna_x86_64.tar.gz
