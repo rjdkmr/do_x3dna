@@ -12,10 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - name: Build the Docker image
-        uses: actions/checkout@v4
-        with:
-          run: podman build --file Dockerfile.static -v `pwd`:/io --tag my-image-name:$(date +%s) . 
+        run: podman build --file Dockerfile.static -v `pwd`:/io --tag my-image-name:$(date +%s) . 
 
       - name: Release the binary
         uses: softprops/action-gh-release@v2
