@@ -1,4 +1,4 @@
-name: Build Static Binary Executable
+name: Build-Release
 
 on:
   push:
@@ -15,7 +15,8 @@ jobs:
       - name: Build the Docker image
         run: podman build --file Dockerfile.static -v `pwd`:/io --tag my-image-name:$(date +%s) . 
 
-      - uses: actions/upload-artifact@v4
+      - name: Release the binary
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: ${{ github.ref_name }}
-          path: build/src/do_X3dna
+          files: build/do_x3dna/do_x3dna
