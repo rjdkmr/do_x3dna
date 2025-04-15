@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dnaMD"
-version = "2.1.2"
+version = "2.1.3"
 description = "To analyze fluctuations in DNA or RNA structures in molecular dynamics trajectories"
 authors = [
     { name = "Rajendra Kumar", email = "rjdkmr@gmail.com" }
@@ -34,4 +34,5 @@ classifiers = [
 homepage = "https://github.com/rjdkmr/do_x3dna"
 repository = "https://github.com/rjdkmr/do_x3dna"
 
-
+[project.scripts]
+dnaMD = "dnaMD:main.main"
